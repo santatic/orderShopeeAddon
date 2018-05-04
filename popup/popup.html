@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Contact V14</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700" rel="stylesheet">
+  <!--===============================================================================================-->
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-firestore.js"></script>
+  <style>
+    ::-webkit-scrollbar-track {
+      background-color: #fff;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      background-color: #fff;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #000000;
+    }
+
+    body,
+    a,
+    h5,
+    input {
+      font-family: 'Quicksand', sans-serif;
+    }
+
+
+    @keyframes donut-spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .donut {
+      display: block;
+      border: 6px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #09c37f;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      margin: auto;
+      animation: donut-spin 1.2s linear infinite;
+    }
+    a.btn {
+      color: #fff !important;
+      font-weight: 500;
+      cursor: pointer;
+      margin: 5px
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container" style=" width: 460px; margin: 53px 0;">
+    <nav class="nav justify-content-center fixed-top">
+      <a class="nav-link btn btn-danger">Save this order to FireStore
+        <img style="margin-left: 3px" src="../images/upload.png" alt=""> </a>
+    </nav>
+
+  </div>
+
+  <!--===============================================================================================-->
+  <script src="../lib/jquery.min.js"></script>
+  <script src="../vendor/bootstrap/js/popper.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="popup.js"></script>
+
+</body>
+
+</html>
