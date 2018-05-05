@@ -25,6 +25,23 @@
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
+                      <li ng-show="firebaseUser">
+                              <a>Hello, {{ firebaseUser.displayName }}</a>                 
+                      </li>   
+                      <li ng-show="firebaseUser">
+                          <a href="#" ng-click="startSignIn()">Sign Out</a>
+                          
+                      </li>   
+
+                      <li ng-hide="firebaseUser"> 
+                        <a>Xin chào, vui lòng đăng nhập.</a>
+                      </li>
+                      <li ng-hide="firebaseUser">
+                        <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
+                    
+                      </li>
+
+
                       <li><a href="#">About</a></li>
                      
                     </ul>
@@ -36,20 +53,23 @@
         
         
         <div ng-view></div>
-    
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
+
+
     <script src="lib/jquery/jquery-2.1.3.min.js"></script>
-    <script type="text/javascript" src="lib/angular/angular.min.js"></script>
+    <script src="lib/angular/angular.min.js"></script>
     <script src="lib/angular/angular-route.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
 
 
-    <script type="text/javascript" src="app/app.js"></script>
+    <script src="app/app.js"></script>
 
-    <script type="text/javascript" src="app/controller/mainCtrl.js"></script>
-    <script type="text/javascript" src="app/controller/ordersCtrl.js"></script>
-    <script type="text/javascript" src="app/controller/configurationCtrl.js"></script>
+    <script src="app/controller/mainCtrl.js"></script>
+    <script src="app/controller/ordersCtrl.js"></script>
+    <script src="app/controller/configurationCtrl.js"></script>
 
-    <script type="text/javascript" src="app/service/todoStorage.js"></script>
+    <script src="app/service/todoStorage.js"></script>
 
 </body>
 </html>
