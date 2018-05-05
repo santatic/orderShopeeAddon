@@ -17,14 +17,31 @@
     },
     "content_scripts": [{
         "matches": [
-            "https://banhang.shopee.vn/*"
+            "https://banhang.shopee.vn/*",
+            "https://shopee.vn/*", 
+            "https://detail.1688.com/*"
         ],
         "js": [
             "lib/jquery.min.js",
+            
+           
+
+            //"jquery-3.1.1.min.js", 
+            "lib/bootstrap/js/bootstrap.min.js", 
+            "lib/angular/angular.js",
+            "lib/moment/moment.js",
+            "lib/moment/angular-moment.min.js",
+            "lib/moment/vi.js",
+            "lib/jszip/jszip.min.js",
+            "lib/jszip/jszip-utils.min.js",
+            "lib/jszip/FileSaver.min.js",
+            "lib/noty/js/noty.min.js",
+            //"content.js" 
             "lib/qrcode.min.js",
-            "js/content.js"
+            "js/content.js"           
         ],
-        "run_at": "document_start"
+        "css":["lib/bootstrap/css/bootstrap.css", "lib/noty/css/noty.css", "lib/custom/css/custom.css"],
+        "run_at": "document_end"//document_start
     }],
 
     "icons": {

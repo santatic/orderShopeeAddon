@@ -300,3 +300,45 @@ function myMain(evt) {
     }
 
 }
+
+
+
+
+
+
+
+
+// start functions   
+// end functions
+
+
+
+
+window.addEventListener ("load", myMain, false);
+function myMain (evt) {
+    var jsInitChecktimer = setInterval (checkForJS_Finish, 100);
+
+    function checkForJS_Finish () {
+        if (document.readyState === 'complete' //document.querySelector (".footer__policy-item")  && $('a').filter(function() {return this.href.match(/\/.*i\.\d+\.\d+/);}).length > 5
+        ) {
+            clearInterval (jsInitChecktimer);
+            // trang shopee or 1688 đã load xong
+
+
+           
+
+			$('img[src*="32x32"]').popover({
+				html: true,
+				trigger: 'hover',
+				//placement: 'bottom',
+				content: function(){return '<img src="'+$(this).attr('src').replace("32x32", "400x400") + '" />';}
+				});
+
+
+
+
+			// ket thuc
+        }
+    }
+}
+
