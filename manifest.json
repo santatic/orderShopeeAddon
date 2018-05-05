@@ -2,6 +2,8 @@
     "name": "My First Chrome Ext",
     "description": "Firestore",
     "version": "1.0",
+    "options_page": "options.html",
+
     "browser_action": {
         "default_icon": {
             "16": "images/get_started16.png",
@@ -28,7 +30,7 @@
 
             //"jquery-3.1.1.min.js", 
             "lib/bootstrap/js/bootstrap.min.js", 
-            "lib/angular/angular.js",
+            "lib/angular/angular.min.js",
             "lib/moment/moment.js",
             "lib/moment/angular-moment.min.js",
             "lib/moment/vi.js",
@@ -40,7 +42,7 @@
             "lib/qrcode.min.js",
             "js/content.js"           
         ],
-        "css":["lib/bootstrap/css/bootstrap.css", "lib/noty/css/noty.css", "lib/custom/css/custom.css"],
+        "css":["lib/bootstrap/css/bootstrap.min.css", "lib/noty/css/noty.css", "lib/custom/css/custom.css"],
         "run_at": "document_end"//document_start
     }],
 
