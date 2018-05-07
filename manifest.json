@@ -2,6 +2,8 @@
     "name": "My First Chrome Ext",
     "description": "Firestore",
     "version": "1.0",
+    "options_page": "options.html",
+
     "browser_action": {
         "default_icon": {
             "16": "images/get_started16.png",
@@ -17,15 +19,32 @@
     },
     "content_scripts": [{
         "matches": [
-            "https://banhang.shopee.vn/*"
+            "https://banhang.shopee.vn/*",
+            "https://shopee.vn/*", 
+            "https://detail.1688.com/*"
         ],
         "css":["css/custom.css"],
         "js": [
             "lib/jquery.min.js",
+            
+           
+
+            //"jquery-3.1.1.min.js", 
+            "lib/bootstrap/js/bootstrap.min.js", 
+            "lib/angular/angular.min.js",
+            "lib/moment/moment.js",
+            "lib/moment/angular-moment.min.js",
+            "lib/moment/vi.js",
+            "lib/jszip/jszip.min.js",
+            "lib/jszip/jszip-utils.min.js",
+            "lib/jszip/FileSaver.min.js",
+            "lib/noty/js/noty.min.js",
+            //"content.js" 
             "lib/qrcode.min.js",
-            "js/content.js"
+            "js/content.js"           
         ],
-        "run_at": "document_start"
+        "css":["lib/bootstrap/css/bootstrap.min.css", "lib/noty/css/noty.css", "lib/custom/css/custom.css"],
+        "run_at": "document_end"//document_start
     }],
 
     "icons": {
@@ -46,6 +65,14 @@
         "*://shopee.vn/",
         "*://cf.shopee.vn/"
     ],
-    "content_security_policy": "script-src 'self' 'sha256-WOdSzz11/3cpqOdrm89LBL2UPwEU9EhbDtMy2OciEhs=' https://www.gstatic.com https://*.firebaseio.com; object-src 'self'",
+    "content_security_policy": "script-src 'self' 'sha256-WOdSzz11/3cpqOdrm89LBL2UPwEU9EhbDtMy2OciEhs=' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com; object-src 'self'",
+    "oauth2": {
+        "client_id": "759441836020-t2tmv8qqq9c8421n4ti2djfoq3iab8hp.apps.googleusercontent.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/userinfo.email",
+          "https://www.googleapis.com/auth/userinfo.profile",
+          "https://www.googleapis.com/auth/spreadsheets"
+        ]
+      },
     "manifest_version": 2
 }
