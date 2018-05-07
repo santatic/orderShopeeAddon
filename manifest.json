@@ -19,6 +19,7 @@
         "matches": [
             "https://banhang.shopee.vn/*"
         ],
+        "css":["css/custom.css"],
         "js": [
             "lib/jquery.min.js",
             "lib/qrcode.min.js",
