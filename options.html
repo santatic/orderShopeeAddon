@@ -2,74 +2,97 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Công Cụ Kinh Doanh Online</title>
+    <title>Lập Nghiệp Shop Online</title>
     <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
-   
+    <link href="lib/noty/css/noty.css" rel="stylesheet">
+
+    <link rel='stylesheet prefetch' href='lib/datatable/css/dataTable.css'>
+    <link rel='stylesheet prefetch' href='lib/datatable/css/material.css'>
+    
+    <style>
+      body {
+        font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+        font-style: normal;
+        font-weight: 300;
+        font-size: 1.4rem;
+        line-height: 2rem;
+        letter-spacing: 0.01rem;
+        color: #212121;
+        background-color: #f5f5f5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      
+      .dt {
+        width: 75%;
+        margin: 50px auto;
+      }
+    </style> 
+
 </head>
 <body ng-app="app">
 
-        <nav ng-controller="headerCtrl" class="navbar navbar-default">
-                <div class="container-fluid">
-                  <!-- Brand and toggle get grouped for better mobile display -->
-                  <div class="navbar-header">
-                    
-                    <a ui-sref="state" class="navbar-brand" href="#/!">Báo Cáo</a>
-                  </div>
+  <nav ng-controller="headerCtrl" class="navbar navbar-default">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
               
-                  <!-- Collect the nav links, forms, and other content for toggling -->
-                  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                      <li ng-class="{active:isActive('/orders')}"><a href="#!orders">Đơn Hàng</a></li>
-                      <li ng-class="{active:isActive('/configuration')}"><a href="#!configuration">Cài Đặt</a></li>
-                      
-                    </ul>
+              <a ui-sref="state" class="navbar-brand" href="#/">Báo Cáo</a>
+            </div>
+        
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <li ng-class="{active:isActive('/orders')}"><a href="#orders">Đơn Hàng</a></li>
+                <li ng-class="{active:isActive('/configuration')}"><a href="#configuration">Cài Đặt</a></li>
+                
+              </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                      <li ng-show="firebaseUser">
-                              <a>Hello, {{ firebaseUser.displayName }}</a>                 
-                      </li>   
-                      <li ng-show="firebaseUser">
-                          <a href="#" ng-click="startSignIn()">Sign Out</a>
-                          
-                      </li>   
-
-                      <li ng-hide="firebaseUser"> 
-                        <a>Xin chào, vui lòng đăng nhập.</a>
-                      </li>
-                      <li ng-hide="firebaseUser">
-                        <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
+              <ul class="nav navbar-nav navbar-right">
+                <li ng-show="firebaseUser">
+                        <a>Hello, {{ firebaseUser.displayName }}</a>                 
+                </li>   
+                <li ng-show="firebaseUser">
+                    <a href="#" ng-click="startSignIn()">Sign Out</a>
                     
-                      </li>
+                </li>   
+
+                <li ng-hide="firebaseUser"> 
+                  <a>Xin chào, vui lòng đăng nhập.</a>
+                </li>
+                <li ng-hide="firebaseUser">
+                  <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
+              
+                </li>
 
 
-                      <li><a href="#">About</a></li>
-                     
-                    </ul>
-                  </div><!-- /.navbar-collapse -->
-                </div><!-- /.container-fluid -->
-        </nav>
+                <li><a href="#">About</a></li>
+                
+              </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+  </nav>
+  
+  <div ng-view></div>
 
-        
-        
-        
-        <div ng-view></div>
     <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
 
-
     <script src="lib/jquery/jquery-2.1.3.min.js"></script>
-    <script src="lib/angular/angular.min.js"></script>
-    <script src="lib/angular/angular-route.js"></script>
+    <script src="lib/angular/1.5.9/angular.min.js"></script>
+    <script src="lib/datatable/dataTable.min.js"></script>
+    <script src="lib/angular/1.5.9/angular-route.min.js"></script>
     <script src="lib/bootstrap/js/bootstrap.min.js"></script>
 
 
-    <script src="app/app.js"></script>
+    <script src="app-options-page/app.js"></script>
 
-    <script src="app/controller/mainCtrl.js"></script>
-    <script src="app/controller/ordersCtrl.js"></script>
-    <script src="app/controller/configurationCtrl.js"></script>
+    <script src="app-options-page/controller/mainCtrl.js"></script>
+    <script src="app-options-page/controller/ordersCtrl.js"></script>
+    <script src="app-options-page/controller/configurationCtrl.js"></script>
 
-    <script src="app/service/todoStorage.js"></script>
-
+    <script src="app-options-page/service/chromeStorage.js"></script>
+    <script src="lib/noty/js/noty.min.js" type="text/javascript"></script>
 </body>
 </html>

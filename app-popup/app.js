@@ -1,56 +1,24 @@
 'use strict';
-// app background
-//Initialize the Firebase SDK
-// var config = {
-// 	apiKey: 'AIzaSyB5a-MpgrGUzsGUntJW6vSE_oryGxeN7jw',
-// 	//authDomain: '<your-auth-domain>',
-// 	databaseURL: 'https://test-f8d9d.firebaseio.com',
-// 	storageBucket: 'test-f8d9d.appspot.com'
-// };
-// firebase.initializeApp(config);
-
 firebase.initializeApp({
-    apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
-    //authDomain: "shopngocanh-2018.firebaseapp.com",
-    //databaseURL: "https://shopngocanh-2018.firebaseio.com",
-    projectId: "shopngocanh-2018",
-    //storageBucket: "shopngocanh-2018.appspot.com",
-    //messagingSenderId: "759441836020"
-
-});
-  
-  // Initialize Cloud Firestore through Firebase
-const  firestore = firebase.firestore();
-const settings = {/* your settings... */ timestampsInSnapshots: true};
-firestore.settings(settings);
-
-firestore.collection("users").add({
-    first: "Ada",
-    last: "Lovelace",
-    born: 1815
-})
-.then(function(docRef) {
-    console.log("Document written with ID: ", docRef.id);
-})
-.catch(function(error) {
-    console.error("Error adding document: ", error);
+    apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
+    projectId: "nguoitimship"
 });
 
 var app = angular.module("app", ["ngRoute"]);
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {
-		templateUrl : "app/template/main.html",
-		controller : "mainCtrl"
+		templateUrl : "/app-popup/template/home.html",
+		controller : "homeCtrl"
     })
-    .when("/configuration", {
-        templateUrl : "app/template/configuration.html",
-        controller : "configurationCtrl"
+    .when("/feed", {
+        templateUrl : "/app-popup/template/feed.html",
+        controller : "feedCtrl"
     })
-    .when("/orders", {
-        templateUrl : "app/template/orders.html",
-        controller : "ordersCtrl"
-    });
+    // .when("/orders", {
+    //     templateUrl : "app-options-page/template/orders.html",
+    //     controller : "ordersCtrl"
+    // });
 });
 
 app.controller("headerCtrl",  ['$scope', '$location',  function($scope, $location, $firebaseObject) {
@@ -104,7 +72,6 @@ app.controller("headerCtrl",  ['$scope', '$location',  function($scope, $locatio
             }
           });
     }
-
 
     $scope.startSignIn = function startSignIn() {
         $scope.isDisabled = true;
