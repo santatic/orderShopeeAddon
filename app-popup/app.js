@@ -26,7 +26,8 @@ app.controller("headerCtrl",  ['$scope', '$location',  function($scope, $locatio
 		//console.log(route+"_"+$location.path());
 		return route === $location.path();
 		
-    } 
+    }
+    $('#linkOpenOptionsPage').click(function(){ chrome.runtime.openOptionsPage(); return false; });
     $scope.isDisabled = false;
 
     $scope.init = function(){

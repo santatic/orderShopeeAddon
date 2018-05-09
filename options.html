@@ -51,10 +51,10 @@
 
               <ul class="nav navbar-nav navbar-right">
                 <li ng-show="firebaseUser">
-                        <a>Hello, {{ firebaseUser.displayName }}</a>                 
+                        <a>Xin Chào, {{ firebaseUser.displayName }}</a>                 
                 </li>   
                 <li ng-show="firebaseUser">
-                    <a href="#" ng-click="startSignIn()">Sign Out</a>
+                    <a href="#" ng-click="startSignIn()">Đăng Xuất</a>
                     
                 </li>   
 
@@ -62,7 +62,7 @@
                   <a>Xin chào, vui lòng đăng nhập.</a>
                 </li>
                 <li ng-hide="firebaseUser">
-                  <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
+                  <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Đăng Nhập Bằng Google'" ng-click="startSignIn()">{{textButton}}</a>
               
                 </li>
 
