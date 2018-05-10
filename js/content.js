@@ -233,7 +233,7 @@ function myMain(evt) {
                     url = $(location).attr('href').match(/\d+/);
 
                     url = url.toString();
-
+                    console.log(url);
                     chrome.runtime.sendMessage({
                         mission: "checkExist",
                         url: url

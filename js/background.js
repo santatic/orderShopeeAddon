@@ -86,7 +86,7 @@ function detailOrder(response, sendResponse) { //add đơn vào db
 
     var val;
     var user = new Object();
-
+    console.log("hello");
     var promise = new Promise(function (resolve, reject) {
         resolve(httpGet("https://banhang.shopee.vn/api/v2/orders/" + response.url, []))
     })
@@ -111,13 +111,14 @@ function detailOrder(response, sendResponse) { //add đơn vào db
         val.cancel_status = false;
         val.logistic = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + response.url, []);
         console.log(val);
-        db.collection("orderShopee").doc(response.url).set(
-            val
-        ).then(function () {
-            db.collection("userShopee").doc(user.id.toString()).set(
-                user
-            )
-        })
+
+        // db.collection("orderShopee").doc(response.url).set(
+        //     val
+        // ).then(function () {
+        //     db.collection("userShopee").doc(user.id.toString()).set(
+        //         user
+        //     )
+        // })
     })
     // $.getJSON("https://banhang.shopee.vn/api/v2/orders/" + response.url, function (result) {
     //     (function(){
