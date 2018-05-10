@@ -15,7 +15,7 @@
         "default_title": "Lập Nghiệp Shop Online"
     },
     "background": {
-        "page": "background.html"
+        "page": "background/background.html"
     },
     "web_accessible_resources": [
         "img/*.png",
