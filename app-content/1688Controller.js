@@ -43,5 +43,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
           saveAs(zipFile, folderName + '.zip');
         });   
     }
+    
+   
   }]
 );
