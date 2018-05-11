@@ -1,15 +1,16 @@
-angular.module('app').service('todoStorage', function ($q) {
+angular.module('app').service('chromeStorage', function ($q) {
     var _this = this;
     this.data = [];
 
     this.findAll = function(callback) {
         chrome.storage.sync.get('todo', function(keys) {
+            console.log(keys);
             if (keys.todo != null) {
                 _this.data = keys.todo;
                 for (var i=0; i<_this.data.length; i++) {
                     _this.data[i]['id'] = i + 1;
                 }
-                console.log(_this.data);
+                //console.log(_this.data);
                 callback(_this.data);
             }
         });

@@ -1,0 +1,10 @@
+.popover{
+    max-width: 100%; /* Max Width of the popover (depending on the container!) */
+}
+.panel-1688-shopee{
+    display:inline;
+    position:fixed;
+    bottom:0;
+    left:0;
+    z-index:999;
+}
