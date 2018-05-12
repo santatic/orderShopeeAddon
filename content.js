@@ -230,62 +230,7 @@ function myMain(evt) {
                             note: $('textarea').val()
                         }, function (response) {})
                     })
-                    break;
-                case $(location).attr('href').indexOf('portal/sale/') !== -1:
-
-                    url = $(location).attr('href').match(/\d+/);
-
-                    url = url.toString();
-                    console.log(url);
-                    chrome.runtime.sendMessage({
-                        mission: "checkExist",
-                        url: url
-                    }, function (response) {
-
-                        if (response.check == "hello") {
-                            setTimeout(() => {
-                                $('.main-header .inline-list').append('<a href="https://banhang.shopee.vn/api/v1/orders/waybill/?orderids=[' + url + ']" style="color: #ff5722; font-weight: 700;" class="shopee-button" target="_blank">IN ĐƠN NÀY</a>');
-                                $('.order-notes .shopee-button--primary').on("click", function () {
-                                    chrome.runtime.sendMessage({
-                                        mission: "updateNote",
-                                        url: url,
-                                        note: $('.order-notes .ember-content-editable').text()
-                                    }, function (response) {})
-                                })
-                            }, 3000)
-                            chrome.runtime.sendMessage({
-                                mission: "detailOrder",
-                                url: url
-                            })
-                        }
-                        if (response.check == "update") {
-                            setTimeout(() => {
-                                $('.main-header .inline-list').append('<a href="https://banhang.shopee.vn/api/v1/orders/waybill/?orderids=[' + url + ']" style="color: #ff5722; font-weight: 700;" class="shopee-button" target="_blank">IN ĐƠN NÀY</a>');
-                                $('.order-notes .shopee-button--primary').on("click", function () {
-                                    chrome.runtime.sendMessage({
-                                        mission: "updateNote",
-                                        url: url,
-                                        note: $('.order-notes .ember-content-editable').text()
-                                    }, function (response) {})
-                                })
-                            }, 3000)
-                            chrome.runtime.sendMessage({
-                                mission: "update",
-                                url: url
-                            })
-                        }
-                        setTimeout(() => {
-                            $('.main-header .inline-list').append('<a style="color: red" class="shopee-button cancel">HỦY</a>');
-                            $('a.cancel').on("click", () => {
-                                chrome.runtime.sendMessage({
-                                    mission: "cancel",
-                                    url: url
-                                })
-                            })
-                        }, 3000)
-
-                    })
-                    break;
+                    break;                
                 case $(location).attr('href').indexOf('portal/sale?type=shipping') !== -1:
 
                     setInterval(function(){
@@ -367,8 +312,15 @@ function myMain(evt) {
                     new Noty({timeout: 5000, type: 'success', text: 'Có thể click vào phân loại hàng để copy'}).show();  
                     // end code cho phep copy so luong hang
                     break;
-                case /https:\/\/shopee.vn\/.*i\.\d+\.\d+/.test(window.location.href): //trang xem 1 sản phẩm shopee
+                case /https:\/\/shopee.vn\/.*i\.\d+\.\d+/.test(window.location.href): //https://shopee.vn/-4-M%C3%A0u-B%E1%BA%A1c-%C4%90en-H%E1%BB%93ng-Cam-H%E1%BB%93ng-Balo-Ulzzang-C%E1%BA%B7p-S%C3%A1ch-Th%E1%BB%9Di-Trang-Si%C3%AAu-C%C3%A1-T%C3%ADnh-!-i.20340126.665841685
                     $.get(chrome.extension.getURL('app-content/template/item-shopee.html'), function(data) {
+                        $(data).prependTo('body');
+                        angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
+                    });            
+                break;
+                case /https:\/\/banhang.shopee.vn\/portal\/sale\/\d+/.test(window.location.href): //https://shopee.vn/-4-M%C3%A0u-B%E1%BA%A1c-%C4%90en-H%E1%BB%93ng-Cam-H%E1%BB%93ng-Balo-Ulzzang-C%E1%BA%B7p-S%C3%A1ch-Th%E1%BB%9Di-Trang-Si%C3%AAu-C%C3%A1-T%C3%ADnh-!-i.20340126.665841685
+                    //https://banhang.shopee.vn/portal/sale/524619140
+                    $.get(chrome.extension.getURL('app-content/template/item-shopee-sale.html'), function(data) {
                         $(data).prependTo('body');
                         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
                     });            
