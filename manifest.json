@@ -19,7 +19,7 @@
     },
     "web_accessible_resources": [
         "img/*.png",
-        "app-content/template/*.html"
+        "app-content*.html"
       ],
     "content_scripts": [{
         "matches": [
@@ -44,9 +44,9 @@
             "lib/qrcode.min.js",
             "js/custom-shopee.js",
             "app-content/app.js",
-            "app-content/shopeeController.js",
-            "app-content/controller/shopee/backend/item-shopee-saleController.js",
-            "app-content/1688Controller.js",
+            "app-content/shopee/frontend/single-product/controller.js",
+            "app-content/shopee/backend/single-sale/controller.js",
+            "app-content/1688/frontend/single-product/controller.js",
             "content.js"
         ],
         "css":["lib/bootstrap/css/bootstrap.min.css", "lib/noty/css/noty.css", "lib/custom/content/css/custom.css"],
@@ -73,8 +73,8 @@
     ],
     "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com; object-src 'self'",
     "oauth2": {
-        "client_id": "340986983672-ehrt5mna72i0sv92dc6ms9a2g3n13o9s.apps.googleusercontent.com", //may Nhon
-        //"client_id": "340986983672-et6re1a3agi2dr9kkqvtmhu8upmg8ljl.apps.googleusercontent.com", //may a Huy
+        // "client_id": "340986983672-ehrt5mna72i0sv92dc6ms9a2g3n13o9s.apps.googleusercontent.com", //may Nhon
+        "client_id": "340986983672-et6re1a3agi2dr9kkqvtmhu8upmg8ljl.apps.googleusercontent.com", //may a Huy
         "scopes": [
           "https://www.googleapis.com/auth/userinfo.email",
           "https://www.googleapis.com/auth/userinfo.profile"

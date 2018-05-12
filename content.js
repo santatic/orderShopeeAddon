@@ -245,7 +245,7 @@ function myMain(evt) {
 
                 case $(location).attr('href').indexOf('detail.1688.com/offer/') !== -1: // trang xem 1 sản phẩm 1688
                     zoom_in_thumbnail_32x32(); //orderShopeeAddon\js\custom-shopee.js
-                    $.get(chrome.extension.getURL('app-content/template/item-1688.html'), function(data) {
+                    $.get(chrome.extension.getURL('app-content/1688/frontend/single-product/template.html'), function(data) {
                         
                         $(data).prependTo('body');
                         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
@@ -313,14 +313,14 @@ function myMain(evt) {
                     // end code cho phep copy so luong hang
                     break;
                 case /https:\/\/shopee.vn\/.*i\.\d+\.\d+/.test(window.location.href): //https://shopee.vn/-4-M%C3%A0u-B%E1%BA%A1c-%C4%90en-H%E1%BB%93ng-Cam-H%E1%BB%93ng-Balo-Ulzzang-C%E1%BA%B7p-S%C3%A1ch-Th%E1%BB%9Di-Trang-Si%C3%AAu-C%C3%A1-T%C3%ADnh-!-i.20340126.665841685
-                    $.get(chrome.extension.getURL('app-content/template/item-shopee.html'), function(data) {
+                    $.get(chrome.extension.getURL('app-content/shopee/frontend/single-product/template.html'), function(data) {
                         $(data).prependTo('body');
                         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
                     });            
                 break;
                 case /https:\/\/banhang.shopee.vn\/portal\/sale\/\d+/.test(window.location.href): //https://shopee.vn/-4-M%C3%A0u-B%E1%BA%A1c-%C4%90en-H%E1%BB%93ng-Cam-H%E1%BB%93ng-Balo-Ulzzang-C%E1%BA%B7p-S%C3%A1ch-Th%E1%BB%9Di-Trang-Si%C3%AAu-C%C3%A1-T%C3%ADnh-!-i.20340126.665841685
                     //https://banhang.shopee.vn/portal/sale/524619140
-                    $.get(chrome.extension.getURL('app-content/template/item-shopee-sale.html'), function(data) {
+                    $.get(chrome.extension.getURL('app-content/shopee/backend/single-sale/template.html'), function(data) {
                         $(data).prependTo('body');
                         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
                     });            
