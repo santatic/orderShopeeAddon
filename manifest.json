@@ -15,7 +15,7 @@
         "default_title": "Lập Nghiệp Shop Online"
     },
     "background": {
-        "page": "background.html"
+        "page": "background/background.html"
     },
     "web_accessible_resources": [
         "img/*.png",
@@ -29,12 +29,9 @@
         ],
         "js": [
             "lib/jquery.min.js",
-<<<<<<< HEAD
-=======
             
            
 
->>>>>>> 9d6c4951a2f61b324ebe2d6504d4bc8a5a379ad6
             "lib/bootstrap/js/bootstrap.min.js", 
             "lib/angular/1.5.9/angular.min.js",
             "lib/moment/moment.js",
@@ -44,10 +41,6 @@
             "lib/jszip/jszip-utils.min.js",
             "lib/jszip/FileSaver.min.js",
             "lib/noty/js/noty.min.js",
-<<<<<<< HEAD
-=======
-
->>>>>>> 9d6c4951a2f61b324ebe2d6504d4bc8a5a379ad6
             "lib/qrcode.min.js",
             "js/custom-shopee.js",
             "app-content/app.js",
@@ -55,13 +48,8 @@
             "app-content/1688Controller.js",
             "content.js"
         ],
-<<<<<<< HEAD
-        "css":["lib/bootstrap/css/bootstrap.min.css", "lib/noty/css/noty.css", "lib/custom/css/custom.css"],
-        "run_at": "document_end"
-=======
         "css":["lib/bootstrap/css/bootstrap.min.css", "lib/noty/css/noty.css", "lib/custom/content/css/custom.css"],
-        "run_at": "document_end"//document_start
->>>>>>> 9d6c4951a2f61b324ebe2d6504d4bc8a5a379ad6
+        "run_at": "document_end"
     }],
 
     "icons": {
@@ -84,7 +72,7 @@
     ],
     "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com; object-src 'self'",
     "oauth2": {
-        "client_id": "340986983672-et6re1a3agi2dr9kkqvtmhu8upmg8ljl.apps.googleusercontent.com",
+        "client_id": "340986983672-ehrt5mna72i0sv92dc6ms9a2g3n13o9s.apps.googleusercontent.com",
         "scopes": [
           "https://www.googleapis.com/auth/userinfo.email",
           "https://www.googleapis.com/auth/userinfo.profile"

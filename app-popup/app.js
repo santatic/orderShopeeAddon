@@ -75,7 +75,8 @@ app.controller("headerCtrl",  ['$scope', '$location',  function($scope, $locatio
     }
 
     $scope.startSignIn = function startSignIn() {
-        $scope.isDisabled = true;
+      console.log('xxxxx');
+      $scope.isDisabled = true;
       
       if (firebase.auth().currentUser) {
         console.log('thoat');
