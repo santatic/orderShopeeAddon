@@ -1,4 +1,4 @@
-app.controller("ordersCtrl", function ($scope) {
+app.controller("orders-controller", function ($scope) {
     $scope.options = {
         scrollbarV: false
     };

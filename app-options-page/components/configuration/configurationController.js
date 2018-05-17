@@ -1,4 +1,4 @@
-app.controller("configurationCtrl", function ($scope, chromeStorage) {
+app.controller("configuration-controller", function ($scope, chromeStorage) {
     chrome.storage.sync.get(/* String or Array */["configuration"], function(items){
         console.log(items);
         $scope.configuration = items.configuration;
