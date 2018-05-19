@@ -22,6 +22,7 @@ firebase.initializeApp({
 
 var app = angular.module("app", ["ngRoute", "data-table"]);
 
+
 app.controller("header-controller",  ['$scope', '$location',  function($scope, $location, $firebaseObject) {
     $scope.isActive = function(route) {
 		  return route === $location.path();
@@ -88,5 +89,13 @@ app.controller("header-controller",  ['$scope', '$location',  function($scope, $
         $scope.startAuth(true);
       }
     }
-
+    app.config( [
+      '$compileProvider',
+      function( $compileProvider )
+      {   
+          $compileProvider.urlSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
+          // Angular before v1.2 uses $compileProvider.urlSanitizationWhitelist(...)
+      }
+    ]);
+    
 }]);

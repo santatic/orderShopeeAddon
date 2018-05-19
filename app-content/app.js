@@ -8,7 +8,11 @@
 
 var app = angular.module("myapp" ,['angularMoment']);//"firebase"
 
+app.config(function($compileProvider) {
+   
 
+    $compileProvider.aHrefSanitizationWhitelist (/^\s*(https?|ftp|mailto|file|chrome-extension):/);
+});
 
 // app.factory('dataService', function() {
 //     // var users = [

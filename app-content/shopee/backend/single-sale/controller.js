@@ -1,21 +1,29 @@
+// app.config(function($compileProvider){
+//     $compileProvider.urlSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);
+//   });
+  //co phai app nay ko. tét di
+  //e nghĩ phải là trong options page, vì cái url là của ext@@.
+  //ủa @@
+
 app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
-    function ($scope, moment) {
-        
+    function ($scope,  moment) {
+    
+        $('#linkOpenOptionsPage').click(function(){console.log(chrome.runtime.getURL('options.html')); window.open(chrome.runtime.getURL('options.html'));        return false; });
+         
         url = $(location).attr('href').match(/\d+/);
         url = url.toString();
         console.log(url);     
         $scope.url = url;
-        $('#print').click(() => {
-            var win = window.open('https://banhang.shopee.vn/api/v1/orders/'+ url +'/waybill', '_blank');
-            win.focus();
-        })
 
+        var optionsUrl = chrome.extension.getURL("options.html#/"+url);            
+        $scope.printLink = optionsUrl;
         chrome.runtime.sendMessage({
             mission: "checkExist",
             url: url
         }, function (response) {
 
             if (response.check == "hello") {
+                 
                 setTimeout(() => {
                     // $('.main-header .inline-list').append('<a href="https://banhang.shopee.vn/api/v1/orders/waybill/?orderids=[' + url + ']" style="color: #ff5722; font-weight: 700;" class="shopee-button" target="_blank">IN ÐON NÀY</a>');
                     $('.order-notes .shopee-button--primary').on("click", function () {
@@ -31,8 +39,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
                     url: url
                 })
             }
-            if (response.check == "update") {
-                
+            if (response.check == "update") { 
                 setTimeout(() => {
                     // $('.main-header .inline-list').append('<a href="https://banhang.shopee.vn/api/v1/orders/waybill/?orderids=[' + url + ']" style="color: #ff5722; font-weight: 700;" class="shopee-button" target="_blank">IN ÐON NÀY</a>');
                     $('.order-notes .shopee-button--primary').on("click", function () {

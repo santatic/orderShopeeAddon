@@ -1,0 +1,30 @@
+{{test}}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6" id="left">
+            <div class="row">
+                <div id="trackno">
+                    {{trackingNo}}
+                </div>
+            </div>
+            <div class="row">
+                <span id="nickname">
+                    {{nickName}}
+                </span>
+            </div>            
+        </div>
+        <div class="col-md-6">
+            <div class="row" style="margin-top: 8px">
+                <table id="products" class="table table-bordered">                    
+                    <tbody>
+                        <tr ng-repeat="item in products">
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.model }}</td>
+                            <td>{{ item.amount }}</td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
