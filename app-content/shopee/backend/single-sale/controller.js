@@ -15,41 +15,31 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
         console.log(url);     
         $scope.url = url;
 
-        var optionsUrl = chrome.extension.getURL("options.html#/"+url);            
+        var optionsUrl = chrome.extension.getURL("options.html#/"+url);      
+      
         $scope.printLink = optionsUrl;
         chrome.runtime.sendMessage({
             mission: "checkExist",
             url: url
         }, function (response) {
+            setTimeout(() => {
+                // $('.main-header .inline-list').append('<a href="https://banhang.shopee.vn/api/v1/orders/waybill/?orderids=[' + url + ']" style="color: #ff5722; font-weight: 700;" class="shopee-button" target="_blank">IN ÐON NÀY</a>');
+                $('.order-notes .shopee-button--primary').on("click", function () {
+                    chrome.runtime.sendMessage({
+                        mission: "updateNote",
+                        url: url,
+                        note: $('.order-notes .ember-content-editable').text()
+                    }, function (response) {})
+                })
+            }, 2000)
 
-            if (response.check == "hello") {
-                 
-                setTimeout(() => {
-                    // $('.main-header .inline-list').append('<a href="https://banhang.shopee.vn/api/v1/orders/waybill/?orderids=[' + url + ']" style="color: #ff5722; font-weight: 700;" class="shopee-button" target="_blank">IN ÐON NÀY</a>');
-                    $('.order-notes .shopee-button--primary').on("click", function () {
-                        chrome.runtime.sendMessage({
-                            mission: "updateNote",
-                            url: url,
-                            note: $('.order-notes .ember-content-editable').text()
-                        }, function (response) {})
-                    })
-                }, 3000)
+            if (response.check == "hello") {               
                 chrome.runtime.sendMessage({
                     mission: "detailOrder",
                     url: url
                 })
             }
             if (response.check == "update") { 
-                setTimeout(() => {
-                    // $('.main-header .inline-list').append('<a href="https://banhang.shopee.vn/api/v1/orders/waybill/?orderids=[' + url + ']" style="color: #ff5722; font-weight: 700;" class="shopee-button" target="_blank">IN ÐON NÀY</a>');
-                    $('.order-notes .shopee-button--primary').on("click", function () {
-                        chrome.runtime.sendMessage({
-                            mission: "updateNote",
-                            url: url,
-                            note: $('.order-notes .ember-content-editable').text()
-                        }, function (response) {})
-                    })
-                }, 3000)
                 chrome.runtime.sendMessage({
                     mission: "update",
                     url: url

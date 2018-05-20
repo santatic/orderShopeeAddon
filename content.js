@@ -3,16 +3,16 @@ window.addEventListener("load", myMain, false);
 function myMain(evt) {
     var jsInitChecktimer = setInterval(checkForJS_Finish, 100);
 
-    function script(u, i) {
-        var d = document;
-        if (!d.getElementById(i)) {
-            var s = d.createElement('script');
-            s.src = u;
-            s.id = i;
-            d.head.appendChild(s);
-        }
-    }
-    //script('//code.jquery.com/jquery-3.2.1.min.js', 'jquery')
+    // function script(u, i) {
+    //     var d = document;
+    //     if (!d.getElementById(i)) {
+    //         var s = d.createElement('script');
+    //         s.src = u;
+    //         s.id = i;
+    //         d.head.appendChild(s);
+    //     }
+    // }
+    // script('//code.jquery.com/jquery-3.2.1.min.js', 'jquery')
     //-------------------------  
 
     function checkForJS_Finish() {

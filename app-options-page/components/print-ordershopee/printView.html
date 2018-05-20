@@ -2,26 +2,66 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6" id="left">
-            <div class="row">
-                <div id="trackno">
-                    {{trackingNo}}
-                </div>
-            </div>
-            <div class="row">
-                <span id="nickname">
-                    {{nickName}}
-                </span>
-            </div>            
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div id="trackno">
+                                <b>
+                                    {{trackingNo}}
+                                </b>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span id="nickname">
+                                {{nickName}}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr ng-if="showNote">
+                        <td>
+                            <span>
+                                {{note}}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="col-md-6">
+            <div class="row">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>{{trackingNo}}</td>
+                            <td>+{{phone}}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>{{orderId}}</td>
+                            <td>{{urlId}}</td>
+                            <td>{{pay}} COD</td>
+                        </tr>
+                        <tr>
+                            <td>{{name}}</td>
+                            <td>{{address}}</td>
+                            <td id="qrcode">
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="row" style="margin-top: 8px">
-                <table id="products" class="table table-bordered">                    
+                <table id="products" class="table table-bordered">
                     <tbody>
                         <tr ng-repeat="item in products">
                             <td>{{ item.name }}</td>
                             <td>{{ item.model }}</td>
                             <td>{{ item.amount }}</td>
-                            </tr>
+                        </tr>
                     </tbody>
                 </table>
             </div>

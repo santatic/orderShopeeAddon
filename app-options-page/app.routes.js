@@ -14,7 +14,8 @@ app.config(function($routeProvider) {
     })
     .when("/:id", {
         templateUrl : "app-options-page/components/print-ordershopee/printView.html",
-        controller : "print-controller"
+        controller : "print-controller",
+        styleUrl : "app-options-page/components/print-ordershopee/printView.css"
     });
 
 });
