@@ -18,6 +18,30 @@ app.controller("print-controller", function ($scope, $routeParams) {
 
     docRef = firestore.collection("orderShopee").doc(id);
 
+    $('button#saveNote').click(function(){
+        var note = $('#noteEdit').val();
+        if(!note){
+
+        }else{
+            docRef.update({
+                "note": note
+            }).then(function () {
+                console.log("done");
+                var options= {
+                    type: "basic",
+                    title: "Đã cập nhật note",
+                    message: new Date().toString(),
+                    iconUrl: "../../../images/notification.png"
+                }
+                chrome.notifications.create("notify", options, callback);
+                function callback(){}
+            })
+        }
+    })
+    $('button#cancelNote').click(function(){
+        $('#noteEdit').val("")
+    })
+
     $('select#selectStatus').on('change', function (e) {
         var optionSelected = $("option:selected", this);
         var valueSelected = this.value;
