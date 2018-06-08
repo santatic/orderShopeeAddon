@@ -1,9 +1,3 @@
-const firestore = firebase.firestore();
-const settings = { /* your settings... */
-    timestampsInSnapshots: true
-};
-firestore.settings(settings);
-
 app.controller("print-controller", function ($scope, $routeParams) {
 
     var id = $routeParams.id;
@@ -20,37 +14,60 @@ app.controller("print-controller", function ($scope, $routeParams) {
         $("#trackno").css({
             "font-size": "15px"
         })
-        window.close()
     }
 
     docRef = firestore.collection("orderShopee").doc(id);
+
+    $('select#selectStatus').on('change', function (e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        console.log(valueSelected);
+        if (!valueSelected) {
+            
+        }else{
+            docRef.update({
+                "own_status": valueSelected
+            }).then(function () {
+                console.log("done");
+                $('label#status').text(valueSelected)
+            })
+        }
+
+    });
+
+
     docRef.get().then(
         function (doc) {
             if (doc.exists) {
                 const data = doc.data();
-                console.log(data);
+                console.log(data.own_status);
                 $scope.trackingNo = data.shipping_traceno;
                 $scope.nickName = data.user.name;
                 data['order-items'].forEach((item, index) => {
                     console.log(item.snapshotid + " = " + item.modelid);
                     let product = data['products'].find(o => o.id === item.snapshotid);
+                    console.log(product);
+                    // let productImage = data['products'].find(o => o.id === item.images[0]);
                     let model = data['item-models'].find(o => o.id === item.modelid)
                     var productsObj = new Object();
                     productsObj = {
                         name: product.name,
                         model: model.name,
-                        amount: item.amount
+                        amount: item.amount,
+                        imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"
+
                     }
                     products.push(productsObj)
                 });
                 console.log(products);
                 $scope.products = products;
+                $scope.status = data.own_status;
                 $scope.name = data.buyer_address_name;
                 $scope.address = data.shipping_address;
                 $scope.phone = data.buyer_address_phone;
                 $scope.orderId = data.ordersn;
                 $scope.urlId = id;
-                $scope.pay = data.buyer_paid_amount;
+                $scope.pay = ((data.buyer_paid_amount) * 100 / 100).toLocaleString();
                 $scope.note = data.note;
                 $scope.showNote = false;
                 if ($scope.note) {
@@ -58,7 +75,9 @@ app.controller("print-controller", function ($scope, $routeParams) {
                 } else {
                     $scope.showNote = false
                 }
-                var qrcode = new QRCode("qrcode");
+                var qrcode = new QRCode("qrcode", {
+                    correctLevel: QRCode.CorrectLevel.H
+                });
 
                 function makeCode() {
                     qrcode.makeCode(id);
@@ -77,10 +96,7 @@ app.controller("print-controller", function ($scope, $routeParams) {
         });
         if (products.length > 5) {
             $("#products").append("<span style='color:red; padding-left: 10px;' >một số sản phẩm được ẩn đi do quá nhiều (" + products.length + " sp)</span>")
-        }   
-        setTimeout(function(){
-            myPrint()
-        },1000)     
+        }
     })
 
 });

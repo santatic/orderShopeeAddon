@@ -29,8 +29,7 @@
             "https://detail.1688.com/*"
         ],
         "js": [
-            "lib/jquery.min.js",
-            
+            "lib/jquery.min.js",          
            
 
             "lib/bootstrap/js/bootstrap.min.js", 

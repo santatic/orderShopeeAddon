@@ -1,6 +1,8 @@
 firebase.initializeApp({
   apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
   projectId: "nguoitimship"
+  // apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
+  // projectId: "shopngocanh-2018"
 });
 // Initialize Cloud Firestore through Firebase
 const firestore = firebase.firestore();
@@ -94,6 +96,7 @@ function detailOrder(response, sendResponse) { //add đơn vào db
     }
     delete val['bundle-deals'];
     delete val['users'];
+    val.own_status = "NEW"
     val.user = user
     val.create_at = new Date();
     val.note = "";
@@ -161,12 +164,19 @@ function checkExist(response, sendResponse) {
         ]
       }
       chrome.notifications.create("notify", options, callback);
-      sendResponse({
-        check: "update",
-        note: data.note,
-        user: data.user.name,
-        money: data.buyer_paid_amount
-      })
+      if(data.shipping_traceno){
+        sendResponse({
+          check: "update",
+          note: data.note,
+          user: data.user.name,
+          money: data.buyer_paid_amount
+        })
+      }else{
+        sendResponse({
+          check: "hello"
+        })
+      }    
+
 
     } else {
       console.log("No such document!");

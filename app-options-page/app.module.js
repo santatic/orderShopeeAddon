@@ -3,7 +3,15 @@
 firebase.initializeApp({
     apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
     projectId: "nguoitimship"
+
+    // apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
+    // projectId: "shopngocanh-2018"
 });
+const firestore = firebase.firestore();
+const settings = { /* your settings... */
+    timestampsInSnapshots: true
+};
+firestore.settings(settings);
   // Initialize Cloud Firestore through Firebase
 // const  firestore = firebase.firestore();
 // const settings = {/* your settings... */ timestampsInSnapshots: true};
@@ -20,8 +28,11 @@ firebase.initializeApp({
 //     console.error("Error adding document: ", error);
 // });
 
-var app = angular.module("app", ["ngRoute", "data-table"]);
+var app = angular.module("app", ["ngRoute", "ui.grid", "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
 
+app.config(function($compileProvider) {  
+  $compileProvider.aHrefSanitizationWhitelist (/^\s*(https?|ftp|mailto|file|chrome-extension):/);
+});
 
 app.controller("header-controller",  ['$scope', '$location',  function($scope, $location, $firebaseObject) {
     $scope.isActive = function(route) {

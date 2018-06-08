@@ -15,7 +15,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
         console.log(url);     
         $scope.url = url;
 
-        var optionsUrl = chrome.extension.getURL("options.html#/"+url);      
+        var optionsUrl = chrome.extension.getURL("options.html#/orders/"+url);      
       
         $scope.printLink = optionsUrl;
         chrome.runtime.sendMessage({
