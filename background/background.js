@@ -20,6 +20,7 @@ chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     switch (request.mission) {
       case "checkExist":
+        console.log("check");
         checkExist(request, sendResponse)
         return true;
         break;
@@ -35,6 +36,18 @@ chrome.runtime.onMessage.addListener(
       case "cancel":
         cancel_status(request, sendResponse)
         break;
+      case "updateList":
+        updateList(request, sendResponse);
+        return true;
+        break;
+      case "payment":
+        paymentCheck(request, sendResponse);
+        return true;
+        break;
+      case "updatePayment":
+        updatePayment(request, sendResponse);
+        return true
+        break;
     }
   });
 
@@ -48,10 +61,105 @@ function httpGet(theUrl, headers) {
   return JSON.parse(xmlHttp.responseText);
 }
 
-// console.log(httpGet("https://banhang.shopee.vn/api/v2/orders/509962928", []))  
+function updatePayment(response, sendResponse) {
+  var check = []
+  var batch = firestore.batch()
+  $.each(response.id, function (i, id) {
+    console.log(id);
+    var docRef = firestore.collection("orderShopee").doc(id);
+    batch.update(docRef, {
+      "own_status": "PAID"
+    })
+    check.push(i)
+    
+  });
+  
+  var timer = setInterval(function () {
+    if (check.length == response.id.length) {
+      clearInterval(timer)
+      batch.commit().then(function () {
+        sendResponse()
+      });
+    }
+  },500)
+}
+
+function paymentCheck(response, sendResponse) {
+  // console.log("recived");
+  var ordersn = response.arrayOrderno;
+  // console.log(ordersn);
+  var resOrdersn = []
+
+  $.each(ordersn, function (i, val) {
+    var colRef = firestore.collection("orderShopee").where("ordersn", "==", val);
+    colRef.get().then(function (querySnapshot) {
+      if (querySnapshot.size == 1) {
+        querySnapshot.forEach(function (doc) {
+          const data = doc.data();
+          var obj = new Object();
+          obj = {
+            money: parseInt(((data.buyer_paid_amount) * 100) / 100),
+            shipping_fee: parseInt(((data.shipping_fee) * 100) / 100),
+            id: doc.id
+          }
+          resOrdersn.push(obj)
+        })
+      } else {
+        obj = {
+          money: "chua co trong Firestore",
+          shipping_fee: "chua co trong Firestore",
+          id: ""
+        }
+        resOrdersn.push(obj)
+      }
+    }).catch(function (error) {
+      console.log("Error getting documents: ", error)
+    })
+  })
+  console.log(resOrdersn);
+  var timer = setInterval(function () {
+    if (resOrdersn.length == ordersn.length) {
+      clearInterval(timer)
+      sendResponse({
+        moneyEx: resOrdersn
+      })
+    }
+  }, 500)
+
+
+  // console.log(ordersn)
+}
+
+function updateList(response, sendResponse) {
+  var id = response.id;
+  // var shopee = httpGet("https://banhang.shopee.vn/api/v2/orders/" + response.id, [])
+  // console.log(shopee.order.shipping_traceno);
+  var docRef = firestore.collection("orderShopee").doc(id)
+  docRef.get().then(function (doc) {
+    if (doc.exists) {
+      const data = doc.data()
+      console.log(doc.id, "=>", doc.data());
+      sendResponse({
+        check: "exist",
+        id: doc.id,
+        traceno: data.shipping_traceno,
+        shipping_fee: ((data.shipping_fee * 100) / 100).toLocaleString(),
+        status: data.own_status,
+        user_paid: ((data.buyer_paid_amount * 100) / 100).toLocaleString()
+      })
+    } else {
+      console.log(doc.id + " not exist");
+      sendResponse({
+        check: "not exist",
+        id: id
+      })
+    }
+  })
+
+}
 
 function cancel_status(response, sendResponse) {
-  var logistic_update
+
   firestore.collection("orderShopee").doc(response.url).update({
     "cancel_status": true
   })
@@ -111,16 +219,18 @@ function detailOrder(response, sendResponse) { //add đơn vào db
 
   }).then(function () {
     delete val['order'];
-    console.log(val);
-    firestore.collection("orderShopee").doc(response.url).set(
-      val
-    ).then(function () {
-      firestore.collection("userShopee").doc(user.id.toString()).set(
-        user
-      ).then(() => {
-        console.log("save successful");
+    if (val.shipping_traceno) {
+      firestore.collection("orderShopee").doc(response.url).set(
+        val
+      ).then(function () {
+        firestore.collection("userShopee").doc(user.id.toString()).set(
+          user
+        ).then(() => {
+          console.log("save successful");
+        })
       })
-    })
+    } else console.log("chua co mvd");
+
   })
 }
 
@@ -139,7 +249,7 @@ function checkExist(response, sendResponse) {
 
     return [day, month, year].join('-') + " " + [hour, minutes].join(':');
   }
-
+  console.log(response.url);
   var docRef = firestore.collection("orderShopee").doc(response.url);
   docRef.get().then(function (doc) {
     if (doc.exists) {
@@ -148,36 +258,12 @@ function checkExist(response, sendResponse) {
       console.log(data.ordersn);
       // var id = response.url.toString()
       var date = formatDate(data.create_at).toString()
-      var options = {
-        type: "list",
-        title: 'Đơn: "' + data.ordersn + '" (đã có)',
-        message: "Đã tồn tại trong Firestore",
-        iconUrl: "../images/notification.png",
-        items: [{
-            title: "Mã vận đơn: ",
-            message: data.shipping_traceno
-          },
-          {
-            title: "Create at: ",
-            message: date
-          }
-        ]
-      }
-      chrome.notifications.create("notify", options, callback);
-      if(data.shipping_traceno){
-        sendResponse({
-          check: "update",
-          note: data.note,
-          user: data.user.name,
-          money: data.buyer_paid_amount
-        })
-      }else{
-        sendResponse({
-          check: "hello"
-        })
-      }    
-
-
+      sendResponse({
+        check: "update",
+        note: data.note,
+        user: data.user.name,
+        money: data.buyer_paid_amount
+      })
     } else {
       console.log("No such document!");
       sendResponse({

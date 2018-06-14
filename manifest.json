@@ -30,7 +30,6 @@
         ],
         "js": [
             "lib/jquery.min.js",          
-           
 
             "lib/bootstrap/js/bootstrap.min.js", 
             "lib/angular/1.5.9/angular.min.js",
@@ -47,6 +46,7 @@
             "app-content/app.js",
             "app-content/shopee/frontend/single-product/controller.js",
             "app-content/shopee/backend/single-sale/controller.js",
+            "app-content/shopee/backend/list-page/controller.js",
             "app-content/1688/frontend/single-product/controller.js",
             "content.js"
         ],
@@ -74,8 +74,7 @@
     ],
     "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com ; object-src 'self'",
     "oauth2": {
-        // "client_id": "340986983672-ehrt5mna72i0sv92dc6ms9a2g3n13o9s.apps.googleusercontent.com", //may Nhon
-        "client_id": "340986983672-et6re1a3agi2dr9kkqvtmhu8upmg8ljl.apps.googleusercontent.com", //may a Huy
+        "client_id": "340986983672-2vunr19utkfmt5sgvk575lhp9kmreoh6.apps.googleusercontent.com",
         "scopes": [
           "https://www.googleapis.com/auth/userinfo.email",
           "https://www.googleapis.com/auth/userinfo.profile"

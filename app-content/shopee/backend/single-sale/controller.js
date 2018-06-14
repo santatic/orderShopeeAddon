@@ -12,6 +12,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
          
         url = $(location).attr('href').match(/\d+/);
         url = url.toString();
+
         console.log(url);     
         $scope.url = url;
 

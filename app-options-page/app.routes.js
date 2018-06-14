@@ -12,6 +12,10 @@ app.config(function($routeProvider) {
         templateUrl : "app-options-page/components/orders/ordersView.html",
         controller : "orders-controller as $ctrl"
     })
+    .when("/payment", {
+        templateUrl : "app-options-page/components/payment/paymentView.html",
+        controller : "payment-controller"
+    })
     .when("/orders/:id", {
         templateUrl : "app-options-page/components/print-ordershopee/printView.html",
         controller : "print-controller",

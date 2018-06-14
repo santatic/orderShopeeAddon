@@ -27,18 +27,85 @@
       text-rendering: optimizeLegibility;
     }
 
+    .navbar {
+      margin-bottom: 0
+    }
+
     .dt {
       width: 75%;
       margin: 50px auto;
     }
 
+    li.list-group-item {
+      border: none
+    }
+
+    ul.list-group {
+      border-bottom: #000 dashed 2px
+    }
+
+    .print {
+      display: none
+    }
+
+    @media print {
+      .noprint {
+        display: none
+      }
+      .print {
+        display: block;
+      }
+    }
+
     @page {
       size: auto;
-      margin: 5mm;
+      margin: 10mm;
     }
 
     #qrcode img {
       width: 100%;
+    }
+
+    .grid {
+      height: 91vh;
+    }
+
+    .grid {
+      width: 100%;
+      /* height: 250px; */
+    }
+
+    .grid-msg-overlay {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .grid-msg-overlay .msg {
+      opacity: 1;
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 60%;
+      height: 50%;
+      background-color: #eee;
+      border-radius: 4px;
+      border: 1px solid #555;
+      text-align: center;
+      font-size: 24px;
+      display: table;
+    }
+
+    .grid-msg-overlay .msg>.center {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .grid input[type="file"] {
+      font-size: 14px;
+      display: inline-block;
     }
   </style>
 
@@ -62,6 +129,9 @@
           </li>
           <li ng-class="{active:isActive('/configuration')}">
             <a href="#configuration">Cài Đặt</a>
+          </li>
+          <li ng-class="{active:isActive('/payment')}">
+            <a href="#payment">Đối Soát</a>
           </li>
 
         </ul>
@@ -105,10 +175,16 @@
   <script src="lib/angular/1.5.9/angular.min.js"></script>
 
   <script src="lib/uigrid/ui-grid.core.min.js"></script>
+  <script src="lib/uigrid/ui-grid.cellnav.min.js"></script>
+  <script src="lib/uigrid/ui-grid.selection.min.js"></script>
   <script src="lib/uigrid/ui-grid.pagination.min.js"></script>
+  <script src="lib/uigrid/ui-grid.resize-columns.min.js"></script>
   <script src="lib/uigrid/ui-grid.edit.min.js"></script>
+  <script src="lib/uigrid/ui-grid.importer.min.js"></script>
+  <script src="lib/xlsx.full.min.js"></script>
+  <script src="lib/ods.js"></script>
   <script src="lib/uigrid/ui-grid.min.js"></script>
-  
+
   <!-- <script src="lib/datatable/dataTable.min.js"></script> -->
   <!-- <script src="lib/datatable/dataTable.helpers.js"></script> -->
   <script src="lib/angular/1.5.9/angular-route.min.js"></script>
@@ -125,8 +201,9 @@
   <script src="app-options-page/components/orders/ordersController.js"></script>
   <script src="app-options-page/components/configuration/configurationController.js"></script>
   <script src="app-options-page/components/print-ordershopee/printController.js"></script>
+  <script src="app-options-page/components/payment/paymentController.js"></script>
   <script src="app-options-page/services/chromeStorage.js"></script>
-  <script src="lib/noty/js/noty.min.js" ></script>
+  <script src="lib/noty/js/noty.min.js"></script>
   <script src='lib/qrcode.min.js'></script>
 
 </body>

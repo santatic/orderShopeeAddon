@@ -1,0 +1,23 @@
+<div class="col-md-10">
+    <div id="grid1" ui-grid="gridOptions" ui-grid-resize-columns ui-grid-pagination class="grid">
+        <div class="grid-msg-overlay" ng-show="!gridOptions.data.length">
+            <div class="msg">
+                <div class="center">
+                    <span class="muted">Select Spreadsheet File</span>
+                    <br />
+                    <input type="file" accept=".xls,.xlsx,.ods" fileread="" opts="gridOptions" multiple="false" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-2" style="background: #fff">
+    <p><b>Tổng tiền Shopee trả: </b> <a id="shpm"></a> vnđ</p>
+    <p>-</p>
+    <p style="border-bottom: #c1c1c1 solid 1px; padding-bottom: 18px;"><b>Tổng tiền dự kiến thu: </b><a id="ownm"></a> vnđ</p>
+    <b><a id="offset"></a> vnđ</b>
+    <p>
+        <button type="button" class="btn btn-primary update">CẬP NHẬT</button>
+    </p>
+</div>
+
