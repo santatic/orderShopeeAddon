@@ -1,5 +1,62 @@
 app.controller("print-controller", function ($scope, $routeParams) {
 
+    var arrayFilter = [{
+            id: 1,
+            english: "NEW",
+            vietnamese: "Đơn mới"
+        },
+        {
+            id: 2,
+            english: "PREPARED",
+            vietnamese: "Đủ hàng"
+        },
+        {
+            id: 3,
+            english: "UNPREPARED",
+            vietnamese: "Thiếu hàng"
+        },
+        {
+            id: 4,
+            english: "PACKED",
+            vietnamese: "Đã đóng gói"
+        },
+        {
+            id: 5,
+            english: "SHIPPED",
+            vietnamese: "Đã gửi đi"
+        },
+        {
+            id: 6,
+            english: "DELIVERED",
+            vietnamese: "Khách đã nhận"
+        },
+        {
+            id: 7,
+            english: "RETURNING",
+            vietnamese: "Đang hoàn hàng"
+        },
+        {
+            id: 8,
+            english: "RETURNED",
+            vietnamese: "Đã hoàn về kho"
+        },
+        {
+            id: 9,
+            english: "PAID",
+            vietnamese: "Đã thanh toán"
+        },
+        {
+            id: 10,
+            english: "REFUNDED",
+            vietnamese: "Đã hoàn tiền"
+        },
+        {
+            id: 11,
+            english: "CANCELED",
+            vietnamese: "Đã hủy"
+        },
+    ]
+
     var id = $routeParams.id;
 
     var products = []
@@ -18,27 +75,28 @@ app.controller("print-controller", function ($scope, $routeParams) {
 
     docRef = firestore.collection("orderShopee").doc(id);
 
-    $('button#saveNote').click(function(){
+    $('button#saveNote').click(function () {
         var note = $('#noteEdit').val();
-        if(!note){
+        if (!note) {
 
-        }else{
+        } else {
             docRef.update({
                 "note": note
             }).then(function () {
                 console.log("done");
-                var options= {
+                var options = {
                     type: "basic",
                     title: "Đã cập nhật note",
                     message: new Date().toString(),
                     iconUrl: "../../../images/notification.png"
                 }
                 chrome.notifications.create("notify", options, callback);
-                function callback(){}
+
+                function callback() {}
             })
         }
     })
-    $('button#cancelNote').click(function(){
+    $('button#cancelNote').click(function () {
         $('#noteEdit').val("")
     })
 
@@ -47,10 +105,13 @@ app.controller("print-controller", function ($scope, $routeParams) {
         var valueSelected = this.value;
         console.log(valueSelected);
         if (!valueSelected) {
-            
-        }else{
+
+        } else {
+            var selectedExpTags = [valueSelected];
+            var names = selectedExpTags.map(x => arrayFilter.find(y => y.vietnamese === x).english)
+            console.log(names);
             docRef.update({
-                "own_status": valueSelected
+                "own_status": names[0]
             }).then(function () {
                 console.log("done");
                 $('label#status').text(valueSelected)
@@ -85,7 +146,9 @@ app.controller("print-controller", function ($scope, $routeParams) {
                 });
                 console.log(products);
                 $scope.products = products;
-                $scope.status = data.own_status;
+                var selectedExpTags = [data.own_status];
+                var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese)
+                $scope.status = names[0];
                 $scope.name = data.buyer_address_name;
                 $scope.address = data.shipping_address;
                 $scope.phone = data.buyer_address_phone;
@@ -115,12 +178,12 @@ app.controller("print-controller", function ($scope, $routeParams) {
             $scope.$apply()
         }).then(() => {
 
-        $("tr:nth-child(n + 6)").css({
-            "display": "none"
-        });
-        if (products.length > 5) {
-            $("#products").append("<span style='color:red; padding-left: 10px;' >một số sản phẩm được ẩn đi do quá nhiều (" + products.length + " sp)</span>")
-        }
+        // $("tr:nth-child(n + 6)").css({
+        //     "display": "none"
+        // });
+        // if (products.length > 5) {
+        //     $("#products").append("<span style='color:red; padding-left: 10px;' >một số sản phẩm được ẩn đi do quá nhiều (" + products.length + " sp)</span>")
+        // }
     })
 
 });

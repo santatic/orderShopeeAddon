@@ -5,7 +5,7 @@
 <div class="print">
 
     <ul ng-repeat="x in rowSelected" class="list-group">
-        <div class="col-sm-6">
+        <div class="col-sm-6" style="display: inline-block;" >
             <li class="list-group-item">
                 ID: {{x.id}} - {{x.own_Status}}
             </li>
@@ -16,8 +16,8 @@
                 {{x.nickname}}
             </li>
         </div>
-        <div class="col-sm-6">
-
+        <div class="col-sm-6" style="display: inline-block;">
+            <div id="{{x.id}}"></div>
         </div>
     </ul>
 

@@ -51,6 +51,9 @@ app.directive("fileread", [function () {
               name: "Phí ship",
               field: "shippingFee"
             },{
+              name: "Trợ giá",
+              field: "vc"
+            },{
               name: "Đối soát",
               field: "offset"
             })      
@@ -83,6 +86,7 @@ app.directive("fileread", [function () {
                   var shopeeMoney = data[i][Object.keys(data[i])[2]];
                   totalShopeeMoney.push(shopeeMoney);
                   totalOwnMoney.push(val.money)
+                  data[i].vc = val.vc
                   data[i].offset = parseInt(shopeeMoney) - val.money ;                  
                 }
                 // console.log(data[i].offset);

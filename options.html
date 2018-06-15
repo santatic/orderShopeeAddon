@@ -140,7 +140,9 @@
           <li ng-class="{active:isActive('/payment')}">
             <a href="#payment">Đối Soát</a>
           </li>
-
+          <li ng-class="{active:isActive('/scan-order')}">
+            <a href="#scan-order">Quét Đơn</a>
+          </li>
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
@@ -181,6 +183,9 @@
   <script src="lib/jquery/jquery-2.1.3.min.js"></script>
   <script src="lib/angular/1.5.9/angular.min.js"></script>
 
+  <script src="lib/qrscan/html5-qrcode.min.js"></script>
+  <script src="lib/qrscan/jsqrcode-combined.min.js"></script>
+
   <script src="lib/uigrid/ui-grid.core.min.js"></script>
   <script src="lib/uigrid/ui-grid.cellnav.min.js"></script>
   <script src="lib/uigrid/ui-grid.selection.min.js"></script>
@@ -209,6 +214,7 @@
   <script src="app-options-page/components/configuration/configurationController.js"></script>
   <script src="app-options-page/components/print-ordershopee/printController.js"></script>
   <script src="app-options-page/components/payment/paymentController.js"></script>
+  <script src="app-options-page\components\scanOrder\scanController.js"></script>
   <script src="app-options-page/services/chromeStorage.js"></script>
   <script src="lib/noty/js/noty.min.js"></script>
   <script src='lib/qrcode.min.js'></script>

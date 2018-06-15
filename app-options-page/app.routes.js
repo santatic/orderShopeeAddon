@@ -20,6 +20,9 @@ app.config(function($routeProvider) {
         templateUrl : "app-options-page/components/print-ordershopee/printView.html",
         controller : "print-controller",
         styleUrl : "app-options-page/components/print-ordershopee/printView.css"
-    });
+    }).when("/scan-order", {
+        templateUrl : "app-options-page/components/scanOrder/scanView.html",
+        controller : "scan-controller"
+    });;
 
 });

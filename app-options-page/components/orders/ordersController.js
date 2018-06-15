@@ -182,6 +182,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
         }
     };
     // angular.element(document.getElementsByClassName('grid')[0]).css('height', '900px');
+
     $scope.options.gridMenuCustomItems = [{
         title: "IN ĐƠN",
         action: function () {
@@ -194,8 +195,32 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
             })
             console.log(selected);
             $scope.rowSelected = selected;
+            // window.onload = function () {
+                selected.forEach(function (val) {
+                    console.log(val.id); 
+                    var timer = setInterval(function(){
+                        if(($("#"+ val.id)).length){
+                            clearInterval(timer)
+                            var qrcode = new QRCode(document.getElementById(val.id), {
+                                width: 100,
+                                height: 100,
+                                correctLevel: QRCode.CorrectLevel.H
+                            });
+        
+                            function makeCode() {
+                                qrcode.makeCode(val.id);
+                            }
+                            makeCode();
+                        }
+                    })
+                    
+                    
+                })
+            // }
+
             $timeout(function () {
                 window.print();
+                $scope.rowSelected = []
             }, 500)
         }
 
