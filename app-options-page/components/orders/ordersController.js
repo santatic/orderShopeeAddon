@@ -4,6 +4,7 @@ app.controller("orders-controller", ordersController)
 ordersController.$inject = ['$scope', '$timeout', 'moment', 'uiGridConstants'];
 
 function ordersController($scope, $timeout, moment, uiGridConstants) {
+    $scope.loading = true;
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
             id: 1,
@@ -224,6 +225,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
             })
             $scope.data = sources
             $scope.options.data = $scope.data;
+            $scope.loading = false
             $scope.gridApi.core.refresh();
             sources.forEach(function (row, index) {
                 switch (row.ownStatus) {

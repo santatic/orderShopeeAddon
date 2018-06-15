@@ -97,8 +97,9 @@ function paymentCheck(response, sendResponse) {
         querySnapshot.forEach(function (doc) {
           const data = doc.data();
           var obj = new Object();
+          var voucher_price = parseInt(((data.voucher_price) * 100) / 100)
           obj = {
-            money: parseInt(((data.buyer_paid_amount) * 100) / 100),
+            money: parseInt(((data.buyer_paid_amount) * 100) / 100) - voucher_price,
             shipping_fee: parseInt(((data.shipping_fee) * 100) / 100),
             id: doc.id
           }

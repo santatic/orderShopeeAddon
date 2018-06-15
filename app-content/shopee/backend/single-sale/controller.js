@@ -41,6 +41,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
                 })
             }
             if (response.check == "update") { 
+                new Noty({layout: 'bottomRight', timeout: 2500, theme: "relax", type: 'success', text: 'ĐƠN ĐÃ ĐƯỢC THEO DÕI'}).show();
                 chrome.runtime.sendMessage({
                     mission: "update",
                     url: url
