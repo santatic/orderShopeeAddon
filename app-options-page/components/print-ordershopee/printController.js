@@ -163,7 +163,7 @@ app.controller("print-controller", function ($scope, $routeParams) {
                     $scope.showNote = false
                 }
                 var qrcode = new QRCode("qrcode", {
-                    // correctLevel: QRCode.CorrectLevel.H
+                    correctLevel: QRCode.CorrectLevel.H
                 });
 
                 function makeCode() {

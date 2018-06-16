@@ -1,5 +1,15 @@
 app.controller("shopeeCtrl", ['$scope', 'moment',
     function ($scope, moment) {
+        function httpGet(theUrl, headers) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", theUrl, false); // false for synchronous request
+            for (var i = 0; i < headers.length; i++) {
+                xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
+            }
+            xmlHttp.send(null);
+            return JSON.parse(xmlHttp.responseText);
+        }
+
         $scope.item = {};
         $scope.init = function () {
             var regex = /\/.+i\.(\d+\.\d+)/g;
@@ -16,16 +26,15 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
         }
         $scope.init();
 
-        $scope.GLOBAL_FIRST_RESPONSE = {};
-        console.log($scope.GLOBAL_FIRST_RESPONSE);
-        $scope.timeSubtract = function () {
-            console.log("subtract");
-            console.log($scope.GLOBAL_FIRST_RESPONSE);
-            if ($scope.GLOBAL_FIRST_RESPONSE.hasOwnProperty($scope.item.itemid)) {
-                return moment($scope.GLOBAL_FIRST_RESPONSE[$scope.item.itemid]['createdTime']).fromNow();
-            } else
-                return 'loading';
-        }
+        var request = httpGet('https://shopee.vn/api/v1/item_detail/?item_id='+ $scope.item.itemid +'&shop_id='+$scope.item.shopid, []);
+        $scope.sold = request.sold
+        console.log(request);
+        // $scope.timeSubtract = function () {
+        //     if (request.hasOwnProperty('ctime')) {
+        //         return moment(request['ctime']*1000).fromNow();
+        //     } else
+        //         return 'loading';
+        // }
 
         $scope.urlToPromise = function (url) {
             return new Promise(function (resolve, reject) {
@@ -48,7 +57,7 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
             var zip = new JSZip();
             var folderName = '';
 
-            folderName = $scope.item.itemid;
+            folderName = $scope.item.itemid + "-" + $scope.item.shopid;
             // console.log($scope.GLOBAL_FIRST_RESPONSE[$scope.item.itemid]);
             if ($('._19OC6A') !== 0) {
 
