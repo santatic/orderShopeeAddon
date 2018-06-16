@@ -12,12 +12,6 @@ app.service('request_center', function () {
                     for (var i = 0; i < details.requestHeaders.length; ++i) {
                         if (details.requestHeaders[i].name === 'If-None-Match-') {
 
-
-                            //firebase.database().ref('/sitems/' + match_itemid[1]).update(objRes);
-
-                            // //console.log(match_itemid[1] + ", " + );
-                            // //details.requestHeaders.splice(i, 1);
-
                             var colSp_product = firestore.collection("sp_product").doc(match_itemid[1]);
 
                             console.log(match_itemid[1]);
@@ -30,9 +24,9 @@ app.service('request_center', function () {
                                     // console.log(details.requestHeaders[8].value);
                                     var objRes = httpGet(details.url, [
                                         ['If-None-Match-', details.requestHeaders[i-1].value]
-                                    ]);                                   
-                                    
-                                    objRes = JSON.parse(objRes)
+                                    ]); 
+                                    objRes = JSON.stringify(objRes)
+                                    objRes = JSON.parse(objRes)     
                                     objRes.key = details.requestHeaders[i-1].value;
                                     objRes.createdTime = firebase.database.ServerValue.TIMESTAMP;
                                     console.log(objRes);

@@ -17,7 +17,10 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
         $scope.init();
 
         $scope.GLOBAL_FIRST_RESPONSE = {};
+        console.log($scope.GLOBAL_FIRST_RESPONSE);
         $scope.timeSubtract = function () {
+            console.log("subtract");
+            console.log($scope.GLOBAL_FIRST_RESPONSE);
             if ($scope.GLOBAL_FIRST_RESPONSE.hasOwnProperty($scope.item.itemid)) {
                 return moment($scope.GLOBAL_FIRST_RESPONSE[$scope.item.itemid]['createdTime']).fromNow();
             } else

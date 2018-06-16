@@ -12,22 +12,22 @@ app.config(function($compileProvider) {
     $compileProvider.aHrefSanitizationWhitelist (/^\s*(https?|ftp|mailto|file|chrome-extension):/);
 });
 
-// app.factory('dataService', function() {
-//     // var users = [
-//     //     { id: 1, username: 'john' }
-//     // ];
-//     var xxx = GLOBAL_FIRST_RESPONSE;
-//     return {
-//         getItem: function(id) {
-//         	return GLOBAL_FIRST_RESPONSE === null ? null : GLOBAL_FIRST_RESPONSE;
-//             // for (i=0; i<users.length; i++) {
-//             //     if (users[i].id === id) {
-//             //         return users[i];
-//             //     }
-//             // }
-//         }
-//     };
-// });
+app.factory('dataService', function() {
+    // var users = [
+    //     { id: 1, username: 'john' }
+    // ];
+    var xxx = GLOBAL_FIRST_RESPONSE;
+    return {
+        getItem: function(id) {
+        	return GLOBAL_FIRST_RESPONSE === null ? null : GLOBAL_FIRST_RESPONSE;
+            // for (i=0; i<users.length; i++) {
+            //     if (users[i].id === id) {
+            //         return users[i];
+            //     }
+            // }
+        }
+    };
+});
 // app.factory("Auth", ["$firebaseAuth",
 //   function($firebaseAuth) {
 //     return $firebaseAuth();

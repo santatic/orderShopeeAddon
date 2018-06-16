@@ -3,18 +3,6 @@ window.addEventListener("load", myMain, false);
 function myMain(evt) {
     var jsInitChecktimer = setInterval(checkForJS_Finish, 1500);
 
-    // function script(u, i) {
-    //     var d = document;
-    //     if (!d.getElementById(i)) {
-    //         var s = d.createElement('script');
-    //         s.src = u;
-    //         s.id = i;
-    //         d.head.appendChild(s);
-    //     }
-    // }
-    // script('//code.jquery.com/jquery-3.2.1.min.js', 'jquery')
-    //-------------------------  
-
     function checkForJS_Finish() {
         if (document.readyState === 'complete' //document.querySelector (".footer__policy-item")  && $('a').filter(function() {return this.href.match(/\/.*i\.\d+\.\d+/);}).length > 5
         ) {
@@ -140,42 +128,7 @@ function myMain(evt) {
                     });
                     break;
                     
-                    // case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?type=unpaid') !== -1:
-                    //     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
-                    //         $(data).prependTo('body');
-                    //         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-                    //     });
-                    //     break;
-                    // case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?type=toship') !== -1:
-                    //     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
-                    //         $(data).prependTo('body');
-                    //         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-                    //     });
-                    //     break;
-                    // case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?type=shipping') !== -1:
-                    //     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
-                    //         $(data).prependTo('body');
-                    //         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-                    //     });
-                    //     break;
-                    // case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?type=completed') !== -1:
-                    //     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
-                    //         $(data).prependTo('body');
-                    //         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-                    //     });
-                    //     break;
-                    // case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?type=cancelled') !== -1:
-                    //     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
-                    //         $(data).prependTo('body');
-                    //         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-                    //     });
-                    //     break;
-                    // case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?type=refund') !== -1:
-                    //     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
-                    //         $(data).prependTo('body');
-                    //         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-                    //     });
-                    //     break;
+                
             }
         }
 
