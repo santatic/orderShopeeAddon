@@ -48,6 +48,7 @@
             "app-content/shopee/backend/single-sale/controller.js",
             "app-content/shopee/backend/list-page/controller.js",
             "app-content/1688/frontend/single-product/controller.js",
+            "app-content/shopee/backend/homepage/controller.js",
             "content.js"
         ],
         "css":["lib/bootstrap/css/bootstrap.min.css", "lib/noty/css/noty.css", "lib/custom/content/css/custom.css"],

@@ -64,6 +64,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
     ]
 
     $scope.options = {
+        // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
         enableSelectAll: true,
         enableGridMenu: true,
@@ -76,13 +77,13 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                 field: "id",
                 enableCellEdit: false,
                 width: '100',
-                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{grid.getCellValue(row, col)}}">{{grid.getCellValue(row, col)}}</a></div>'
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
             }, {
                 name: "TrackNo",
                 enableCellEdit: false,
                 width: '200',
-                field: "trackno"
-                // cellTemplate: '<div class="ui-grid-cell-contents" ><a href="#">{{grid.getCellValue(row, col)}}</a></div>'
+                field: "trackno",
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
             }, {
                 name: "NickName",
                 enableCellEdit: false,
@@ -140,7 +141,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                         },
                         {
                             value: "6",
-                            label: "khách đã nhận"
+                            label: "Khách đã nhận"
                         },
                         {
                             value: "7",
@@ -182,6 +183,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
         }
     };
     // angular.element(document.getElementsByClassName('grid')[0]).css('height', '900px');
+    $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
 
     $scope.options.gridMenuCustomItems = [{
         title: "IN ĐƠN",
@@ -239,7 +241,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                 obj = {
                     id: doc.id,
                     trackno: myData.shipping_traceno,
-                    nickname: myData.user.name,
+                    nickname: myData.user.name +" - " + myData.buyer_address_name ,
                     paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                     shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
                     status: myData.logistic["logistics-logs"][0].description,

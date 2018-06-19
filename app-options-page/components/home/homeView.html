@@ -1,3 +1,80 @@
-<div>
-    {{msg}}
+<div class="container" style="margin-top: 40px;">
+    <div class="row">
+        <div class="card-report">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <span ng-show="today >= 0">
+                        <a>{{today}}</a> đơn được theo dõi</span>
+                </h4>
+                <h4 class="card-title">
+                    <span ng-show="sumToday >= 0">
+                        {{sumToday.toLocaleString()}} (vnđ)
+                    </span>
+                </h4>
+                <p class="card-text">Đầu ngày tới giờ</p>
+            </div>
+        </div>
+        <div class="card-report">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <span ng-show="yesterday >= 0">
+                        <a>{{yesterday}}</a> đơn được theo dõi</span>
+                </h4>
+                <h4 class="card-title">
+                    <span ng-show="sumYes >= 0">
+                        {{sumYes.toLocaleString()}} (vnđ)</span>
+                </h4>
+
+                <p class="card-text">Ngày hôm qua</p>
+            </div>
+        </div>
+        <div class="card-report">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <span ng-show="seven >= 0">
+                        <a>{{seven}}</a> đơn được theo dõi</span>
+                </h4>
+                <h4 class="card-title">
+                    <span ng-show="sumSeven >= 0">
+                        {{sumSeven.toLocaleString()}} (vnđ)</span>
+                </h4>
+                <p class="card-text">7 ngày qua</p>
+            </div>
+        </div>
+        <div class="card-report">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <span ng-show="month >= 0">
+                        <a>{{month}}</a> đơn được theo dõi</span>
+                </h4>
+                <h4 class="card-title">
+                    <span ng-show="sumMonth >= 0">
+                        {{sumMonth.toLocaleString()}} (vnđ)</span>
+                </h4>
+                <p class="card-text">Tháng này</p>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 30px;">
+        <div class="card-second">
+            <div class="card-body">
+                <canvas id="doughnut" class="chart chart-doughnut" chart-data="donutData" chart-labels="donutLabels">
+                    </canva>
+                    <span class="donut-label"></span>
+            </div>
+        </div>
+        <!-- <div class="card-second">
+            <div class="card-body">
+                <h4 class="card-title">Title</h4>
+                <p class="card-text">Text</p>
+            </div>
+        </div>
+        <div class="card-second">
+            <div class="card-body">
+                <h4 class="card-title">Title</h4>
+                <p class="card-text">Text</p>
+            </div>
+        </div> -->
+    </div>
+    <!-- </div> -->
 </div>

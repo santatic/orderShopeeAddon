@@ -1,0 +1,17 @@
+<div class="panel panel-default panel-1688-shopee" ng-controller="logisticCtrl">
+    <div class="panel-header">
+        <span class="pull-right" data-toggle="collapse" data-target=".panel-body">
+            <<<
+        </span>
+    </div>
+    <div class="panel-body collapse in">
+        <ul class="list-group">
+            <li ng-repeat="x in data" class="list-group-item">
+                <span>{{x.size}} đơn {{x.status}}</span>
+                <span class="pull-right" >
+                    <button ng-click="update(x.status)"  type="button" class="btn btn-success">&#8634;</button>
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>

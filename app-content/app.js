@@ -6,6 +6,7 @@
 // };
 // firebase.initializeApp(config);
 
+
 var app = angular.module("myapp" ,['angularMoment']);//"firebase"
 
 app.config(function($compileProvider) {

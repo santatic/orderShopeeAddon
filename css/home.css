@@ -1,0 +1,19 @@
+.card-report{
+    width: 24%;
+    display: inline-block;
+}
+.card-second{
+    width: 32%;
+    display: inline-block;
+}
+.card-second .card-body{
+    margin: 0
+}
+.card-body{
+    border: #00000017 solid 1px;
+    border-radius: 4px;
+    margin: 0 5px;
+    padding: 13px;
+    background: #fff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.04);
+}

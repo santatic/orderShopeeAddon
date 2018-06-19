@@ -1,4 +1,10 @@
-{{test}}
+<div style="display: inline;position: fixed;bottom: 0px;left: 0px;z-index: 999;">
+        <div class="panel-body">
+                <button ng-click="print()" class="btn btn-primary noprint" id="print">IN ĐƠN</button>
+        </div>
+</div>
+
+
 <div class="container">
     <div class="row">
         <div class="col-md-6" id="left">
@@ -6,7 +12,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <div id="trackno">
+                            <div id="trackno" style="font-size: 20px;">
                                 <b>
                                     {{trackingNo}}
                                 </b>
@@ -16,7 +22,7 @@
                     <tr>
                         <td>
                             <span id="nickname">
-                                {{nickName}}
+                                {{nickName}} - {{name}}
                             </span>
                         </td>
                     </tr>
@@ -43,7 +49,7 @@
                     <option>Đã hoàn về kho</option>
                     <option>Đã thanh toán</option>
                     <option>Đã hoàn tiền</option>
-                    <option>Đã Hủy</option>
+                    <option>Đã hủy</option>
                 </select>
                 <br>
                 <div class="card">
@@ -53,6 +59,11 @@
                             <button id="saveNote" class="btn btn-success" style="margin-right: 10px">SAVE</button>
                             <button id="cancelNote" class="btn btn-danger">CANCEL</button>
                         </div>
+                    </div>
+                </div>
+                <div class="card" style="    margin-top: 56px;">
+                    <div class="card-body">
+                        {{logistics}}
                     </div>
                 </div>
 

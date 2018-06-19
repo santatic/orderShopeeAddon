@@ -11,6 +11,20 @@ const settings = { /* your settings... */
 };
 firestore.settings(settings);
 
+// var Col = firestore.collection('orderShopee')
+// Col.get().then(function (querySnapshot) {
+//   console.log(querySnapshot.size);
+//   querySnapshot.forEach(function (doc) {
+//     const data = doc.data()
+//     if (data.shipping_traceno == "") {
+//       var docRef = firestore.collection('orderShopee').doc(doc.id)
+//       docRef.delete().then(function () {
+//         console.log("daxoa");
+//       })
+//     }
+//   })
+// })
+
 var app = angular.module('app', []);
 app.controller('mainCtrl', function ($scope, request_center, message_center) {
   request_center.request_trigger();
@@ -48,6 +62,14 @@ chrome.runtime.onMessage.addListener(
         updatePayment(request, sendResponse);
         return true
         break;
+      case "getHomepage":
+        getHomepage(request, sendResponse);
+        return true
+        break;
+      case "updateLogFromContent":
+        updateLogFromContent(request, sendResponse);
+        return true
+        break;
     }
   });
 
@@ -61,6 +83,113 @@ function httpGet(theUrl, headers) {
   return JSON.parse(xmlHttp.responseText);
 }
 
+function updateLogFromContent(response, sendResponse) {
+  console.log(response.updateLogShopee);
+  var check = []
+  var batch = firestore.batch()
+
+  $.each(response.updateLogShopee, function (i, val) {
+    var log = val.log['logistics-logs'][0].description;
+    // console.log(log);
+    var test = log
+
+    if (log.indexOf('Đóng bảng kê đi') !== -1 || log.indexOf('Đã điều phối giao hàng') !== -1 || log.indexOf('Đã lấy hàng/Đã nhập kho') !== -1 || log.indexOf('Giao hàng lần') !== -1) {
+      log = "SHIPPED";
+      var docRef = firestore.collection("orderShopee").doc(val.id);
+      batch.update(docRef, {
+        "own_status": log
+      })
+    }
+    else if (log.indexOf('Thành công - Phát thành công') !== -1) {
+      log = "DELIVERED";
+      var docRef = firestore.collection("orderShopee").doc(val.id);
+      batch.update(docRef, {
+        "own_status": log
+      })
+    }
+
+    if (test != log) {
+      console.log(log);
+    }
+    var docRef = firestore.collection("orderShopee").doc(val.id);
+    batch.update(docRef, {
+      "logistic": val.log
+    })
+    check.push(i)
+  })
+
+  $.each(response.idsDaGiao, function (i, id) {
+    // console.log(id);
+    var docRef = firestore.collection("orderShopee").doc(id);
+    batch.update(docRef, {
+      "own_status": "DELIVERED"
+    })
+    check.push(i)
+  });
+  console.log(check.length);
+  console.log(response.idsDaGiao.length);
+  console.log(response.updateLogShopee.length);
+
+  var timer = setInterval(function () {
+    if (check.length == (response.idsDaGiao.length + response.updateLogShopee.length)) {
+      clearInterval(timer)
+      batch.commit().then(function () {
+        sendResponse()
+      });
+    }
+  }, 500)
+}
+
+function getHomepage(response, sendResponse) {
+
+  var res = [];
+  var loop = [
+    "NEW",
+    "PREPARED",
+    "UNPREPARED",
+    "PACKED",
+    "SHIPPED",
+    "DELIVERED"
+  ]
+
+  $.each(loop, function (i, val) {
+    console.log(val);
+    var logistics = [];
+    var colRef = firestore.collection("orderShopee").where("own_status", "==", val)
+    colRef.get().then(function (querySnapshot) {
+      console.log(querySnapshot.size);
+      var ids = []
+      querySnapshot.forEach(function (doc) {
+        const data = doc.data()
+        var obj = new Object()
+        obj = {
+          id: doc.id,
+          logistics: data.logistic['logistics-logs'][0].description
+        }
+        logistics.push(obj)
+      })
+      var obj = new Object();
+      obj = {
+        status: val,
+        size: querySnapshot.size,
+        logistics: logistics
+      }
+      res.push(obj)
+    })
+  })
+  var timer = setInterval(function () {
+    if (res.length == 6) {
+      console.log(res);
+      sendResponse({
+        data: res
+      })
+      clearInterval(timer)
+    }
+  }, 500)
+
+}
+
+
 function updatePayment(response, sendResponse) {
   var check = []
   var batch = firestore.batch()
@@ -71,9 +200,8 @@ function updatePayment(response, sendResponse) {
       "own_status": "PAID"
     })
     check.push(i)
-    
   });
-  
+
   var timer = setInterval(function () {
     if (check.length == response.id.length) {
       clearInterval(timer)
@@ -81,7 +209,7 @@ function updatePayment(response, sendResponse) {
         sendResponse()
       });
     }
-  },500)
+  }, 500)
 }
 
 function paymentCheck(response, sendResponse) {

@@ -1,5 +1,16 @@
 <div class="container">
-        <audio id="play-beep" src="../../../lib/audio/beep.wav"></audio>
-        <video id="preview"></video>
+        <div class="col-md-7">
+                <audio id="play-beep" src="../../../lib/audio/beep.wav"></audio>
+                <video id="preview"></video>
+        </div>
+        <div class="col-md-5">
+                <div class="radio">
+                        <input type="radio" ng-model="typeUrl" value="addon"> Trang chi tiết Addon
+
+                </div>
+                <div class="radio">
+                        <input type="radio" ng-model="typeUrl" value="shopee"> Trang chi tiết Shopee
+                </div>
+        </div>
         <!-- <div id="reader" autoplay="" style="width:700px;height:540px; display: block; margin-left: auto; margin-right:auto"></div> -->
 </div>

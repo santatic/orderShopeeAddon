@@ -73,6 +73,12 @@ app.controller("print-controller", function ($scope, $routeParams) {
         })
     }
 
+    $scope.print = function(){
+        window.print()
+    }
+
+    var saleUrl = chrome.extension.getURL("options.html#/");
+
     docRef = firestore.collection("orderShopee").doc(id);
 
     $('button#saveNote').click(function () {
@@ -154,6 +160,7 @@ app.controller("print-controller", function ($scope, $routeParams) {
                 $scope.phone = data.buyer_address_phone;
                 $scope.orderId = data.ordersn;
                 $scope.urlId = id;
+                $scope.logistics = data.logistic['logistics-logs'][0].description
                 $scope.pay = ((data.buyer_paid_amount) * 100 / 100).toLocaleString();
                 $scope.note = data.note;
                 $scope.showNote = false;
