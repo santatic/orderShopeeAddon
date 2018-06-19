@@ -16,7 +16,7 @@ app.controller("scan-controller", function ($scope, $routeParams) {
     console.log($scope.typeUrl);
      
 
-    var win = window.open($scope.typeUrl == "addon"? chrome.extension.getURL("options.html#/orders/")   + content, '_blank');
+    var win = window.open($scope.typeUrl == "addon"? chrome.extension.getURL("options.html#/orders/") + content : "https://banhang.shopee.vn/portal/sale/" + content, '_blank');
     win.focus()
   });
   Instascan.Camera.getCameras().then(function (cameras) {
