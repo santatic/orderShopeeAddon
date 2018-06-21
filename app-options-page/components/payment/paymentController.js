@@ -5,6 +5,7 @@ app.controller("payment-controller", function ($scope, uiGridConstants) {
     paginationPageSize: 15,
     enableSorting: true,
     showGridFooter: false,
+    enableFiltering: true,
     // showGridHeader: false
   };
 

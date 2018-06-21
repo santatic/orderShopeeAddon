@@ -59,7 +59,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
         {
             id: 11,
             english: "CANCELED",
-            vietnamese: "hủy"
+            vietnamese: "đã hủy"
         },
     ]
 
@@ -94,6 +94,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                 enableCellEdit: false,
                 field: "paid",
                 width: '100'
+            },{
+                name: "Nhà vận chuyển",
+                width: "150",
+                field: "carrier"
             },
             {
                 name: "Shipping Fee",
@@ -120,49 +124,49 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                 filter: {
                     type: uiGridConstants.filter.SELECT,
                     selectOptions: [{
-                            value: "1",
+                            value: 1,
                             label: "Đơn mới"
                         },
                         {
-                            value: "2",
+                            value: 2,
                             label: "Đủ hàng"
                         },
                         {
-                            value: "3",
+                            value: 3,
                             label: "Thiếu hàng"
                         },
                         {
-                            value: "4",
+                            value: 4,
                             label: "Đã đóng gói"
                         },
                         {
-                            value: "5",
+                            value: 5,
                             label: "Đã gửi đi"
                         },
                         {
-                            value: "6",
+                            value: 6,
                             label: "Khách đã nhận"
                         },
                         {
-                            value: "7",
+                            value: 7,
                             label: "Đang hoàn hàng"
                         },
                         {
-                            value: "8",
+                            value: 8,
                             label: "Đã hoàn về kho"
                         },
                         {
-                            value: "9",
+                            value: 9,
                             label: "Đã thanh toán"
                         },
                         {
-                            value: "10",
+                            value: "HT",
                             label: "Đã hoàn tiền"
                         },
                         {
-                            value: "11",
+                            value: "0",
                             label: "Đã hủy"
-                        },
+                        }
                     ]
                 },
                 cellFilter: 'mapGender'
@@ -243,6 +247,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                     trackno: myData.shipping_traceno,
                     nickname: myData.user.name +" - " + myData.buyer_address_name ,
                     paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
+                    carrier: myData.actual_carrier,
                     shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
                     status: myData.logistic["logistics-logs"][0].description,
                     updateTime: ctime,
@@ -255,41 +260,43 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
             $scope.loading = false
             $scope.gridApi.core.refresh();
             sources.forEach(function (row, index) {
+                
                 switch (row.ownStatus) {
                     case "NEW":
-                        row.ownStatus = "1"
+                        row.ownStatus = 1
                         break
                     case "PREPARED":
-                        row.ownStatus = "2"
+                        row.ownStatus = 2
                         break
                     case "UNPREPARED":
-                        row.ownStatus = "3"
+                        row.ownStatus = 3
                         break
                     case "PACKED":
-                        row.ownStatus = "4"
+                        row.ownStatus = 4
                         break
                     case "SHIPPED":
-                        row.ownStatus = "5"
+                        row.ownStatus = 5
                         break
                     case "DELIVERED":
-                        row.ownStatus = "6"
+                        row.ownStatus = 6
                         break
                     case "RETURNING":
-                        row.ownStatus = "7"
+                        row.ownStatus = 7
                         break
                     case "RETURNED":
-                        row.ownStatus = "8"
+                        row.ownStatus = 8
                         break
                     case "PAID":
-                        row.ownStatus = "9"
+                        row.ownStatus = 9
                         break
                     case "REFUNDED":
-                        row.ownStatus = "10"
+                        row.ownStatus = "HT"
                         break
                     case "CANCELED":
-                        row.ownStatus = "11"
+                        row.ownStatus = "0"
                         break
                 }
+                console.log(row.ownStatus);
                 // var selectedExpTags = [parseInt(value.ownStatus)];
                 // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
                 // value.own_Status = names[0];
@@ -298,7 +305,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
         }
     ).then(function () {
         console.log($scope);
-
         //$scope.apply();
     })
 
@@ -316,8 +322,8 @@ function mapGender() {
         7: "Đang hoàn hàng chưa về đến kho",
         8: "Đã hoàn về kho",
         9: "Đã thanh toán",
-        10: "Đã hoàn tiền",
-        11: "Hủy"
+        "HT": "Đã hoàn tiền",
+        "0": "Đã hủy"
     };
 
     return function (input) {

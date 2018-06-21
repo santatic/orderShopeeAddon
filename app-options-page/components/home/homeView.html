@@ -2,56 +2,60 @@
     <div class="row">
         <div class="card-report">
             <div class="card-body">
+                <p class="card-text">Hôm Nay</p>
                 <h4 class="card-title">
                     <span ng-show="today >= 0">
-                        <a>{{today}}</a> đơn được theo dõi</span>
+                        <a>{{today}}</a> Đơn Hàng</span>
                 </h4>
                 <h4 class="card-title">
                     <span ng-show="sumToday >= 0">
-                        {{sumToday.toLocaleString()}} (vnđ)
+                        {{sumToday.toLocaleString()}} ₫
                     </span>
                 </h4>
-                <p class="card-text">Đầu ngày tới giờ</p>
+                
             </div>
         </div>
         <div class="card-report">
             <div class="card-body">
+                    <p class="card-text">Ngày hôm qua</p>
                 <h4 class="card-title">
                     <span ng-show="yesterday >= 0">
-                        <a>{{yesterday}}</a> đơn được theo dõi</span>
+                        <a>{{yesterday}}</a> Đơn Hàng</span>
                 </h4>
                 <h4 class="card-title">
                     <span ng-show="sumYes >= 0">
-                        {{sumYes.toLocaleString()}} (vnđ)</span>
+                        {{sumYes.toLocaleString()}} ₫</span>
                 </h4>
 
-                <p class="card-text">Ngày hôm qua</p>
+                
             </div>
         </div>
         <div class="card-report">
             <div class="card-body">
+                    <p class="card-text">7 ngày qua</p>
                 <h4 class="card-title">
                     <span ng-show="seven >= 0">
-                        <a>{{seven}}</a> đơn được theo dõi</span>
+                        <a>{{seven}}</a> Đơn Hàng</span>
                 </h4>
                 <h4 class="card-title">
                     <span ng-show="sumSeven >= 0">
-                        {{sumSeven.toLocaleString()}} (vnđ)</span>
+                        {{sumSeven.toLocaleString()}} ₫</span>
                 </h4>
-                <p class="card-text">7 ngày qua</p>
+                
             </div>
         </div>
         <div class="card-report">
             <div class="card-body">
+                    <p class="card-text">Tháng này</p>
                 <h4 class="card-title">
                     <span ng-show="month >= 0">
-                        <a>{{month}}</a> đơn được theo dõi</span>
+                        <a>{{month}}</a> Đơn Hàng</span>
                 </h4>
                 <h4 class="card-title">
                     <span ng-show="sumMonth >= 0">
-                        {{sumMonth.toLocaleString()}} (vnđ)</span>
+                        {{sumMonth.toLocaleString()}} ₫</span>
                 </h4>
-                <p class="card-text">Tháng này</p>
+                
             </div>
         </div>
     </div>

@@ -29,10 +29,11 @@
             "https://detail.1688.com/*"
         ],
         "js": [
-            "lib/jquery.min.js",          
-
+            "lib/jquery.min.js",
+            "lib/jquery/jquery-ui.min.js",
             "lib/bootstrap/js/bootstrap.min.js", 
             "lib/angular/1.5.9/angular.min.js",
+            "lib/bootstrap/js/ui-bootstrap-tpls-0.12.0.js",
             "lib/angular/1.5.9/angular-route.min.js",
             "lib/moment/moment.js",
             "lib/moment/angular-moment.min.js",

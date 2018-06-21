@@ -1,5 +1,55 @@
 app.controller("logisticCtrl", ['$scope',
     function ($scope) {
+
+        var states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Dakota", "North Carolina", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"];
+
+        console.log("hi");
+        var timer = setInterval(function () {
+
+            $('div.chat-panel').prependTo('')
+
+            var input = $('.shopee-chat-root .chat-panel textarea')
+
+            if (input.length) {
+
+                console.log("here");               
+
+                clearInterval(timer)
+
+                input.autocomplete({
+                    delay: 100,
+                    minLength: 1,
+                    source: states,
+                    appendTo: 'div.chat-panel',
+                    focus: function (event, ui) {
+                        // prevent autocomplete from updating the textbox
+                        event.preventDefault();
+                    },
+                    select: function (event, ui) {
+                    }
+                }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                    console.log(item.label);
+                    return $("<li>" + item.label + "</li>").appendTo(ul);
+                };
+
+            
+
+                // input.keyup(function () {
+                //     $("#typehead1").sendkeys("A")
+                //     console.log(input.val())
+                // })
+            } else {
+                console.log("notyet");
+            }
+        }, 500)
+
+
+        // $scope.selected = undefined;
+        // $scope.states = Chat;
+        
+
+
+
         function httpGet(theUrl, headers) {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("GET", theUrl, false); // false for synchronous request
@@ -82,7 +132,12 @@ app.controller("logisticCtrl", ['$scope',
             $scope.$apply()
         })
         $scope.update = function (status) {
-            new Noty({layout: 'bottomRight', theme: "relax", type: 'success', text: 'Đang cập nhật, khi nào xong sẽ tự load lại trang!'}).show();
+            new Noty({
+                layout: 'bottomRight',
+                theme: "relax",
+                type: 'success',
+                text: 'Đang cập nhật, khi nào xong sẽ tự load lại trang!'
+            }).show();
             var idsDaGiao = []
             var updateLogShopee = []
             var selectedExpTags = [status];
@@ -104,7 +159,7 @@ app.controller("logisticCtrl", ['$scope',
                     updateLogShopee.push(obj)
                 }
             })
-            
+
             chrome.runtime.sendMessage({
                 mission: "updateLogFromContent",
                 idsDaGiao: idsDaGiao,
