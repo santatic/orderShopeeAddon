@@ -1,9 +1,9 @@
 app.controller("orders-controller", ordersController)
     .filter('mapGender', mapGender)
 
-ordersController.$inject = ['$scope', '$timeout', 'moment', 'uiGridConstants'];
+ordersController.$inject = ['$scope', '$timeout', 'moment', 'uiGridConstants', 'helper'];
 
-function ordersController($scope, $timeout, moment, uiGridConstants) {
+function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     $scope.loading = true;
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
@@ -94,7 +94,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                 enableCellEdit: false,
                 field: "paid",
                 width: '100'
-            },{
+            }, {
                 name: "Nhà vận chuyển",
                 width: "150",
                 field: "carrier"
@@ -202,26 +202,26 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
             console.log(selected);
             $scope.rowSelected = selected;
             // window.onload = function () {
-                selected.forEach(function (val) {
-                    console.log(val.id); 
-                    var timer = setInterval(function(){
-                        if(($("#"+ val.id)).length){
-                            clearInterval(timer)
-                            var qrcode = new QRCode(document.getElementById(val.id), {
-                                width: 100,
-                                height: 100,
-                                correctLevel: QRCode.CorrectLevel.H
-                            });
-        
-                            function makeCode() {
-                                qrcode.makeCode(val.id);
-                            }
-                            makeCode();
+            selected.forEach(function (val) {
+                console.log(val.id);
+                var timer = setInterval(function () {
+                    if (($("#" + val.id)).length) {
+                        clearInterval(timer)
+                        var qrcode = new QRCode(document.getElementById(val.id), {
+                            width: 100,
+                            height: 100,
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+
+                        function makeCode() {
+                            qrcode.makeCode(val.id);
                         }
-                    })
-                    
-                    
+                        makeCode();
+                    }
                 })
+
+
+            })
             // }
 
             $timeout(function () {
@@ -229,7 +229,24 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                 $scope.rowSelected = []
             }, 500)
         }
+    }, {
+        title: "TẠO PHIẾU XUẤT",
+        action: function () {
+            var selected = $scope.gridApi.selection.getSelectedRows();
+            helper.validateExportOrder(selected)
+            // $.each(selected, function (i, value) {
+            //     console.log(value.id);
+            //     docRef = firestore.collection("orderShopee");
+            //     docRef.get().then(function (doc) {
+            //         const data = doc.data()
+            //         if(data.exportId){
 
+            //         }else{
+
+            //         }
+            //     })
+            // })
+        }
     }]
 
     $scope.options.multiSelect = true;
@@ -240,12 +257,13 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
         function (querySnapshot) {
             querySnapshot.forEach(function (doc) {
                 const myData = doc.data();
+                // console.log(myData);
                 ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
                 obj = new Object();
                 obj = {
                     id: doc.id,
                     trackno: myData.shipping_traceno,
-                    nickname: myData.user.name +" - " + myData.buyer_address_name ,
+                    nickname: myData.user.name + " - " + myData.buyer_address_name,
                     paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                     carrier: myData.actual_carrier,
                     shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
@@ -260,7 +278,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
             $scope.loading = false
             $scope.gridApi.core.refresh();
             sources.forEach(function (row, index) {
-                
+
                 switch (row.ownStatus) {
                     case "NEW":
                         row.ownStatus = 1
@@ -296,7 +314,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants) {
                         row.ownStatus = "0"
                         break
                 }
-                console.log(row.ownStatus);
+                // console.log(row.ownStatus);
                 // var selectedExpTags = [parseInt(value.ownStatus)];
                 // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
                 // value.own_Status = names[0];

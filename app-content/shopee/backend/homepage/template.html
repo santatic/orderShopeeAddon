@@ -1,7 +1,8 @@
 <style>
     ul.ui-autocomplete{
-        display: block !important;
+        /* display: block !important; */
         z-index: 999 !important;
+        position: unset !important
     }
 </style>
 <div class="panel panel-default panel-1688-shopee" ng-controller="logisticCtrl">
@@ -10,7 +11,6 @@
             <<< </span>
     </div>
     <div class="panel-body collapse in">
-        <textarea type="text" id="typehead1" placeholder="enter a state"></textarea>
         <ul class="list-group">
             <li ng-repeat="x in data" class="list-group-item">
                 <span>{{x.size}} đơn {{x.status}}</span>

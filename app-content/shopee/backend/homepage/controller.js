@@ -1,52 +1,64 @@
 app.controller("logisticCtrl", ['$scope',
     function ($scope) {
 
-        var states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Dakota", "North Carolina", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"];
+        chrome.runtime.sendMessage({
+            mission: "getSuggest"}, function(response){
+                console.log(response.suggests);
+                var states = response.suggests;
+                var timer = setInterval(function () {
+
+                    var input = $('.shopee-chat-root .chat-panel textarea')
+                    input.keyup(function () {
+                        $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+                    })
+        
+                    if (input.length) {
+        
+                        // $('div.chat-panel').prepend('<div class="suggest"></div>')
+        
+                        console.log("here");
+        
+                        clearInterval(timer)
+        
+                        input.autocomplete({
+                            delay: 100,
+                            minLength: 1,
+                            source: states,
+                            appendTo: 'div.chat-content',
+                            // focus: function (event, ui) {
+                            //     // prevent autocomplete from updating the textbox
+                            //     event.preventDefault();
+                            // },
+                            // select: function (event, ui) {
+                            //     // alert(input.val());
+                            //     console.log(ui.item.value)
+                            // }
+                        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                            // console.log(item.label);
+        
+                            $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+        
+                            return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
+        
+                        };      
+        
+        
+                        
+                    } else {
+                        console.log("notyet");
+                    }
+                }, 500)
+        
+            })
+
+        
 
         console.log("hi");
-        var timer = setInterval(function () {
-
-            $('div.chat-panel').prependTo('')
-
-            var input = $('.shopee-chat-root .chat-panel textarea')
-
-            if (input.length) {
-
-                console.log("here");               
-
-                clearInterval(timer)
-
-                input.autocomplete({
-                    delay: 100,
-                    minLength: 1,
-                    source: states,
-                    appendTo: 'div.chat-panel',
-                    focus: function (event, ui) {
-                        // prevent autocomplete from updating the textbox
-                        event.preventDefault();
-                    },
-                    select: function (event, ui) {
-                    }
-                }).data("ui-autocomplete")._renderItem = function (ul, item) {
-                    console.log(item.label);
-                    return $("<li>" + item.label + "</li>").appendTo(ul);
-                };
-
-            
-
-                // input.keyup(function () {
-                //     $("#typehead1").sendkeys("A")
-                //     console.log(input.val())
-                // })
-            } else {
-                console.log("notyet");
-            }
-        }, 500)
-
+       
 
         // $scope.selected = undefined;
         // $scope.states = Chat;
-        
+
 
 
 

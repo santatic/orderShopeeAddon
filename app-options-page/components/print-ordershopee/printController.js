@@ -1,4 +1,4 @@
-app.controller("print-controller", function ($scope, $routeParams) {
+app.controller("print-controller", function ($scope, $routeParams, moment) {
 
     var arrayFilter = [{
             id: 1,
@@ -155,6 +155,8 @@ app.controller("print-controller", function ($scope, $routeParams) {
                 var selectedExpTags = [data.own_status];
                 var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese)
                 $scope.status = names[0];
+                $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
+                $scope.carrier = data.actual_carrier
                 $scope.name = data.buyer_address_name;
                 $scope.address = data.shipping_address;
                 $scope.phone = data.buyer_address_phone;
