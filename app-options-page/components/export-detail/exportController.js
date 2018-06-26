@@ -1,10 +1,11 @@
-app.controller("orders-controller", ordersController)
+app.controller("export-controller", ordersController)
     .filter('mapGender', mapGender)
 
-ordersController.$inject = ['$scope', '$timeout', 'moment', 'uiGridConstants', 'helper'];
+ordersController.$inject = ['$scope', '$timeout', 'moment', '$routeParams', 'uiGridConstants', 'helper'];
 
-function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
+function ordersController($scope, $timeout, moment, $routeParams,  uiGridConstants, helper) {
     $scope.loading = true;
+    var id = $routeParams.id
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
             id: 1,
@@ -104,10 +105,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 enableCellEdit: false,
                 width: '100',
                 field: "shippingFee"
-            }, {
-                name: "ExportCode",
-                field: "exId",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
             },            
             {
                 name: "Status Shopee",
@@ -234,32 +231,16 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 $scope.rowSelected = []
             }, 500)
         }
-    }, {
-        title: "TẠO PHIẾU XUẤT",
-        action: function () {
-            var selected = $scope.gridApi.selection.getSelectedRows();
-            helper.validateExportOrder(selected)
-            // $.each(selected, function (i, value) {
-            //     console.log(value.id);
-            //     docRef = firestore.collection("orderShopee");
-            //     docRef.get().then(function (doc) {
-            //         const data = doc.data()
-            //         if(data.exportId){
-
-            //         }else{
-
-            //         }
-            //     })
-            // })
-        }
+    
     }]
 
     $scope.options.multiSelect = true;
     var sources = []
-
-    docRef = firestore.collection("orderShopee");
+console.log(id);    
+    var docRef = firestore.collection("orderShopee").where("exportId", "==", id);
     docRef.get().then(
         function (querySnapshot) {
+            console.log(querySnapshot.size);
             querySnapshot.forEach(function (doc) {
                 const myData = doc.data();
                 // console.log(myData);
@@ -272,7 +253,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                     carrier: myData.actual_carrier,
                     shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
-                    exId: myData.exportId,
                     status: myData.logistic["logistics-logs"][0].description,
                     updateTime: ctime,
                     ownStatus: myData.own_status

@@ -24,6 +24,12 @@ app.config(function($routeProvider) {
     }).when("/scan-order", {
         templateUrl : "app-options-page/components/scanOrder/scanView.html",
         controller : "scan-controller"
+    }).when("/export/:id", {
+        templateUrl : "app-options-page/components/export-detail/export.html",
+        controller : "export-controller"
+    }).when("/exportcode-list", {
+        templateUrl : "app-options-page/components/exports/exportsView.html",
+        controller : "exports-controller"
     });;
 
 });

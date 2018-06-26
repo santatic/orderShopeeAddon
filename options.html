@@ -37,6 +37,9 @@
           <li ng-class="{active:isActive('/orders')}">
             <a href="#orders">Đơn Hàng</a>
           </li>
+          <li ng-class="{active:isActive('/exportcode-list')}">
+            <a href="#exportcode-list">Phiếu xuất</a>
+          </li>
           <li ng-class="{active:isActive('/configuration')}">
             <a href="#configuration">Cài Đặt</a>
           </li>
@@ -121,6 +124,8 @@
   <script src="app-options-page/components/print-ordershopee/printController.js"></script>
   <script src="app-options-page/components/payment/paymentController.js"></script>
   <script src="app-options-page\components\scanOrder\scanController.js"></script>
+  <script src="app-options-page\components\exports\exportsController.js"></script>
+  <script src="app-options-page\components\export-detail\exportController.js"></script>
   <script src="app-options-page/services/chromeStorage.js"></script>
   <script src="lib/noty/js/noty.min.js"></script>
   <script src='lib/qrcode.min.js'></script>

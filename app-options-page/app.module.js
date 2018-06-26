@@ -74,7 +74,7 @@ app.service('helper', function () {
         arrExportId.forEach(function (val, i) {
           var docEx = firestore.collection("orderShopee").doc(val);
           batch.update(docEx, {
-            "exportId": date.getTime()
+            "exportId": date.getTime().toString()
           })
           check.push(i)
         })
@@ -82,13 +82,22 @@ app.service('helper', function () {
           if (check.length == arrExportId.length) {
             clearInterval(timerSec)
             batch.commit().then(function () {
-              new Noty({
-                layout: 'bottomRight',
-                timeout: 5000,
-                theme: "relax",
-                type: 'success',
-                text: 'ĐÃ THÊM MÃ PHIẾU XUẤT'
-              }).show();
+              firestore.collection("exportCode").doc(date.getTime().toString()).set({
+                "orders": arrExportId,
+                "shipper": "",
+                "create_at": date
+              }).then(function(){
+                new Noty({
+                  layout: 'bottomRight',
+                  timeout: 5000,
+                  theme: "relax",
+                  type: 'success',
+                  text: 'ĐÃ THÊM MÃ PHIẾU XUẤT'
+                }).show();
+              }).then(function(){
+                window.reload()
+              })
+              
             });
           }
         }, 500)
