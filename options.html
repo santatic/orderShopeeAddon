@@ -40,6 +40,9 @@
           <li ng-class="{active:isActive('/exportcode-list')}">
             <a href="#exportcode-list">Phiếu xuất</a>
           </li>
+          <li ng-class="{active:isActive('/importcode-list')}">
+            <a href="#importcode-list">Phiếu thu</a>
+          </li>
           <li ng-class="{active:isActive('/configuration')}">
             <a href="#configuration">Cài Đặt</a>
           </li>
@@ -107,7 +110,7 @@
   <script src="lib/uigrid/ui-grid.min.js"></script>
 
   <!-- <script src="lib/datatable/dataTable.min.js"></script> -->
-  <!-- <script src="lib/datatable/dataTable.helpers.js"></script> -->
+  <script src="lib/bootstrap/js/ui-bootstrap-tpls-2.5.0.js"></script>
   <script src="lib/angular/1.5.9/angular-route.min.js"></script>
   <script src="lib/bootstrap/js/bootstrap.min.js"></script>
 
@@ -126,10 +129,11 @@
   <script src="app-options-page\components\scanOrder\scanController.js"></script>
   <script src="app-options-page\components\exports\exportsController.js"></script>
   <script src="app-options-page\components\export-detail\exportController.js"></script>
+  <script src="app-options-page\components\import-detail\importController.js"></script>
+  <script src="app-options-page\components\imports\importsController.js"></script>
   <script src="app-options-page/services/chromeStorage.js"></script>
   <script src="lib/noty/js/noty.min.js"></script>
   <script src='lib/qrcode.min.js'></script>
-
 </body>
 
 </html>

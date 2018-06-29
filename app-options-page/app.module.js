@@ -28,7 +28,7 @@ firestore.settings(settings);
 //     console.error("Error adding document: ", error);
 // });
 
-var app = angular.module("app", ["ngRoute", "chart.js", 'ui.grid.rowEdit', "ui.grid", 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
+var app = angular.module("app", ["ngRoute", 'ui.bootstrap', "chart.js", 'ui.grid.rowEdit', "ui.grid", 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
 
 app.config(function ($compileProvider) {
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);
@@ -85,7 +85,8 @@ app.service('helper', function () {
               firestore.collection("exportCode").doc(date.getTime().toString()).set({
                 "orders": arrExportId,
                 "shipper": "",
-                "create_at": date
+                "create_at": date,
+                "status": "MỚI"
               }).then(function(){
                 new Noty({
                   layout: 'bottomRight',
@@ -95,7 +96,7 @@ app.service('helper', function () {
                   text: 'ĐÃ THÊM MÃ PHIẾU XUẤT'
                 }).show();
               }).then(function(){
-                window.reload()
+                location.reload()
               })
               
             });

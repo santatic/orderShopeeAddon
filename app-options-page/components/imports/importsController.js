@@ -1,4 +1,4 @@
-app.controller("exports-controller", ordersController)
+app.controller("imports-controller", ordersController)
 
 ordersController.$inject = ['$scope', '$q', '$timeout', 'moment', 'uiGridConstants'];
 
@@ -16,23 +16,20 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         enableSorting: true,
         showGridFooter: false,
         columnDefs: [{
-            name: "Export Id",
+            name: "Mã phiếu thu",
             field: "id",
             enableCellEdit: false,
-            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.id}}">{{row.entity.id}}</a></div>'
+            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.id}}">{{row.entity.id}}</a></div>'
         },{
-            name: "Size",
+            name: "Số lượng đơn",
             field: "size",
         }, {
-            name: "Shiper Name",
-            field: "shipper",
-        }, {
-            name: "Create At",
+            name: "Ngày nhận tiền",
             enableCellEdit: false,
-            field: "time"
+            field: "time",
         },{
-            name: "Trạng thái",
-            field: "status",
+            name: "Ngân hàng",
+            field: "bank",
         }],
         enableFiltering: true,
         onRegisterApi: function (gridApi) {
@@ -86,20 +83,19 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
 
     $scope.options.multiSelect = true;
     var sources = []
-    var docRef = firestore.collection("exportCode")
+    var docRef = firestore.collection("importCode")
     docRef.get().then(
         function (querySnapshot) {
             querySnapshot.forEach(function (doc) {
                 const myData = doc.data();
                 // console.log(myData);
-                ctime = moment(myData.create_at.seconds * 1000).format("DD-MM-YYYY")
+                ctime = myData.reciveMoneyAt
                 obj = new Object();
                 obj = {
                     id: doc.id,
-                    shipper: myData.shipper,
+                    bank: myData.myBank,
                     time: ctime,
-                    size: myData.orders.length,
-                    status: myData.status
+                    size: myData.orders.length
                 }
                 sources.push(obj)
             })

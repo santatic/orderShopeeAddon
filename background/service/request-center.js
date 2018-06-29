@@ -102,7 +102,6 @@ app.service('request_center', function (helper_center) {
                                 exist: arrIdExisted,
                                 notExist: arrIdNotExisted
                             }
-                            alert(arrIdExisted.length +", "+arrIdNotExisted.length)
                             // return res
                             clearInterval(timer)
                         }

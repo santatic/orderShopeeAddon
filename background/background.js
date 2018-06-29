@@ -12,18 +12,33 @@ const settings = { /* your settings... */
 firestore.settings(settings);
 
 // var Col = firestore.collection('orderShopee')
+// var bat = firestore.batch()
+// var pushar = []
 // Col.get().then(function (querySnapshot) {
 //   console.log(querySnapshot.size);
 //   querySnapshot.forEach(function (doc) {
+//     console.log(doc.id);
 //     const data = doc.data()
-//     if (data.shipping_traceno == "") {
-//       var docRef = firestore.collection('orderShopee').doc(doc.id)
-//       docRef.delete().then(function () {
-//         console.log("daxoa");
-//       })
-//     }
+//     var status = data.own_status
+//     var Doc = firestore.collection('orderShopee').doc(doc.id).update({
+//       "own_status": {
+//         "status": status,
+//         "create_at": new Date()
+//       }
+//     })
+//     pushar.push(doc.id)
 //   })
+//   console.log(pushar);
+//   var timer3 = setInterval(function(){
+//     if(pushar.length == querySnapshot.size ){
+      
+//         console.log("update done");
+
+//       clearInterval(timer3)
+//     }
+//   },500)
 // })
+
 
 var app = angular.module('app', []);
 app.controller('mainCtrl', function ($scope, request_center, helper_center) {
@@ -79,8 +94,21 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
           getSuggest(request, sendResponse)
           return true
           break;
+        case "updateStatusFromShopee":
+          updateStatusFromShopee(request, sendResponse)
+          break
       }
     });
+
+  function updateStatusFromShopee(response, sendResponse) {
+    firestore.collection("orderShopee").doc(response.url).update({
+      "own_status": {
+        status: response.status,
+        create_at: new Date()}
+    }).then(function () {
+      sendResponse()
+    })
+  }
 
   function getSuggest(response, sendResponse) {
     var sources_suggest = []
@@ -91,8 +119,8 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
           const data = doc.data()
           sources_suggest.push(data.suggest_chat.toString())
         })
-        var timer = setInterval(function(){
-          if(sources_suggest.length == querySnapshot.size){
+        var timer = setInterval(function () {
+          if (sources_suggest.length == querySnapshot.size) {
             clearInterval(timer)
             sendResponse({
               suggests: sources_suggest
@@ -100,7 +128,7 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
           }
         })
       })
-     
+
   }
 
   function httpGet(theUrl, headers) {
@@ -127,13 +155,17 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
         log = "SHIPPED";
         var docRef = firestore.collection("orderShopee").doc(val.id);
         batch.update(docRef, {
-          "own_status": log
+          "own_status": {
+            status: log,
+            create_at: new Date()}
         })
       } else if (log.indexOf('Thành công - Phát thành công') !== -1) {
         log = "DELIVERED";
         var docRef = firestore.collection("orderShopee").doc(val.id);
         batch.update(docRef, {
-          "own_status": log
+          "own_status": {
+            status: log,
+            create_at: new Date()}
         })
       }
 
@@ -151,7 +183,9 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
       // console.log(id);
       var docRef = firestore.collection("orderShopee").doc(id);
       batch.update(docRef, {
-        "own_status": "DELIVERED"
+        "own_status": {
+          status: "DELIVERED",
+          create_at: new Date()}
       })
       check.push(i)
     });
@@ -184,7 +218,7 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
     $.each(loop, function (i, val) {
       console.log(val);
       var logistics = [];
-      var colRef = firestore.collection("orderShopee").where("own_status", "==", val)
+      var colRef = firestore.collection("orderShopee").where("own_status.status", "==", val)
       colRef.get().then(function (querySnapshot) {
         console.log(querySnapshot.size);
         var ids = []
@@ -220,13 +254,28 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
 
 
   function updatePayment(response, sendResponse) {
+    var date = new Date()
+    console.log(date.getTime().toString());
     var check = []
     var batch = firestore.batch()
+    var ImRef = firestore.collection("importCode").doc(date.getTime().toString());
+    batch.set(ImRef, {
+      "myBank": response.bank,
+      "reciveMoneyAt": response.date,
+      "orders": response.id
+    })
     $.each(response.id, function (i, id) {
       console.log(id);
-      var docRef = firestore.collection("orderShopee").doc(id);
+      var docRef = firestore.collection("orderShopee").doc(id.id);
+
       batch.update(docRef, {
-        "own_status": "PAID"
+        "own_status": {
+          status: "PAID",
+          create_at: new Date()},
+        "actual_money_shopee_paid": id.shopeeMoney,
+        "importMoneyId": date.getTime().toString()
+
+
       })
       check.push(i)
     });
@@ -259,7 +308,9 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
               vc: voucher_price,
               money: parseInt(((data.buyer_paid_amount) * 100) / 100) - voucher_price,
               shipping_fee: parseInt(((data.shipping_fee) * 100) / 100),
-              id: doc.id
+              id: doc.id,
+              status: data.own_status.status,
+              traceno: data.shipping_traceno
             }
             resOrdersn.push(obj)
           })
@@ -267,7 +318,9 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
           obj = {
             money: "chua co trong Firestore",
             shipping_fee: "chua co trong Firestore",
-            id: ""
+            id: "",
+            status: "chua co trong Firestore",
+            traceno: "chua co trong Firestore"
           }
           resOrdersn.push(obj)
         }
@@ -303,7 +356,7 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
           id: doc.id,
           traceno: data.shipping_traceno,
           shipping_fee: ((data.shipping_fee * 100) / 100).toLocaleString(),
-          status: data.own_status,
+          status: data.own_status.status,
           user_paid: ((data.buyer_paid_amount * 100) / 100).toLocaleString()
         })
       } else {
@@ -363,7 +416,9 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
       }
       delete val['bundle-deals'];
       delete val['users'];
-      val.own_status = "NEW"
+      val.own_status = {
+        status: "NEW",
+        create_at: new Date()}
       val.user = user
       val.create_at = new Date();
       val.note = "";
@@ -421,7 +476,8 @@ app.controller('mainCtrl', function ($scope, request_center, helper_center) {
           check: "update",
           note: data.note,
           user: data.user.name,
-          money: data.buyer_paid_amount
+          money: data.buyer_paid_amount,
+          status: data.own_status.status
         })
       } else {
         console.log("No such document!");

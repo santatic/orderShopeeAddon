@@ -12,12 +12,38 @@
     </div>
 </div>
 <div class="col-md-2" style="background: #fff">
-    <p><b>Tổng tiền Shopee trả: </b> <a id="shpm"></a> vnđ</p>
-    <p>-</p>
-    <p style="border-bottom: #c1c1c1 solid 1px; padding-bottom: 18px;"><b>Tổng tiền dự kiến thu: </b><a id="ownm"></a> vnđ</p>
-    <b><a id="offset"></a> vnđ</b>
     <p>
-        <button type="button" class="btn btn-primary update">CẬP NHẬT</button>
-    </p>
-</div>
+        <b>Tổng tiền Shopee trả: </b>
+        <a id="shpm"></a> vnđ</p>
+    <p>-</p>
+    <p style="border-bottom: #c1c1c1 solid 1px; padding-bottom: 18px;">
+        <b>Tổng tiền dự kiến thu: </b>
+        <a id="ownm"></a> vnđ</p>
+    <b>
+        <a id="offset"></a> vnđ</b>
 
+    <p class="input-group">
+        <input type="text" class="form-control" uib-datepicker-popup ng-model="dt" is-open="popup2.opened" datepicker-options="dateOptions"
+            ng-required="true" close-text="Close" id="datepicker" />
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open2()">
+                <i class="glyphicon glyphicon-calendar"></i>
+            </button>
+        </span>
+    </p>
+    <p>
+        <label id="bank">Chọn Ngân Hàng</label>
+        <select class="form-control" name="" id="selectStatus">
+            <option></option>
+            <option>VIB</option>
+            <option>BIDV</option>
+            <option>VietcomBank</option>
+            <option>Tiền mặt</option>
+
+        </select>
+    </p>
+    <p>
+        <button disabled type="button" class="btn btn-primary update">CẬP NHẬT</button>
+    </p>
+    <p id="loading"></p>
+</div>

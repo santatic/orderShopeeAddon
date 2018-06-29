@@ -1,7 +1,7 @@
 <div style="display: inline;position: fixed;bottom: 0px;left: 0px;z-index: 999;">
-        <div class="panel-body">
-                <button ng-click="print()" class="btn btn-primary noprint" id="print">IN ĐƠN</button>
-        </div>
+    <div class="panel-body">
+        <button ng-click="print()" class="btn btn-primary noprint" id="print">IN ĐƠN</button>
+    </div>
 </div>
 
 
@@ -81,13 +81,16 @@
                         </tr>
                         <tr>
                             <td>{{orderId}}</td>
-                            <td> <a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{urlId}}">{{urlId}}</a></td>
+                            <td>
+                                <a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{urlId}}">{{urlId}}</a>
+                            </td>
                             <td>{{pay}} COD</td>
                         </tr>
                         <tr>
-                            <td>{{name}}</td>
-                            <td>{{address}}</td>
                             <td id="qrcode">
+                                <td>{{name}}</td>
+                                <td>{{address}}</td>
+
                             </td>
                         </tr>
                     </tbody>

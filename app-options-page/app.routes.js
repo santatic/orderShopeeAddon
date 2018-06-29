@@ -30,6 +30,12 @@ app.config(function($routeProvider) {
     }).when("/exportcode-list", {
         templateUrl : "app-options-page/components/exports/exportsView.html",
         controller : "exports-controller"
+    }).when("/import/:id", {
+        templateUrl : "app-options-page/components/import-detail/importView.html",
+        controller : "import-controller"
+    }).when("/importcode-list", {
+        templateUrl : "app-options-page/components/imports/importsView.html",
+        controller : "imports-controller"
     });;
 
 });

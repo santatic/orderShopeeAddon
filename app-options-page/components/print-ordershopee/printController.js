@@ -117,7 +117,9 @@ app.controller("print-controller", function ($scope, $routeParams, moment) {
             var names = selectedExpTags.map(x => arrayFilter.find(y => y.vietnamese === x).english)
             console.log(names);
             docRef.update({
-                "own_status": names[0]
+                "own_status": {
+                    status: names[0],
+                    create_at: new Date()}
             }).then(function () {
                 console.log("done");
                 $('label#status').text(valueSelected)
@@ -152,7 +154,7 @@ app.controller("print-controller", function ($scope, $routeParams, moment) {
                 });
                 console.log(products);
                 $scope.products = products;
-                var selectedExpTags = [data.own_status];
+                var selectedExpTags = [data.own_status.status];
                 var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese)
                 $scope.status = names[0];
                 $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
@@ -185,14 +187,14 @@ app.controller("print-controller", function ($scope, $routeParams, moment) {
                 window.close()
             }
             $scope.$apply()
-        }).then(() => {
-
-        // $("tr:nth-child(n + 6)").css({
-        //     "display": "none"
-        // });
-        // if (products.length > 5) {
-        //     $("#products").append("<span style='color:red; padding-left: 10px;' >một số sản phẩm được ẩn đi do quá nhiều (" + products.length + " sp)</span>")
-        // }
-    })
+        }).catch(function(error) {
+            new Noty({
+                layout: 'bottomRight',
+                timeout: 5000,
+                theme: "relax",
+                type: 'error',
+                text: error
+              }).show();
+        });
 
 });

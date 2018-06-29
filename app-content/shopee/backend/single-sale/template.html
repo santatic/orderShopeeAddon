@@ -1,5 +1,25 @@
 <div class="panel panel-default panel-1688-shopee" ng-controller="item-shopee-saleCtrl" id="addTaskModal">
-    <div class="panel-body">
-        <a href={{printLink}} target="_blank"><button class="btn btn-success" id="print">THEO DÕI</button></a> 
+    <div class="panel-body" ng-show="showSelect">
+        <label id="status">{{status}}</label>
+        <select class="form-control" name="" id="selectStatus">
+            <option></option>
+            <option>Đơn mới</option>
+            <option>Đủ hàng</option>
+            <option>Thiếu hàng</option>
+            <option>Đã đóng gói</option>
+            <option>Đã gửi đi</option>
+            <option>Khách đã nhận</option>
+            <option>Đang hoàn hàng</option>
+            <option>Đã hoàn về kho</option>
+            <option>Đã thanh toán</option>
+            <option>Đã hoàn tiền</option>
+            <option>Đã hủy</option>
+        </select>
     </div>
+    <div class="panel-body">
+        <a href={{printLink}} target="_blank">
+            <button class="btn btn-success" id="print">THEO DÕI</button>
+        </a>
+    </div>
+
 </div>

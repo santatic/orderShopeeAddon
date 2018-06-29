@@ -3,8 +3,9 @@ app.controller("export-controller", ordersController)
 
 ordersController.$inject = ['$scope', '$timeout', 'moment', '$routeParams', 'uiGridConstants', 'helper'];
 
-function ordersController($scope, $timeout, moment, $routeParams,  uiGridConstants, helper) {
+function ordersController($scope, $timeout, moment, $routeParams, uiGridConstants, helper) {
     $scope.loading = true;
+    $scope.cancel = true
     var id = $routeParams.id
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
@@ -95,17 +96,13 @@ function ordersController($scope, $timeout, moment, $routeParams,  uiGridConstan
                 enableCellEdit: false,
                 field: "paid",
                 width: '100'
-            }, {
-                name: "Nhà vận chuyển",
-                width: "150",
-                field: "carrier"
             },
             {
                 name: "Shipping Fee",
                 enableCellEdit: false,
                 width: '100',
                 field: "shippingFee"
-            },            
+            },
             {
                 name: "Status Shopee",
                 enableCellEdit: false,
@@ -191,57 +188,110 @@ function ordersController($scope, $timeout, moment, $routeParams,  uiGridConstan
     // angular.element(document.getElementsByClassName('grid')[0]).css('height', '900px');
     $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
 
-    $scope.options.gridMenuCustomItems = [{
-        title: "IN ĐƠN",
-        action: function () {
-            var selected = $scope.gridApi.selection.getSelectedRows();
-            console.log(selected);
-            $.each(selected, function (i, value) {
-                var selectedExpTags = [parseInt(value.ownStatus)];
-                var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                value.own_Status = names[0];
-            })
-            console.log(selected);
-            $scope.rowSelected = selected;
-            // window.onload = function () {
-            selected.forEach(function (val) {
-                console.log(val.id);
-                var timer = setInterval(function () {
-                    if (($("#" + val.id)).length) {
-                        clearInterval(timer)
-                        var qrcode = new QRCode(document.getElementById(val.id), {
-                            width: 100,
-                            height: 100,
-                            correctLevel: QRCode.CorrectLevel.H
-                        });
+    $('select#selectStatus').on('change', function (e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        
+        if (!valueSelected) {
 
-                        function makeCode() {
-                            qrcode.makeCode(val.id);
-                        }
-                        makeCode();
-                    }
+        } else {
+            console.log(valueSelected);
+            if (valueSelected == "CANCEL") {
+                console.log("cancel");
+                var docRef = firestore.collection("orderShopee").where("exportId", "==", id);
+                docRef.get().then(
+                    function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                            firestore.collection("orderShopee").doc(doc.id).update({
+                                "exportId": ""
+                            })
+                        })
+                    }).then(function () {
+                    new Noty({
+                        layout: 'bottomRight',
+                        timeout: 2000,
+                        theme: "relax",
+                        type: 'success',
+                        text: 'ĐÃ HỦY PHIẾU'
+                    }).show();
+                    $('label#status').text("ĐÃ HỦY")
+                    $scope.cancel= false
+                    $scope.$apply()
                 })
 
+            } else {
+                firestore.collection("exportCode").doc(id).update({
+                    "status": valueSelected
+                }).then(function () {
+                    console.log("done");
+                    $('label#status').text(valueSelected)
+                    new Noty({
+                        layout: 'bottomRight',
+                        timeout: 2000,
+                        theme: "relax",
+                        type: 'success',
+                        text: 'ĐÃ CẬP NHẬT TRẠNG THÁI CỦA PHIẾU'
+                    }).show();
+                })
+            }
 
-            })
-            // }
+        }
 
+    });
+
+    $scope.options.gridMenuCustomItems = [{
+        title: "IN PHIẾU XUẤT",
+        action: function () {
+            $('#haveQR').append('<td id="qrcode"></td>')
+            $scope.id = id;
+            var qrcode = new QRCode("qrcode", {
+                width: 100,
+                height: 100,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            function makeCode() {
+                qrcode.makeCode(id);
+            }
+            makeCode();
             $timeout(function () {
                 window.print();
-                $scope.rowSelected = []
+                $('#qrcode').remove()
             }, 500)
         }
-    
+
     }]
 
     $scope.options.multiSelect = true;
     var sources = []
-console.log(id);    
+    var arrTraceno = []
+    firestore.collection("exportCode").doc(id).get().then(function (doc) {
+        const data = doc.data()
+        $scope.shipperName = data.shipper;
+        $scope.status = data.status
+        $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
+        $scope.$apply()
+    })
+    $('#shipperName').keyup(function (eventObj) {
+        if (eventObj.which == 13) {
+            firestore.collection("exportCode").doc(id).update({
+                "shipper": $(this).val()
+            }).then(function () {
+                new Noty({
+                    layout: 'bottomRight',
+                    timeout: 2000,
+                    theme: "relax",
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT TÊN NGƯỜI NHẬN HÀNG'
+                }).show();
+            })
+        }
+    });
     var docRef = firestore.collection("orderShopee").where("exportId", "==", id);
     docRef.get().then(
         function (querySnapshot) {
-            console.log(querySnapshot.size);
             querySnapshot.forEach(function (doc) {
+
                 const myData = doc.data();
                 // console.log(myData);
                 ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
@@ -250,15 +300,19 @@ console.log(id);
                     id: doc.id,
                     trackno: myData.shipping_traceno,
                     nickname: myData.user.name + " - " + myData.buyer_address_name,
-                    paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                     carrier: myData.actual_carrier,
+                    paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                     shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
                     status: myData.logistic["logistics-logs"][0].description,
                     updateTime: ctime,
-                    ownStatus: myData.own_status
+                    ownStatus: myData.own_status.status
                 }
                 sources.push(obj)
+                arrTraceno.push(obj.trackno)
             })
+            $scope.carrier = sources[0].carrier
+            $scope.arrTraceno = arrTraceno
+            $scope.size = querySnapshot.size
             $scope.data = sources
             $scope.options.data = $scope.data;
             $scope.loading = false

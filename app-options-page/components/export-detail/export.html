@@ -1,5 +1,51 @@
 <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
-<div>
-    <div id="grid1" ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-cellnav ui-grid-pagination ui-grid-edit
-    class="grid"></div>
+<div class="noprint">
+    <div class="col-md-9">
+        <div>
+            <div id="grid1" ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-cellnav ui-grid-pagination ui-grid-edit
+                class="grid"></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <ul class="list-group" style="font-size: 20px;">
+            <li class="list-group-item">Số Lượng:
+                <span id="size" >{{size}}</span> đơn</li>
+            <li class="list-group-item">Người nhận:
+                <input type="text" name="" id="shipperName" value="{{shipperName}}">
+            </li>
+            <li class="list-group-item">Ngày tạo:
+                <span id="date">{{date}}</span>
+            </li>
+        </ul>
+        <label id="status">{{status}}</label>
+        <select ng-show="cancel" class="form-control" name="" id="selectStatus">
+            <option></option>
+            <option>MỚI</option>
+            <option>ĐÃ GIAO</option>
+            <option value="CANCEL">HỦY PHIẾU</option>
+        </select>
+    </div>
+</div>
+<div class="print">
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td>{{id}}</td>
+                <td>{{carrier}}</td>
+                <td>{{date}}</td>
+            </tr>
+            <tr id="haveQR">
+                <td>Người giao:</td>
+                <td>
+                    SỐ LƯỢNG: <b>{{size}}</b> ĐƠN
+                    <p>Người nhận:</p>
+                </td>                
+            </tr>
+        </tbody>
+    </table>
+    <ul class="list-group" style="columns: 2; border-bottom: none">
+        <li ng-repeat="x in arrTraceno" class="list-group-item">
+            <b>{{x}}</b>
+        </li>
+    </ul>
 </div>
