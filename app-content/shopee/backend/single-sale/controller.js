@@ -1,5 +1,6 @@
-app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
-    function ($scope, moment) {
+app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
+    function ($scope, moment, Chat) {
+        Chat.getSuggests() 
 
         $scope.showSelect = false
         $scope.showOption = true

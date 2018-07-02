@@ -15,7 +15,7 @@
             <li ng-repeat="x in data" class="list-group-item">
                 <span>{{x.size}} đơn {{x.status}}</span>
                 <span class="pull-right">
-                    <button ng-click="update(x.status)" type="button" class="btn btn-success">&#8634;</button>
+                    <button id="update" ng-click="update(x.status)" type="button" class="btn btn-success">&#8634;</button>
                 </span>
             </li>
         </ul>

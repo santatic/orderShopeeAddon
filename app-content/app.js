@@ -13,10 +13,61 @@ app.config(function ($compileProvider) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);
 });
 
-// app.factory('Chat', function () {
-    // var states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Dakota", "North Carolina", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"];
-//     return states;
-// })
+app.service('Chat', function () {
+    this.getSuggests = function () {
+        var states = []
+        chrome.storage.local.get('suggests', function (keys) {
+            keys.suggests.forEach(function (val) {
+                states.push(val.suggest_chat)
+            })
+        })
+        // var states = Chat;
+        var timer = setInterval(function () {
+
+            var input = $('.shopee-chat-root .chat-panel textarea')
+            input.keyup(function () {
+                $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+            })
+
+            if (input.length && (states.length > 0)) {
+
+                // $('div.chat-panel').prepend('<div class="suggest"></div>')
+
+                console.log("here");
+
+                clearInterval(timer)
+
+                input.autocomplete({
+                    delay: 100,
+                    minLength: 1,
+                    source: states,
+                    appendTo: 'div.chat-content',
+                    // focus: function (event, ui) {
+                    //     // prevent autocomplete from updating the textbox
+                    //     event.preventDefault();
+                    // },
+                    // select: function (event, ui) {
+                    //     // alert(input.val());
+                    //     console.log(ui.item.value)
+                    // }
+                }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                    // console.log(item.label);
+
+                    $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+
+                    return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
+
+                };
+
+
+
+            } else {
+                console.log("notyet");
+            }
+        }, 500)
+    }
+
+})
 
 app.factory('dataService', function () {
     // var users = [
