@@ -110,11 +110,15 @@ app.service('helper', function () {
   }
 })
 
-app.controller("header-controller", ['$scope', '$location', function ($scope, $location, $firebaseObject) {
+app.controller("header-controller", ['$scope', '$location', '$rootScope', function ($scope, $location,$rootScope, $firebaseObject) {
   $scope.isActive = function (route) {
     return route === $location.path();
   }
-
+  chrome.storage.local.get('data', function (keys) {    
+    $rootScope.$apply(function () {
+      $rootScope.dataOrders = keys.data
+    });
+  })
   $scope.isDisabled = false;
 
   $scope.init = function () {

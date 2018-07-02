@@ -35,26 +35,27 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="form-group noprint">
-                <label id="status">{{status}}</label>
-                <select class="form-control" name="" id="selectStatus">
-                    <option></option>
-                    <option>Đơn mới</option>
-                    <option>Đủ hàng</option>
-                    <option>Thiếu hàng</option>
-                    <option>Đã đóng gói</option>
-                    <option>Đã gửi đi</option>
-                    <option>Khách đã nhận</option>
-                    <option>Đang hoàn hàng</option>
-                    <option>Đã hoàn về kho</option>
-                    <option>Đã thanh toán</option>
-                    <option>Đã hoàn tiền</option>
-                    <option>Đã hủy</option>
+            <div class="form-group-status noprint">
+                    <div class="radio">
+                            <input type="radio" ng-model="statusRadio" value="NEW">ĐƠN MỚI    
+                    </div>
+                    <div class="radio">
+                            <input type="radio" ng-model="statusRadio" value="PACKED">ĐÃ ĐÓNG GÓI
+                    </div>
+                    <div class="radio">
+                            <input type="radio" ng-model="statusRadio" value="SHIPPED">ĐÃ GỬI ĐI
+                    </div>
+                    <div class="radio">
+                            <input type="radio" ng-model="statusRadio" value="DELIVERED">KHÁCH ĐÃ NHẬN
+                    </div>
+                    <!-- <div class="radio">
+                            <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
+                    </div> -->
                 </select>
                 <br>
                 <div class="card">
                     <div class="card-body">
-                        <textarea placeholder="Nhập note tại đây" class="form-control" rows="3" id="noteEdit"></textarea>
+                        <textarea  ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="3" id="noteEdit">{{note}}</textarea>
                         <div class="btn-group" style="margin-top: 10px; float: right">
                             <button id="saveNote" class="btn btn-success" style="margin-right: 10px">SAVE</button>
                             <button id="cancelNote" class="btn btn-danger">CANCEL</button>

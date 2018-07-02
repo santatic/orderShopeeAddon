@@ -1,4 +1,4 @@
-app.controller("print-controller", function ($scope, $routeParams, moment) {
+app.controller("print-controller", function ($scope, $rootScope, $routeParams, moment) {
 
     var arrayFilter = [{
             id: 1,
@@ -73,20 +73,18 @@ app.controller("print-controller", function ($scope, $routeParams, moment) {
         })
     }
 
-    $scope.print = function(){
+    $scope.print = function () {
         window.print()
     }
 
     var saleUrl = chrome.extension.getURL("options.html#/");
-
-    docRef = firestore.collection("orderShopee").doc(id);
 
     $('button#saveNote').click(function () {
         var note = $('#noteEdit').val();
         if (!note) {
 
         } else {
-            docRef.update({
+            firestore.collection("orderShopee").doc(id).update({
                 "note": note
             }).then(function () {
                 console.log("done");
@@ -99,6 +97,7 @@ app.controller("print-controller", function ($scope, $routeParams, moment) {
                 chrome.notifications.create("notify", options, callback);
 
                 function callback() {}
+                location.reload()
             })
         }
     })
@@ -106,95 +105,114 @@ app.controller("print-controller", function ($scope, $routeParams, moment) {
         $('#noteEdit').val("")
     })
 
-    $('select#selectStatus').on('change', function (e) {
-        var optionSelected = $("option:selected", this);
-        var valueSelected = this.value;
-        console.log(valueSelected);
-        if (!valueSelected) {
-
-        } else {
-            var selectedExpTags = [valueSelected];
-            var names = selectedExpTags.map(x => arrayFilter.find(y => y.vietnamese === x).english)
-            console.log(names);
-            docRef.update({
-                "own_status": {
-                    status: names[0],
-                    create_at: new Date()}
-            }).then(function () {
-                console.log("done");
-                $('label#status').text(valueSelected)
-            })
-        }
+    $('.form-group-status input:radio').change(function (e) {
+        console.log((this.value));
+        var selectedExpTags = [this.value];
+        var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
+        console.log(names);
+        var n = new Noty({
+            layout: 'topLeft',
+            theme: "relax",
+            type: 'warning',
+            text: 'ĐANG THAY ĐỔI TRẠNG THÁI....'
+        }).show();
+        firestore.collection("orderShopee").doc(id).update({
+            "own_status": {
+                status: names[0],
+                create_at: new Date()
+            }
+        }).then(function () {
+            new Noty({
+                layout: 'topLeft',
+                timeout: 2000,
+                theme: "relax",
+                type: 'success',
+                text: 'TRẠNG THÁI ĐƠN ĐÃ ĐƯỢC CẬP NHẬT'
+            }).show();
+            n.close()
+        })
 
     });
-
-
-    docRef.get().then(
-        function (doc) {
-            if (doc.exists) {
-                const data = doc.data();
-                console.log(data.own_status);
-                $scope.trackingNo = data.shipping_traceno;
-                $scope.nickName = data.user.name;
-                data['order-items'].forEach((item, index) => {
-                    console.log(item.snapshotid + " = " + item.modelid);
-                    let product = data['products'].find(o => o.id === item.snapshotid);
-                    console.log(product);
-                    // let productImage = data['products'].find(o => o.id === item.images[0]);
-                    let model = data['item-models'].find(o => o.id === item.modelid)
-                    var productsObj = new Object();
-                    productsObj = {
-                        name: product.name,
-                        model: model.name,
-                        amount: item.amount,
-                        imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"
-
-                    }
-                    products.push(productsObj)
-                });
-                console.log(products);
-                $scope.products = products;
-                var selectedExpTags = [data.own_status.status];
-                var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese)
-                $scope.status = names[0];
-                $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
-                $scope.carrier = data.actual_carrier
-                $scope.name = data.buyer_address_name;
-                $scope.address = data.shipping_address;
-                $scope.phone = data.buyer_address_phone;
-                $scope.orderId = data.ordersn;
-                $scope.urlId = id;
-                $scope.logistics = data.logistic['logistics-logs'][0].description
-                $scope.pay = ((data.buyer_paid_amount) * 100 / 100).toLocaleString();
-                $scope.note = data.note;
-                $scope.showNote = false;
-                if ($scope.note) {
-                    $scope.showNote = true
-                } else {
-                    $scope.showNote = false
-                }
-                var qrcode = new QRCode("qrcode", {
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-
-                function makeCode() {
-                    qrcode.makeCode(id);
-                }
-                makeCode();
-
-            } else {
-                alert("Đơn này chưa có trong database");
-                window.close()
-            }
-            $scope.$apply()
-        }).catch(function(error) {
+    chrome.storage.local.get('data', function (keys) {
+        dataOrders = keys.data
+        var found = dataOrders.some(function (el) {
+            return el.id == id;
+        });
+        if (found) {
+            let index = dataOrders.findIndex(x => x.id == id)
+            getDetail(dataOrders[index])
+        } else {
             new Noty({
                 layout: 'bottomRight',
                 timeout: 5000,
                 theme: "relax",
-                type: 'error',
-                text: error
-              }).show();
+                type: 'success',
+                text: 'ĐƠN NÀY ĐƯỢC GỌI TRỰC TIẾP TỪ FIRESTORE'
+            }).show();
+            firestore.collection("orderShopee").doc(id).get().then(function (doc) {
+                getDetail(doc.data())
+            })
+        }
+    })
+
+    function getDetail(data) {
+        // const data = dataOrders[index]
+        // console.log(data.own_status);
+        $scope.trackingNo = data.shipping_traceno;
+        $scope.nickName = data.user.name;
+        data['order-items'].forEach((item, index) => {
+            // console.log(item.snapshotid + " = " + item.modelid);
+            let product = data['products'].find(o => o.id === item.snapshotid);
+            // console.log(product);
+            // let productImage = data['products'].find(o => o.id === item.images[0]);
+            let model = data['item-models'].find(o => o.id === item.modelid)
+            var productsObj = new Object();
+            productsObj = {
+                name: product.name,
+                model: model.name,
+                amount: item.amount,
+                imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"
+
+            }
+            products.push(productsObj)
         });
+        // console.log(products);
+        $scope.products = products;
+        var selectedExpTags = [data.own_status.status];
+        var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
+        $scope.statusRadio = names[0]
+        $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
+        $scope.carrier = data.actual_carrier
+        $scope.name = data.buyer_address_name;
+        $scope.address = data.shipping_address;
+        $scope.phone = data.buyer_address_phone;
+
+        $scope.orderId = data.ordersn;
+        $scope.urlId = id;
+        $scope.logistics = data.logistic['logistics-logs'][0].description
+        $scope.pay = ((data.buyer_paid_amount) * 100 / 100).toLocaleString();
+        $scope.note = data.note;
+        $scope.showNote = false;
+        if ($scope.note) {
+            $scope.showNote = true
+        } else {
+            $scope.showNote = false
+        }
+        var qrcode = new QRCode("qrcode", {
+            width: 100,
+            height: 100,
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        function makeCode() {
+            qrcode.makeCode(id);
+        }
+        makeCode();
+        $scope.$apply()
+    }
+
+
+
+
 
 });

@@ -140,6 +140,9 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
     $scope.cancelSuggest = function () {
         $('input#suggest').val("")
     }
+    chrome.storage.local.get('data', function (keys) {
+        console.log(keys);
+    });
 
     chrome.storage.sync.get( /* String or Array */ ["configuration"], function (items) {
         console.log(items);

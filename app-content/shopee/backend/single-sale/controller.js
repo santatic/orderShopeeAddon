@@ -2,7 +2,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
     function ($scope, moment) {
 
         $scope.showSelect = false
-
+        $scope.showOption = true
         var arrayFilter = [{
                 id: 1,
                 english: "NEW",
@@ -67,7 +67,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
     
             } else {
                 var selectedExpTags = [valueSelected];
-                var names = selectedExpTags.map(x => arrayFilter.find(y => y.vietnamese === x).english)
+                var names = selectedExpTags.map(x => arrayFilter.find(y => y.vietnamese === x).id)
                 console.log(names);
                 chrome.runtime.sendMessage({
                     mission: "updateStatusFromShopee",
@@ -135,6 +135,9 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment',
                 var selectedExpTags = [response.status];
                 var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese)
                 $scope.status = names[0]
+                if(response.status == "PAID"){
+                    $scope.showOption = false
+                }
                 $scope.$apply()
                 chrome.runtime.sendMessage({
                     mission: "update",

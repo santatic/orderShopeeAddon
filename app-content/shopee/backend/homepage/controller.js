@@ -2,64 +2,55 @@ app.controller("logisticCtrl", ['$scope',
     function ($scope) {
 
         chrome.runtime.sendMessage({
-            mission: "getSuggest"}, function(response){
-                console.log(response.suggests);
-                var states = response.suggests;
-                var timer = setInterval(function () {
+            mission: "getSuggest"
+        }, function (response) {
+            console.log(response.suggests);
+            var states = response.suggests;
+            var timer = setInterval(function () {
 
-                    var input = $('.shopee-chat-root .chat-panel textarea')
-                    input.keyup(function () {
+                var input = $('.shopee-chat-root .chat-panel textarea')
+                input.keyup(function () {
+                    $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+                })
+
+                if (input.length) {
+
+                    // $('div.chat-panel').prepend('<div class="suggest"></div>')
+
+                    console.log("here");
+
+                    clearInterval(timer)
+
+                    input.autocomplete({
+                        delay: 100,
+                        minLength: 1,
+                        source: states,
+                        appendTo: 'div.chat-content',
+                        // focus: function (event, ui) {
+                        //     // prevent autocomplete from updating the textbox
+                        //     event.preventDefault();
+                        // },
+                        // select: function (event, ui) {
+                        //     // alert(input.val());
+                        //     console.log(ui.item.value)
+                        // }
+                    }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                        // console.log(item.label);
+
                         $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
-                    })
-        
-                    if (input.length) {
-        
-                        // $('div.chat-panel').prepend('<div class="suggest"></div>')
-        
-                        console.log("here");
-        
-                        clearInterval(timer)
-        
-                        input.autocomplete({
-                            delay: 100,
-                            minLength: 1,
-                            source: states,
-                            appendTo: 'div.chat-content',
-                            // focus: function (event, ui) {
-                            //     // prevent autocomplete from updating the textbox
-                            //     event.preventDefault();
-                            // },
-                            // select: function (event, ui) {
-                            //     // alert(input.val());
-                            //     console.log(ui.item.value)
-                            // }
-                        }).data("ui-autocomplete")._renderItem = function (ul, item) {
-                            // console.log(item.label);
-        
-                            $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
-        
-                            return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
-        
-                        };      
-        
-        
-                        
-                    } else {
-                        console.log("notyet");
-                    }
-                }, 500)
-        
-            })
 
-        
+                        return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
 
-        console.log("hi");
-       
-
-        // $scope.selected = undefined;
-        // $scope.states = Chat;
+                    };
 
 
+
+                } else {
+                    console.log("notyet");
+                }
+            }, 500)
+
+        })
 
 
         function httpGet(theUrl, headers) {
@@ -154,7 +145,6 @@ app.controller("logisticCtrl", ['$scope',
             var updateLogShopee = []
             var selectedExpTags = [status];
             var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
-            console.log(names[0]);
             $.each(names[0], function (i, val) {
                 // console.log(val.logistics);
                 var sub = "Đã giao hàng"
@@ -163,14 +153,19 @@ app.controller("logisticCtrl", ['$scope',
                 } else {
                     var data = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [])
                     // console.log(data);
-                    var obj = new Object()
-                    obj = {
-                        id: val.id,
-                        log: data
+                    if (val.logistics !== data) {
+                        var obj = new Object()
+
+                        obj = {
+                            id: val.id,
+                            log: data
+                        }
+                        updateLogShopee.push(obj)
                     }
-                    updateLogShopee.push(obj)
+
                 }
             })
+            console.log(updateLogShopee);
 
             chrome.runtime.sendMessage({
                 mission: "updateLogFromContent",
