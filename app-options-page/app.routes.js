@@ -36,6 +36,9 @@ app.config(function($routeProvider) {
     }).when("/importcode-list", {
         templateUrl : "app-options-page/components/imports/importsView.html",
         controller : "imports-controller"
+    }).when("/products", {
+        templateUrl : "app-options-page/components/products/productsView.html",
+        controller : "products-controller"
     });;
 
 });

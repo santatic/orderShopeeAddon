@@ -1,8 +1,8 @@
 firebase.initializeApp({
-  apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
-  projectId: "nguoitimship"
-  // apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
-  // projectId: "shopngocanh-2018"
+  // apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
+  // projectId: "nguoitimship"
+  apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
+  projectId: "shopngocanh-2018"
 });
 // Initialize Cloud Firestore through Firebase
 const firestore = firebase.firestore();
@@ -146,78 +146,78 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
 
   request_center.request_trigger()
 
-  firestore.collection("orderShopee").where("own_status.status", "<", 7)
-    .onSnapshot(function (snapshot) {
-      console.log("connected");
-      snapshot.docChanges.forEach(function (change, i) {
-        var obj = change.doc.data()
-        if (change.type === "added") {
-          var found = dataOnSnapshot.some(function (el) {
-            return el.id == obj.id;
-          });
-          if (!found) {
-            // console.log("added", obj);
-            dataOnSnapshot.push(obj)
-          }
+  // firestore.collection("orderShopee").where("own_status.status", "<", 7)
+  //   .onSnapshot(function (snapshot) {
+  //     console.log("connected");
+  //     snapshot.docChanges.forEach(function (change, i) {
+  //       var obj = change.doc.data()
+  //       if (change.type === "added") {
+  //         var found = dataOnSnapshot.some(function (el) {
+  //           return el.id == obj.id;
+  //         });
+  //         if (!found) {
+  //           // console.log("added", obj);
+  //           dataOnSnapshot.push(obj)
+  //         }
 
-        }
-        if (change.type === "modified") {
-          let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-          // console.log("modified", obj);
-          dataOnSnapshot[index] = obj
-        }
-        // console.log(change);
-        if (change.type === "removed") {
-          let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-          // console.log("removed", obj);
-          dataOnSnapshot.splice(index, 1);
-          // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-          // dataOnSnapshot[index] = obj
-        }
-        if ((i + 1) == snapshot.docChanges.length) {
-          $scope.storageFirestore.data = dataOnSnapshot
-          $scope.storageFirestore.syncOrders()
-        }
-      });
-    })
-
-
+  //       }
+  //       if (change.type === "modified") {
+  //         let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+  //         // console.log("modified", obj);
+  //         dataOnSnapshot[index] = obj
+  //       }
+  //       // console.log(change);
+  //       if (change.type === "removed") {
+  //         let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+  //         // console.log("removed", obj);
+  //         dataOnSnapshot.splice(index, 1);
+  //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+  //         // dataOnSnapshot[index] = obj
+  //       }
+  //       if ((i + 1) == snapshot.docChanges.length) {
+  //         $scope.storageFirestore.data = dataOnSnapshot
+  //         $scope.storageFirestore.syncOrders()
+  //       }
+  //     });
+  //   })
 
 
-  firestore.collection("suggest")
-    .onSnapshot(function (snapshot) {
-      console.log("connected");
-      snapshot.docChanges.forEach(function (change, i) {
-        var obj = change.doc.data()
-        if (change.type === "added") {
-          var found = dataSuggests.some(function (el) {
-            return el.suggest_chat == obj.suggest_chat;
-          });
-          if (!found) {
-            // console.log("added", obj);
-            dataSuggests.push(obj)
-          }
 
-        }
-        if (change.type === "modified") {
-          let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
-          console.log("modified", obj);
-          dataSuggests[index] = obj
-        }
-        // console.log(change);
-        if (change.type === "removed") {
-          let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
-          console.log("removed", obj);
-          dataSuggests.splice(index, 1);
-          // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-          // dataOnSnapshot[index] = obj
-        }
-        if ((i + 1) == snapshot.docChanges.length) {
-          $scope.storageFirestore.suggests = dataSuggests
-          $scope.storageFirestore.syncSuggests()
-        }
-      });
-    })
+
+  // firestore.collection("suggest")
+  //   .onSnapshot(function (snapshot) {
+  //     console.log("connected");
+  //     snapshot.docChanges.forEach(function (change, i) {
+  //       var obj = change.doc.data()
+  //       if (change.type === "added") {
+  //         var found = dataSuggests.some(function (el) {
+  //           return el.suggest_chat == obj.suggest_chat;
+  //         });
+  //         if (!found) {
+  //           // console.log("added", obj);
+  //           dataSuggests.push(obj)
+  //         }
+
+  //       }
+  //       if (change.type === "modified") {
+  //         let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
+  //         console.log("modified", obj);
+  //         dataSuggests[index] = obj
+  //       }
+  //       // console.log(change);
+  //       if (change.type === "removed") {
+  //         let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
+  //         console.log("removed", obj);
+  //         dataSuggests.splice(index, 1);
+  //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+  //         // dataOnSnapshot[index] = obj
+  //       }
+  //       if ((i + 1) == snapshot.docChanges.length) {
+  //         $scope.storageFirestore.suggests = dataSuggests
+  //         $scope.storageFirestore.syncSuggests()
+  //       }
+  //     });
+  //   })
 
 
 

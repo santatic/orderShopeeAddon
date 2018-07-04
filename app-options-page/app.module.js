@@ -4,11 +4,11 @@ firebase.initializeApp({
   // apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
   // projectId: "nguoitimship",
 
-  // apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
-  // projectId: "shopngocanh-2018",
+  apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
+  projectId: "shopngocanh-2018",
 
-  apiKey: "AIzaSyDQGNExQfK_QGLyGrqGZ4RE247-l3M84bA",
-  projectId: "ext-chrome-6aaac"
+  // apiKey: "AIzaSyDQGNExQfK_QGLyGrqGZ4RE247-l3M84bA",
+  // projectId: "ext-chrome-6aaac"
 });
 
 const firestore = firebase.firestore();
