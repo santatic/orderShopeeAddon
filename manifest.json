@@ -1,7 +1,7 @@
 {
     "name": "Lập Nghiệp Shop Online",
     "description": "Công cụ hỗ trợ các shop bán hàng thông minh hơn",
-    "version": "1.5",
+    "version": "1.8",
     "options_page": "options.html",
 
     "browser_action": {
@@ -76,7 +76,7 @@
     ],
     "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com ; object-src 'self'",
     "oauth2": {
-        "client_id": "340986983672-2vunr19utkfmt5sgvk575lhp9kmreoh6.apps.googleusercontent.com",
+        "client_id": "340986983672-et6re1a3agi2dr9kkqvtmhu8upmg8ljl.apps.googleusercontent.com",
         "scopes": [
           "https://www.googleapis.com/auth/userinfo.email",
           "https://www.googleapis.com/auth/userinfo.profile"

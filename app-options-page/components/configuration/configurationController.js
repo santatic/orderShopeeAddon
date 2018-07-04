@@ -106,6 +106,10 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
     docRef = firestore.collection("suggest");
 
     function getSuggest() {
+        chrome.storage.local.get('suggests', function (keys) {
+            dataOnSnapshot = keys.suggests;
+            console.log(dataOnSnapshot);
+          })
         var sources_suggest = []
         docRef.get().then(
             function (querySnapshot) {

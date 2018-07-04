@@ -21,9 +21,9 @@ app.controller("home-controller", function ($scope, moment) {
     var paidYesterday = []
     var paidSeven = []
     var paidMonth = []
-    firestore.collection('orderShopee').get().then(function (querySnapshot) {
-        querySnapshot.forEach(doc => {
-            const data = doc.data();
+    chrome.storage.local.get('data', function (keys) {
+        keys.data.forEach(doc => {
+            const data = doc
             var create_at = moment(data.create_at.seconds * 1000).format("YYYY-MM-DD").toString();
             var month = moment(data.create_at.seconds * 1000).format("YYYY-MM").toString()
             var buyer_paid = parseInt((data.buyer_paid_amount)*100)/100
@@ -49,7 +49,12 @@ app.controller("home-controller", function ($scope, moment) {
                 // console.log("yesterday: ", create_at);
                 yesterdayCount.push(doc.id)
                 paidYesterday.push(buyer_paid)
-            }            
+            }  
+        })
+    })
+    firestore.collection('orderShopee').get().then(function (querySnapshot) {
+        querySnapshot.forEach(doc => {
+                      
         });
         var sumToday = 0
         paidToday.forEach(function(num){sumToday+=num});

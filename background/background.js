@@ -104,98 +104,120 @@ var app = angular.module('app', []);
 app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_center, helper_center) {
   // helper_center.doesConnectionExist()
   $scope.storageFirestore = storageFirestore
-  // chrome.storage.local.set({
-  //   suggests: []
-  // }, function () {
-  //   console.log('Data is stored in Chrome storage');
-  //   chrome.storage.local.get('suggests', function (keys) {
-  //     console.log(keys);
-  //   });
+  //   chrome.storage.local.clear(function() {
+  //     console.log("done clear");
+  //     var error = chrome.runtime.lastError;
+  //     if (error) {
+  //         console.error(error);
+  //     }
   // });
-  request_center.request_trigger()
   var dataOnSnapshot = []
-  chrome.storage.local.get('data', function (keys) {
-    dataOnSnapshot = keys.data;
-    console.log(dataOnSnapshot);
-  })
-
-
-    firestore.collection("orderShopee").where("own_status.status", "<", 7)
-      .onSnapshot(function (snapshot) {
-        console.log("connected");
-        snapshot.docChanges.forEach(function (change, i) {
-          var obj = change.doc.data()
-          if (change.type === "added") {
-            var found = dataOnSnapshot.some(function (el) {
-              return el.id == obj.id;
-            });
-            if (!found) {
-              // console.log("added", obj);
-              dataOnSnapshot.push(obj)
-            }
-
-          }
-          if (change.type === "modified") {
-            let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-            // console.log("modified", obj);
-            dataOnSnapshot[index] = obj
-          }
-          // console.log(change);
-          if (change.type === "removed") {
-            let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-            // console.log("removed", obj);
-            dataOnSnapshot.splice(index, 1);
-            // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-            // dataOnSnapshot[index] = obj
-          }
-          if ((i + 1) == snapshot.docChanges.length) {
-            $scope.storageFirestore.data = dataOnSnapshot
-            $scope.storageFirestore.syncOrders()
-          }
-        });
+  var dataSuggests = []
+  chrome.storage.local.get('data', function (obj) {
+    console.log(obj);
+    if (Object.keys(obj).length === 0) {
+      chrome.storage.local.set({
+        data: []
+      }, function () {
+        console.log('Data is stored in Chrome storage');
+      });
+      chrome.storage.local.set({
+        suggests: []
+      }, function () {
+        console.log('Suggest is stored in Chrome storage');
+      });
+      chrome.storage.local.get('data', function (obj) {
+        dataOnSnapshot = obj.data;
+        console.log(dataOnSnapshot);
       })
+      chrome.storage.local.get('suggests', function (obj) {
+        dataSuggests = obj.suggests;
+        console.log(dataSuggests);
+      })
+    } else {
+      dataOnSnapshot = obj.data;
+      console.log(dataOnSnapshot);
+      chrome.storage.local.get('suggests', function (obj) {
+        dataSuggests = obj.suggests;
+        console.log(dataSuggests);
+      })
+    }
+  });
 
-      var dataSuggests = []
-    chrome.storage.local.get('suggests', function (keys) {
-      dataSuggests = keys.suggests;
-      console.log(dataSuggests);
+  request_center.request_trigger()
+
+  firestore.collection("orderShopee").where("own_status.status", "<", 7)
+    .onSnapshot(function (snapshot) {
+      console.log("connected");
+      snapshot.docChanges.forEach(function (change, i) {
+        var obj = change.doc.data()
+        if (change.type === "added") {
+          var found = dataOnSnapshot.some(function (el) {
+            return el.id == obj.id;
+          });
+          if (!found) {
+            // console.log("added", obj);
+            dataOnSnapshot.push(obj)
+          }
+
+        }
+        if (change.type === "modified") {
+          let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+          // console.log("modified", obj);
+          dataOnSnapshot[index] = obj
+        }
+        // console.log(change);
+        if (change.type === "removed") {
+          let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+          // console.log("removed", obj);
+          dataOnSnapshot.splice(index, 1);
+          // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+          // dataOnSnapshot[index] = obj
+        }
+        if ((i + 1) == snapshot.docChanges.length) {
+          $scope.storageFirestore.data = dataOnSnapshot
+          $scope.storageFirestore.syncOrders()
+        }
+      });
     })
 
 
-    firestore.collection("suggest")
-      .onSnapshot(function (snapshot) {
-        console.log("connected");
-        snapshot.docChanges.forEach(function (change, i) {
-          var obj = change.doc.data()
-          if (change.type === "added") {
-            var found = dataSuggests.some(function (el) {
-              return el.suggest_chat == obj.suggest_chat;
-            });
-            if (!found) {
-              // console.log("added", obj);
-              dataSuggests.push(obj)
-            }
 
+
+  firestore.collection("suggest")
+    .onSnapshot(function (snapshot) {
+      console.log("connected");
+      snapshot.docChanges.forEach(function (change, i) {
+        var obj = change.doc.data()
+        if (change.type === "added") {
+          var found = dataSuggests.some(function (el) {
+            return el.suggest_chat == obj.suggest_chat;
+          });
+          if (!found) {
+            // console.log("added", obj);
+            dataSuggests.push(obj)
           }
-          if (change.type === "modified") {
-            let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
-            console.log("modified", obj);
-            dataSuggests[index] = obj
-          }
-          // console.log(change);
-          if (change.type === "removed") {
-            let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
-            console.log("removed", obj);
-            dataSuggests.splice(index, 1);
-            // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-            // dataOnSnapshot[index] = obj
-          }
-          if ((i + 1) == snapshot.docChanges.length) {
-            $scope.storageFirestore.suggests = dataSuggests
-            $scope.storageFirestore.syncSuggests()
-          }
-        });
-      })
+
+        }
+        if (change.type === "modified") {
+          let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
+          console.log("modified", obj);
+          dataSuggests[index] = obj
+        }
+        // console.log(change);
+        if (change.type === "removed") {
+          let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
+          console.log("removed", obj);
+          dataSuggests.splice(index, 1);
+          // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+          // dataOnSnapshot[index] = obj
+        }
+        if ((i + 1) == snapshot.docChanges.length) {
+          $scope.storageFirestore.suggests = dataSuggests
+          $scope.storageFirestore.syncSuggests()
+        }
+      });
+    })
 
 
 
@@ -631,19 +653,19 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     });
     if (found) {
       let index = dataOnSnapshot.findIndex(x => x.id == response.url)
-            getDetail(dataOnSnapshot[index])
+      getDetail(dataOnSnapshot[index])
     } else {
-      firestore.collection("orderShopee").doc(response.url).get().then(function(doc){
-        if(doc.exists){
+      firestore.collection("orderShopee").doc(response.url).get().then(function (doc) {
+        if (doc.exists) {
           console.log("from DB");
           getDetail(doc.data())
-        }else{
+        } else {
           console.log("No such document!");
           sendResponse({
             check: "hello"
           })
         }
-      })      
+      })
     }
 
     function getDetail(data) {
