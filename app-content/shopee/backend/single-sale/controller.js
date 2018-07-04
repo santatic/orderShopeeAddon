@@ -60,33 +60,34 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 vietnamese: "Đã hủy"
             },
         ]
-        $('select#selectStatus').on('change', function (e) {
-            var optionSelected = $("option:selected", this);
-            var valueSelected = this.value;
-            console.log(valueSelected);
-            if (!valueSelected) {
+        $('.form-group-status input:radio').change(function (e) {
+            console.log((this.value));
+            var selectedExpTags = [this.value];
+            var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
+            console.log(names);
+            var n = new Noty({
+                layout: 'bottomRight',
+                theme: "relax",
+                type: 'warning',
+                text: 'ĐANG THAY ĐỔI TRẠNG THÁI....'
+            }).show();
+            chrome.runtime.sendMessage({
+                mission: "updateStatusFromShopee",
+                url: url,
+                status: names[0]
+            }, function (response) {
+                n.close()
+                new Noty({
+                    layout: 'bottomRight',
+                    timeout: 2500,
+                    theme: "relax",
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT TRẠNG THÁI ĐƠN'
+                }).show();
+                $('label#status').text(valueSelected)
+            })            
     
-            } else {
-                var selectedExpTags = [valueSelected];
-                var names = selectedExpTags.map(x => arrayFilter.find(y => y.vietnamese === x).id)
-                console.log(names);
-                chrome.runtime.sendMessage({
-                    mission: "updateStatusFromShopee",
-                    url: url,
-                    status: names[0]
-                }, function (response) {
-                    new Noty({
-                        layout: 'bottomRight',
-                        timeout: 2500,
-                        theme: "relax",
-                        type: 'success',
-                        text: 'ĐÃ CẬP NHẬT TRẠNG THÁI ĐƠN'
-                    }).show();
-                    $('label#status').text(valueSelected)
-                })
-            }
-    
-        });
+        });        
 
         $('#linkOpenOptionsPage').click(function () {
             console.log(chrome.runtime.getURL('options.html'));
@@ -133,9 +134,8 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                     type: 'success',
                     text: 'ĐƠN ĐÃ ĐƯỢC THEO DÕI'
                 }).show();
-                var selectedExpTags = [response.status];
-                var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese)
-                $scope.status = names[0]
+                
+                $scope.statusRadio = response.status
                 if(response.status == "PAID"){
                     $scope.showOption = false
                 }
