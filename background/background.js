@@ -112,6 +112,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   //     }
   // });
   var dataOnSnapshot = []
+  var dataToAdd = []
   var dataSuggests = []
   chrome.storage.local.get('data', function (obj) {
     console.log(obj);
@@ -162,30 +163,29 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             snapshot.docChanges.forEach(function (change, i) {
               var obj = change.doc.data()
               if (change.type === "added") {
-                var found = dataOnSnapshot.some(function (el) {
-                  return el.id == obj.id;
-                });
-                if (!found) {
-                  // console.log("added", obj);
-                  dataOnSnapshot.push(obj)
-                }
+                // var found = dataOnSnapshot.some(function (el) {
+                //   return el.id == obj.id;
+                // });
+                // if (!found) {
+                  dataToAdd.push(obj)
+                // }
 
               }
               if (change.type === "modified") {
-                let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+                let index = dataToAdd.findIndex(x => x.id == obj.id)
                 // console.log("modified", obj);
-                dataOnSnapshot[index] = obj
+                dataToAdd[index] = obj
               }
               // console.log(change);
               if (change.type === "removed") {
-                let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+                let index = dataToAdd.findIndex(x => x.id == obj.id)
                 // console.log("removed", obj);
-                dataOnSnapshot.splice(index, 1);
+                dataToAdd.splice(index, 1);
                 // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
                 // dataOnSnapshot[index] = obj
               }
               if ((i + 1) == snapshot.docChanges.length) {
-                $scope.storageFirestore.data = dataOnSnapshot
+                $scope.storageFirestore.data = dataToAdd
                 $scope.storageFirestore.syncOrders()
               }
             });
@@ -285,6 +285,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           break;
         case "updateStatusFromShopee":
           updateStatusFromShopee(request, sendResponse)
+          return true
           break
       }
     });

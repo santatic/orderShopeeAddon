@@ -276,11 +276,17 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         }
     }]
 
-    $scope.options.multiSelect = true;
-    var sources = []
+    $scope.options.multiSelect = true;    
     var now = new Date
     chrome.storage.local.get('data', function (keys) {
-        var data = keys.data;
+        getData(keys.data)
+        
+    })   
+    chrome.storage.onChanged.addListener(function(changes){
+        getData(changes.data.newValue);
+    })
+    function getData(data){
+        var sources = []
         data.forEach(function (doc) {
             const myData = doc
             // console.log(myData);
@@ -353,105 +359,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     break
             }
         })
-    })
-
-    // docRef = firestore.collection("orderShopee");
-    // docRef.get().then(
-    //     function (querySnapshot) {
-
-    //         querySnapshot.forEach(function (doc) {
-    //             const myData = doc.data();
-    //             // console.log(myData);
-    //             ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
-    //             obj = new Object();
-    //             var start = new Date(myData.own_status.create_at.seconds*1000)
-    //             obj = {
-    //                 id: doc.id,
-    //                 trackno: myData.shipping_traceno,
-    //                 nickname: myData.user.name + " - " + myData.buyer_address_name,
-    //                 paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
-    //                 carrier: myData.actual_carrier,
-    //                 shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
-    //                 exId: myData.exportId,
-    //                 status: myData.logistic["logistics-logs"][0].description,
-    //                 updateTime: ctime,
-    //                 importId: myData.importMoneyId,
-    //                 ownStatus: myData.own_status.status,
-    //                 fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24))
-    //             }
-    //             sources.push(obj)
-    //         })
-
-    //         $scope.data = sources
-    //         $scope.options.data = $scope.data;
-    //         $scope.loading = false
-    //         $scope.gridApi.core.refresh();
-    //         sources.forEach(function (row, index) {
-    //             switch (row.carrier) {
-    //                 case "Giao Hàng Tiết Kiệm":
-    //                     row.carrier = 1;
-    //                     break;
-    //                 case "Viettel Post":
-    //                     row.carrier = 2
-    //                     break
-    //             }
-
-    //             switch (row.ownStatus) {
-    //                 case "NEW":
-    //                     row.ownStatus = 1
-    //                     break
-    //                 case "PREPARED":
-    //                     row.ownStatus = 2
-    //                     break
-    //                 case "UNPREPARED":
-    //                     row.ownStatus = 3
-    //                     break
-    //                 case "PACKED":
-    //                     row.ownStatus = 4
-    //                     break
-    //                 case "SHIPPED":
-    //                     row.ownStatus = 5
-    //                     break
-    //                 case "DELIVERED":
-    //                     row.ownStatus = 6
-    //                     break
-    //                 case "RETURNING":
-    //                     row.ownStatus = 7
-    //                     break
-    //                 case "RETURNED":
-    //                     row.ownStatus = 8
-    //                     break
-    //                 case "PAID":
-    //                     row.ownStatus = 9
-    //                     break
-    //                 case "REFUNDED":
-    //                     row.ownStatus = "HT"
-    //                     break
-    //                 case "CANCELED":
-    //                     row.ownStatus = "0"
-    //                     break
-    //             }
-    //             // console.log(row.ownStatus);
-    //             // var selectedExpTags = [parseInt(value.ownStatus)];
-    //             // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-    //             // value.own_Status = names[0];
-    //         })
-    //         // console.log(querySnapshot.size);
-    //     }
-    // ).then(function () {
-    //     console.log($scope);
-    //     //$scope.apply();
-    // }).catch(function (error) {
-    //     new Noty({
-    //         layout: 'bottomRight',
-    //         timeout: 5000,
-    //         theme: "relax",
-    //         type: 'error',
-    //         text: error
-    //     }).show();
-    // });
-
+    }
 }
+
+
 
 function mapCarrier() {
     var genderHash = {
