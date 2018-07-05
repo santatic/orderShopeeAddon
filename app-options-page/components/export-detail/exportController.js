@@ -191,7 +191,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     $('select#selectStatus').on('change', function (e) {
         var optionSelected = $("option:selected", this);
         var valueSelected = this.value;
-        
+
         if (!valueSelected) {
 
         } else {
@@ -207,16 +207,21 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                             })
                         })
                     }).then(function () {
-                    new Noty({
-                        layout: 'bottomRight',
-                        timeout: 2000,
-                        theme: "relax",
-                        type: 'success',
-                        text: 'ĐÃ HỦY PHIẾU'
-                    }).show();
-                    $('label#status').text("ĐÃ HỦY")
-                    $scope.cancel= false
-                    $scope.$apply()
+                    firestore.collection("exportCode").doc(id).update({
+                        "status": "HỦY PHIẾU"
+                    }).then(function () {
+                        new Noty({
+                            layout: 'bottomRight',
+                            timeout: 2000,
+                            theme: "relax",
+                            type: 'success',
+                            text: 'ĐÃ HỦY PHIẾU'
+                        }).show();
+                        $('label#status').text("ĐÃ HỦY")
+                        $scope.cancel = false
+                        $scope.$apply()
+                    })
+
                 })
 
             } else {

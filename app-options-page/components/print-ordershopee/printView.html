@@ -14,7 +14,7 @@
                         <td>
                             <div id="trackno" style="font-size: 20px;">
                                 <b>
-                                    {{trackingNo}}
+                                    {{trackingNo}}<span ng-show="showStatus > 5"> - {{statusLonhon6}}</span>
                                 </b>
                             </div>
                         </td>
@@ -36,6 +36,7 @@
                     </tr>
                 </tbody>
             </table>
+            
             <div class="form-group-status noprint">
 
                 <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="NEW">ĐƠN MỚI

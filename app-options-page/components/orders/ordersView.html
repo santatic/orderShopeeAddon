@@ -1,11 +1,11 @@
 <!-- <div class="container"> -->
 <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
 <div id="grid1" ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-cellnav ui-grid-pagination ui-grid-edit
-    class="grid noprint"></div>
+    class="grid noprint">    
+</div>
 <div class="print">
-
     <ul ng-repeat="x in rowSelected" class="list-group">
-        <div class="col-sm-6" style="display: inline-block;" >
+        <div class="col-sm-6" style="display: inline-block;">
             <li class="list-group-item">
                 ID: {{x.id}} - {{x.own_Status}}
             </li>

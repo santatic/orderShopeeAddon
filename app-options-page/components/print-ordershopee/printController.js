@@ -192,8 +192,11 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
         });
         // console.log(products);
         $scope.products = products;
+        $scope.showStatus = data.own_status.status
         var selectedExpTags = [data.own_status.status];
         var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
+        var statusLonhon6 = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+        $scope.statusLonhon6 = statusLonhon6[0]
         $scope.statusRadio = names[0]
         $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
         $scope.carrier = data.actual_carrier

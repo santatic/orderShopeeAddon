@@ -21,12 +21,13 @@ app.controller("home-controller", function ($scope, moment) {
     var paidYesterday = []
     var paidSeven = []
     var paidMonth = []
+
     chrome.storage.local.get('data', function (keys) {
         keys.data.forEach(doc => {
             const data = doc
             var create_at = moment(data.create_at.seconds * 1000).format("YYYY-MM-DD").toString();
             var month = moment(data.create_at.seconds * 1000).format("YYYY-MM").toString()
-            var buyer_paid = parseInt((data.buyer_paid_amount)*100)/100
+            var buyer_paid = parseInt((data.buyer_paid_amount) * 100) / 100
 
             if (thisMonth == month) {
                 monthCount.push(doc.id)
@@ -49,59 +50,60 @@ app.controller("home-controller", function ($scope, moment) {
                 // console.log("yesterday: ", create_at);
                 yesterdayCount.push(doc.id)
                 paidYesterday.push(buyer_paid)
-            }  
+            }
         })
-    })
-    firestore.collection('orderShopee').get().then(function (querySnapshot) {
-        querySnapshot.forEach(doc => {
-                      
-        });
         var sumToday = 0
-        paidToday.forEach(function(num){sumToday+=num});
+        paidToday.forEach(function (num) {
+            sumToday += num
+        });
         console.log(sumToday.toLocaleString());
         $scope.sumToday = sumToday
 
         var sumYes = 0
-        paidYesterday.forEach(function(num){sumYes+=num});
+        paidYesterday.forEach(function (num) {
+            sumYes += num
+        });
         $scope.sumYes = sumYes
 
         var sumSeven = 0
-        paidSeven.forEach(function(num){sumSeven+=num});
+        paidSeven.forEach(function (num) {
+            sumSeven += num
+        });
         $scope.sumSeven = sumSeven
 
         var sumMonth = 0
-        paidMonth.forEach(function(num){sumMonth+=num});
-        $scope.sumMonth = sumMonth
+        paidMonth.forEach(function (num) {
+            sumMonth += num
+        });
 
+
+        $scope.sumMonth = sumMonth
         $scope.seven = sevenCount.length
         $scope.today = todayCount.length
         $scope.yesterday = yesterdayCount.length
         $scope.month = monthCount.length
         $scope.$apply()
+        var newOrder
+        var packedOrder
+        newOrder = keys.data.filter(function (event) {
+            return event.own_status.status == 1;
+        }).length;
+        packedOrder = keys.data.filter(function (event) {
+            return event.own_status.status == 4;
+        }).length;
+
+        var timer = setInterval(function () {
+            if (newOrder > 0) {
+                $scope.donutLabels = ["ĐƠN MỚI", "ĐƠN ĐÃ ĐÓNG GÓI"];
+                $scope.donutData = [newOrder, packedOrder];
+                $scope.$apply()
+                clearInterval(timer)
+            }
+        }, 500)
+
     })
-    var newOrder
-    var packedOrder
-    var preparedOrder
-    var unpreparedOrder
-    firestore.collection('orderShopee').where("own_status", "==", "NEW").get().then(querySnapshot => {
-        newOrder = querySnapshot.size
-    })
-    firestore.collection('orderShopee').where("own_status", "==", "PACKED").get().then(querySnapshot => {
-        packedOrder = querySnapshot.size
-    })
-    firestore.collection('orderShopee').where("own_status", "==", "PREPARED").get().then(querySnapshot => {
-        preparedOrder = querySnapshot.size
-    })
-    firestore.collection('orderShopee').where("own_status", "==", "UNPREPARED").get().then(querySnapshot => {
-        unpreparedOrder = querySnapshot.size
-    })
-    var timer = setInterval(function(){
-        if (newOrder > 0) {
-            $scope.donutLabels = ["ĐƠN MỚI", "ĐƠN ĐÃ ĐÓNG GÓI", "ĐỦ HÀNG", "THIẾU HÀNG"];
-            $scope.donutData = [newOrder, packedOrder, preparedOrder, unpreparedOrder];
-            $scope.$apply()
-            clearInterval(timer)
-        }
-    },500)
-    
+
+
+
+
 });
