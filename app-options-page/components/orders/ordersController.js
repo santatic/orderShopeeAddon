@@ -289,8 +289,16 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         var sources = []
         data.forEach(function (doc) {
             const myData = doc
-            // console.log(myData);
-            ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
+       
+            if(myData.logistic["logistics-logs"].length > 0){
+                ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
+                description = myData.logistic["logistics-logs"][0].description
+            }else{
+                let date = new Date()
+                ctime = moment(date.getTime()).format('YYYY-MM-DD');
+                description = ""
+            }
+            console.log(ctime);
             obj = new Object();
             var start = new Date(myData.own_status.create_at.seconds * 1000)
             obj = { 
@@ -301,7 +309,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 carrier: myData.actual_carrier,
                 shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
                 exId: myData.exportId,
-                status: myData.logistic["logistics-logs"][0].description,
+                status: description,
                 updateTime: ctime,
                 importId: myData.importMoneyId,
                 ownStatus: myData.own_status.status,

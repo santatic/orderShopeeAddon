@@ -7,8 +7,8 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6" id="left">
-            <table class="table table-bordered">
+        <div class="col-md-6" >
+            <table id="left" class="table table-bordered">
                 <tbody>
                     <tr>
                         <td>
@@ -70,15 +70,10 @@
                 </div>
                 <br>
                 <span>
-                    
+
                 </span>
-                IN SẢN PHẨM: 
-                  <button ng-model="printProducts" ng-click="printProducts=!printProducts">{{printProducts}}</button>
 
             </div>
-
-        </div>
-        <div class="col-md-6">
             <div class="row">
                 <table class="table table-bordered">
                     <tbody>
@@ -104,8 +99,15 @@
                     </tbody>
                 </table>
             </div>
+
+        </div>
+        <div class="col-md-6">
             <div class="rowProducts row noprint" style="margin-top: 8px">
-                <table id="products" class="table table-bordered">
+                <span class="noprint">IN SẢN PHẨM:
+                    <button ng-model="printProducts" ng-click="printProducts=!printProducts">{{printProducts}}</button>
+                </span>
+
+                <table style="margin-top: 10px" id="products" class="table table-bordered">
                     <tbody>
                         <tr ng-repeat="item in products">
                             <td class="imageProduct" style="background: #fff;">
