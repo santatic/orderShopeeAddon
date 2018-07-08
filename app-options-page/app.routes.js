@@ -38,7 +38,8 @@ app.config(function($routeProvider) {
         controller : "imports-controller"
     }).when("/products", {
         templateUrl : "app-options-page/components/products/productsView.html",
-        controller : "products-controller"
+        controller : "products-controller",
+        // css: "app-options-page/components/products/productsView.css",
     });;
 
 });

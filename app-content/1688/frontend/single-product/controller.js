@@ -1,5 +1,5 @@
-app.controller("1688Ctrl", ['$scope', 'moment',
-    function ($scope, moment) {
+app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
+    function ($scope, moment, titleProducts) {
 
 
         $scope.urlToPromise = function (url) {
@@ -44,38 +44,54 @@ app.controller("1688Ctrl", ['$scope', 'moment',
             });
         }
 
+        var images = [];
+        var SKU_classify = [];
+        var id1688 = '';
         var read_data = function () {
-            var obj = new Object();
-            obj = {
-                Sku: '',
-                id: [],
-                image: [],
-            }
+            var i = 1;
             $(".mod-detail-gallery #dt-tab .nav-tabs .tab-trigger").each(function (index) {
                 if (index < 5) {
-                    var image = JSON.parse($(this).attr('data-imgs'));
-                    console.log(image.preview);
+                    images.push(JSON.parse($(this).attr('data-imgs')).preview)
                 }
             })
+            $('[data-sku-config]').each(function (index) {
+                SKU_classify.push({
+                    skuName: JSON.parse($(this).attr('data-sku-config')).skuName,
+                    skuUrl_Image: $(this).find("img").attr('src').replace('.32x32.', '.')
+                })
+            })
+            SKU_classify.map(x => {
+                x.height = 0;
+                x.long = 0;
+                x.weight = 0;
+                x.width = 0;
+                var d = new Date();
+                x.spSku = d.getTime() + i;
+                i++;
+            })
+            id1688 = $('meta[name=b2c_auction]').attr("content");
+            // console.log(SKU_classify);
         }
 
-        // tạo mới sản phẩm
-        $scope.creat_products = function () {
+        // thêm sản phẩm
+        titleProducts.getSuggests();
+        $scope.add_products = function () {
             var n = new Noty({
                 closeWith: [],
-                text: 'Product name? <input id="suggest" style="display: block" type="text">',
+                // timeout: 2000,
+                text: 'Product name? <input id="product_name" style="display: block" type="text"><div class="suggestProducts"></div>',
                 buttons: [
                     Noty.button('YES', 'btn btn-success', function () {
                         read_data();
-                        // var input = $('input#suggest').val()
-                        // if (input) {
-                        //     docRef.doc().set({
-                        //         "suggest_chat": input
-                        //     }).then(function () {
-                        //         getSuggest()
-                        //         n.close();
-                        //     })
-                        // }
+                        chrome.runtime.sendMessage({
+                            mission: "pushFirestore",
+                            SKU_name: titleProducts.getSKU()? titleProducts.getSKU(): '',
+                            images: images,
+                            id1688: id1688,
+                            SKU_classify: SKU_classify
+                        }, function (response) {
+                            n.close();
+                        })
                     }, { id: 'button1', 'data-status': 'ok' }),
 
                     Noty.button('NO', 'btn btn-error', function () {
@@ -84,11 +100,6 @@ app.controller("1688Ctrl", ['$scope', 'moment',
                     })
                 ]
             }).show();
-        }
-
-        // thêm sản phẩm vào cái có sẵn
-        $scope.add_products = function () {
-
         }
 
     }]

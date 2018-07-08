@@ -69,6 +69,74 @@ app.service('Chat', function () {
 
 })
 
+//autocomplete sản phẩm 1688
+app.service('titleProducts', function () {
+    this.SKU = '';
+    this.getSKU = function () {
+        return SKU;
+    }
+    this.getSuggests = function () {
+        var states = []
+
+        //lấy từ storage
+
+        // chrome.storage.local.get('suggests', function (keys) {
+        //     keys.suggests.forEach(function (val) {
+        //         states.push(val.suggest_chat)
+        //     })
+        // })
+        // var states = Chat;
+
+        //lấy từ firestore
+        chrome.runtime.sendMessage({
+            mission: "getProducts"
+        }, function (response) {
+            // console.log(response.data);
+            states = response.data;
+        })
+
+        var timer = setInterval(function () {
+
+            var input = $('input#product_name')
+
+            if (input.length && (states.length > 0)) {
+
+                // console.log("here");
+
+                clearInterval(timer)
+
+                input.autocomplete({
+                    delay: 100,
+                    minLength: 1,
+                    source: states.map(x => x.name),
+                    appendTo: 'div.suggestProducts',
+                    select: function (event, ui) {
+                        states.map(x => {
+                            if (x.name == ui.item.value) {
+                                SKU = x.SKU;
+                                // console.log(SKU);
+                            }
+                        })
+                    }
+                }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                    var img = '';
+                    states.map(x => {
+                        if (x.name == item.label) {
+                            img = x.image.replace('400x400', '30x30');
+                        }
+                    })
+                    return $("<li style='cursor: pointer' ><img src='" + img + "'>" + item.label + "</li>").appendTo(ul);
+                };
+            } else {
+                console.log("notyet");
+            }
+        }, 500)
+    }
+
+})
+
+
+
 app.factory('dataService', function () {
     // var users = [
     //     { id: 1, username: 'john' }

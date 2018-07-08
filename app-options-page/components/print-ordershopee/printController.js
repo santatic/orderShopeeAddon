@@ -1,5 +1,5 @@
 app.controller("print-controller", function ($scope, $rootScope, $routeParams, moment) {
-
+    $scope.printProducts = false
     var arrayFilter = [{
             id: 1,
             english: "NEW",
@@ -66,40 +66,52 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
         $("#trackno").css({
             "font-size": "30px"
         })
-        window.print()
-        $("#line").remove()
-        $("#trackno").css({
+        console.log($scope.printProducts);
+        if($scope.printProducts){
+            $('.rowProducts').removeClass('noprint')
+            $('.rowProducts').addClass('print')
+            $('.imageProduct').css({
+                "display": "none"
+            })
+        }
+        setTimeout(function(){
+            window.print()
+            $("#line").remove()
+            $('.rowProducts').removeClass('print')
+            $('.rowProducts').addClass('noprint')
+            $('.imageProduct').css({
+                "display": "block"
+            })
+            $("#trackno").css({
             "font-size": "15px"
         })
+        },500)
+        
+        
     }
 
     $scope.print = function () {
-        window.print()
+        myPrint()
     }
 
     var saleUrl = chrome.extension.getURL("options.html#/");
 
     $('button#saveNote').click(function () {
         var note = $('#noteEdit').val();
-        if (!note) {
-
-        } else {
+        
             firestore.collection("orderShopee").doc(id).update({
                 "note": note
             }).then(function () {
                 console.log("done");
-                var options = {
-                    type: "basic",
-                    title: "Đã cập nhật note",
-                    message: new Date().toString(),
-                    iconUrl: "../../../images/notification.png"
-                }
-                chrome.notifications.create("notify", options, callback);
-
-                function callback() {}
-                location.reload()
+                new Noty({
+                    layout: 'topLeft',
+                    theme: "relax",
+                    timeout: 2500,
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT NOTE'
+                }).show();
             })
-        }
+        
     })
     $('button#cancelNote').click(function () {
         $('#noteEdit').val("")
@@ -129,7 +141,9 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
                 type: 'success',
                 text: 'TRẠNG THÁI ĐƠN ĐÃ ĐƯỢC CẬP NHẬT'
             }).show();
+            $('.noty_layout').addClass('noprint')            
             n.close()
+            myPrint()
         })
 
     });

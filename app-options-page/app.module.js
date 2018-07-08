@@ -1,11 +1,11 @@
 'use strict';
 
 firebase.initializeApp({
-  // apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
-  // projectId: "nguoitimship",
+  apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
+  projectId: "nguoitimship",
 
-  apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
-  projectId: "shopngocanh-2018",
+  // apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
+  // projectId: "shopngocanh-2018",
 
   // apiKey: "AIzaSyDQGNExQfK_QGLyGrqGZ4RE247-l3M84bA",
   // projectId: "ext-chrome-6aaac"
@@ -32,7 +32,7 @@ firestore.settings(settings);
 //     console.error("Error adding document: ", error);
 // });
 
-var app = angular.module("app", ["ngRoute", 'ui.bootstrap', "chart.js", 'ui.grid.rowEdit', "ui.grid", 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
+var app = angular.module("app", ["ngRoute", 'ui.bootstrap', "chart.js", 'ui.grid.treeView', 'ui.grid.rowEdit', "ui.grid", 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
 
 app.config(function ($compileProvider) {
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);

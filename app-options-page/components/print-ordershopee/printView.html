@@ -26,7 +26,8 @@
                             </span>
                         </td>
                     </tr>
-                    <tr ng-if="showNote">
+                    <tr ng-show="note !== ''">
+                        <!-- <tr> -->
                         <td>
                             <span>
                                 {{note}}
@@ -36,26 +37,26 @@
                 </tbody>
             </table>
             <div class="form-group-status noprint">
-                    <div class="radio">
-                            <input type="radio" ng-model="statusRadio" value="NEW">ĐƠN MỚI    
-                    </div>
-                    <div class="radio">
-                            <input type="radio" ng-model="statusRadio" value="PACKED">ĐÃ ĐÓNG GÓI
-                    </div>
-                    <div class="radio">
-                            <input type="radio" ng-model="statusRadio" value="SHIPPED">ĐÃ GỬI ĐI
-                    </div>
-                    <div class="radio">
-                            <input type="radio" ng-model="statusRadio" value="DELIVERED">KHÁCH ĐÃ NHẬN
-                    </div>
-                    <!-- <div class="radio">
+
+                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="NEW">ĐƠN MỚI
+
+
+                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="PACKED">ĐÃ ĐÓNG GÓI
+
+
+                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="SHIPPED">ĐÃ GỬI ĐI
+
+
+                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="DELIVERED">KHÁCH ĐÃ NHẬN
+
+                <!-- 
                             <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
                     </div> -->
                 </select>
                 <br>
                 <div class="card">
                     <div class="card-body">
-                        <textarea  ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="3" id="noteEdit">{{note}}</textarea>
+                        <textarea ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="3" id="noteEdit">{{note}}</textarea>
                         <div class="btn-group" style="margin-top: 10px; float: right">
                             <button id="saveNote" class="btn btn-success" style="margin-right: 10px">SAVE</button>
                             <button id="cancelNote" class="btn btn-danger">CANCEL</button>
@@ -67,6 +68,12 @@
                         {{logistics}}
                     </div>
                 </div>
+                <br>
+                <span>
+                    
+                </span>
+                IN SẢN PHẨM: 
+                  <button ng-model="printProducts" ng-click="printProducts=!printProducts">{{printProducts}}</button>
 
             </div>
 
@@ -97,11 +104,11 @@
                     </tbody>
                 </table>
             </div>
-            <div class="row noprint" style="margin-top: 8px">
+            <div class="rowProducts row noprint" style="margin-top: 8px">
                 <table id="products" class="table table-bordered">
                     <tbody>
                         <tr ng-repeat="item in products">
-                            <td style="background: #fff;">
+                            <td class="imageProduct" style="background: #fff;">
                                 <img src="{{item.imageUrl}}" width="80px" height="80px" alt=""> </td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.model }}</td>
