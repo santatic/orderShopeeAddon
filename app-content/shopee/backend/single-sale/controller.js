@@ -1,6 +1,6 @@
 app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
     function ($scope, moment, Chat) {
-        Chat.getSuggests() 
+        Chat.getSuggests()
 
         $scope.showSelect = false
         $scope.showOption = true
@@ -60,34 +60,83 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 vietnamese: "Đã hủy"
             },
         ]
-        $('.form-group-status input:radio').change(function (e) {
+        var beforeRadio
+        $('.form-group-status input:radio').mouseup(function () {
+            beforeRadio = $('input:radio:checked');
+        }).change(function (e) {
             console.log((this.value));
+            var thisRadio = $(this)
             var selectedExpTags = [this.value];
             var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
-            console.log(names);
-            var n = new Noty({
-                layout: 'bottomRight',
-                theme: "relax",
-                type: 'warning',
-                text: 'ĐANG THAY ĐỔI TRẠNG THÁI....'
-            }).show();
-            chrome.runtime.sendMessage({
-                mission: "updateStatusFromShopee",
-                url: url,
-                status: names[0]
-            }, function (response) {
-                n.close()
-                new Noty({
-                    layout: 'bottomRight',
-                    timeout: 2500,
-                    theme: "relax",
-                    type: 'success',
-                    text: 'ĐÃ CẬP NHẬT TRẠNG THÁI ĐƠN'
+            var beforeRadioArr = [beforeRadio.val()];
+            var beforeRadioArray = beforeRadioArr.map(x => arrayFilter.find(y => y.english === x).id)
+            if (names[0] < beforeRadioArray[0]) {
+                var n = new Noty({
+                    closeWith: [],
+                    layout: "topLeft",
+                    text: 'BẠN CÓ CHẮC MUỐN CHUYỂN TRẠNG THÁI?',
+                    buttons: [
+                        Noty.button('YES', 'btn btn-success', function () {
+                            n.close()
+                            var x = new Noty({
+                                layout: 'bottomRight',
+                                theme: "relax",
+                                type: 'warning',
+                                text: 'ĐANG THAY ĐỔI TRẠNG THÁI....'
+                            }).show();
+                            chrome.runtime.sendMessage({
+                                mission: "updateStatusFromShopee",
+                                url: url,
+                                status: names[0]
+                            }, function (response) {
+                                x.close()                                
+                                new Noty({
+                                    layout: 'bottomRight',
+                                    timeout: 2500,
+                                    theme: "relax",
+                                    type: 'success',
+                                    text: 'ĐÃ CẬP NHẬT TRẠNG THÁI ĐƠN'
+                                }).show();
+                            })
+                            
+                        }, {
+                            id: 'button1',
+                            'data-status': 'ok'
+                        }),
+
+                        Noty.button('NO', 'btn btn-error', function () {
+                            n.close();
+                            thisRadio.prop('checked', false);
+                            beforeRadio.prop('checked', true);
+                        })
+                    ]
                 }).show();
-                $('label#status').text(valueSelected)
-            })            
-    
-        });        
+            } else {
+                var n = new Noty({
+                    layout: 'bottomRight',
+                    theme: "relax",
+                    type: 'warning',
+                    text: 'ĐANG THAY ĐỔI TRẠNG THÁI....'
+                }).show();
+                chrome.runtime.sendMessage({
+                    mission: "updateStatusFromShopee",
+                    url: url,
+                    status: names[0]
+                }, function (response) {
+                    n.close()
+                    new Noty({
+                        layout: 'bottomRight',
+                        timeout: 2500,
+                        theme: "relax",
+                        type: 'success',
+                        text: 'ĐÃ CẬP NHẬT TRẠNG THÁI ĐƠN'
+                    }).show();
+                })
+            }
+
+
+
+        });
 
         $('#linkOpenOptionsPage').click(function () {
             console.log(chrome.runtime.getURL('options.html'));
@@ -134,9 +183,9 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                     type: 'success',
                     text: 'ĐƠN ĐÃ ĐƯỢC THEO DÕI'
                 }).show();
-                
+
                 $scope.statusRadio = response.status
-                if(response.status == "PAID"){
+                if (response.status == "PAID") {
                     $scope.showOption = false
                 }
                 $scope.$apply()

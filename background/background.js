@@ -157,7 +157,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       if (isRunOnSnapshot && (url.indexOf("banhang.shopee.vn") !== -1 || url.indexOf("chrome-extension://") !== -1)) {
         isRunOnSnapshot = false;
         console.log("RUN", url);
-        firestore.collection("orderShopee").where("own_status.status", "<", 6)
+        firestore.collection("orderShopee").where("own_status.status", "<=", 6)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {

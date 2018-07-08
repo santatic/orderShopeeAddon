@@ -91,18 +91,11 @@ app.service('helper', function () {
                 "shipper": "",
                 "create_at": date,
                 "status": "MỚI"
-              }).then(function(){
-                new Noty({
-                  layout: 'bottomRight',
-                  timeout: 5000,
-                  theme: "relax",
-                  type: 'success',
-                  text: 'ĐÃ THÊM MÃ PHIẾU XUẤT'
-                }).show();
-              }).then(function(){
-                location.reload()
+              }).then(function () {
+                var win = window.open(chrome.extension.getURL("options.html#/export/")+date.getTime(), "_blank");
+                win.focus()
               })
-              
+
             });
           }
         }, 500)

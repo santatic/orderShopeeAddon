@@ -6,9 +6,10 @@
   <title>Lập Nghiệp Shop Online</title>
   <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
   <link href="lib/noty/css/noty.css" rel="stylesheet">
+  <link href="css/quicksand.css" rel="stylesheet">
   <link href="css/custom.css" rel="stylesheet">
   <link href="css/home.css" rel="stylesheet">
-  
+
   <!-- <link href="lib/uigrid/ui-grid.woff" rel="stylesheet"> -->
   <!-- <link href="lib/uigrid/ui-grid.tff" rel="stylesheet"> -->
   <link rel="stylesheet" href="lib/uigrid/ui-grid.min.css">
@@ -16,7 +17,6 @@
   <link rel='stylesheet prefetch' href='lib/datatable/css/material.css'> -->
 
   <style>
-    
   </style>
 
 </head>
@@ -24,67 +24,67 @@
 <body ng-app="app">
 
   <nav ng-controller="header-controller" class="navbar navbar-default">
-    <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
 
-        <a ui-sref="state" class="navbar-brand" href="#/">Báo Cáo</a>
-      </div>
-
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li ng-class="{active:isActive('/orders')}">
-            <a href="#orders">Đơn Hàng</a>
-          </li>
-          <li ng-class="{active:isActive('/exportcode-list')}">
-            <a href="#exportcode-list">Phiếu xuất</a>
-          </li>
-          <li ng-class="{active:isActive('/importcode-list')}">
-            <a href="#importcode-list">Phiếu thu</a>
-          </li>
-          <li ng-class="{active:isActive('/configuration')}">
-            <a href="#configuration">Cài Đặt</a>
-          </li>
-          <li ng-class="{active:isActive('/payment')}">
-            <a href="#payment">Đối Soát</a>
-          </li>
-          <li ng-class="{active:isActive('/scan-order')}">
-            <a href="#scan-order">Quét Đơn</a>
-          </li>
-        </ul>
-
-        <ul class="nav navbar-nav navbar-right">
-          <li ng-show="firebaseUser">
-            <a>Xin Chào, {{ firebaseUser.displayName }}</a>
-          </li>
-          <li ng-show="firebaseUser">
-            <a href="#" ng-click="startSignIn()">Đăng Xuất</a>
-
-          </li>
-
-          <li ng-hide="firebaseUser">
-            <a>Xin chào, vui lòng đăng nhập.</a>
-          </li>
-          <li ng-hide="firebaseUser">
-            <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Đăng Nhập Bằng Google'" ng-click="startSignIn()">{{textButton}}</a>
-
-          </li>
-
-
-          <li>
-            <a href="https://chrome.google.com/webstore/detail/l%C3%A2%CC%A3p-nghi%C3%AA%CC%A3p-shop-online/anokolenakmakmibdegfndgjfboiigfa" target="_blank">About</a>
-          </li>
-
-        </ul>
-      </div>
-      <!-- /.navbar-collapse -->
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a ui-sref="state" class="navbar-brand" href="#/">BÁO CÁO</a>
     </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-inverse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li ng-class="{active:isActive('/orders')}">
+          <a href="#orders">Đơn Hàng</a>
+        </li>
+        <li ng-class="{active:isActive('/exportcode-list')}">
+          <a href="#exportcode-list">Phiếu Xuất</a>
+        </li>
+        <li ng-class="{active:isActive('/importcode-list')}">
+          <a href="#importcode-list">Phiếu Thu</a>
+        </li>
+        <li ng-class="{active:isActive('/configuration')}">
+          <a href="#configuration">Cài Đặt</a>
+        </li>
+        <li ng-class="{active:isActive('/payment')}">
+          <a href="#payment">Đối Soát</a>
+        </li>
+        <li ng-class="{active:isActive('/scan-order')}">
+          <a href="#scan-order">Quét QR</a>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li ng-show="firebaseUser">
+          <a>Xin Chào, {{ firebaseUser.displayName }}</a>
+        </li>
+        <li ng-show="firebaseUser">
+          <a href="#" ng-click="startSignIn()">Đăng Xuất</a>
+
+        </li>
+
+        <li ng-hide="firebaseUser">
+          <a>Xin chào, vui lòng đăng nhập.</a>
+        </li>
+        <li ng-hide="firebaseUser">
+          <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Đăng Nhập Bằng Google'" ng-click="startSignIn()">{{textButton}}</a>
+
+        </li>
+
+
+        <li>
+          <a href="https://chrome.google.com/webstore/detail/l%C3%A2%CC%A3p-nghi%C3%AA%CC%A3p-shop-online/anokolenakmakmibdegfndgjfboiigfa"
+            target="_blank">About</a>
+        </li>
+
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+
     <!-- /.container-fluid -->
   </nav>
-
-  <div ng-view></div>
-
+  <!-- <div class="container"> -->
+    <div ng-view></div>
+  <!-- </div> -->
 
   <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>

@@ -1,24 +1,25 @@
 <!-- <div class="container"> -->
 <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
 <div id="grid1" ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-cellnav ui-grid-pagination ui-grid-edit
-    class="grid noprint">    
+    class="grid noprint">
 </div>
-<div class="print">
+<div class="printt">
     <ul ng-repeat="x in rowSelected" class="list-group">
-        <div class="col-sm-6" style="display: inline-block;">
-            <li class="list-group-item">
-                ID: {{x.id}} - {{x.own_Status}}
-            </li>
-            <li class="list-group-item">
-                VẬN ĐƠN: {{x.trackno}}
-            </li>
-            <li class="list-group-item">
-                {{x.nickname}}
-            </li>
-        </div>
         <div class="col-sm-6" style="display: inline-block;">
             <div id="{{x.id}}"></div>
         </div>
+        <div class="col-sm-6" style="display: inline-block">
+            <!-- <li class="list-group-item">
+                ID: {{x.id}} - {{x.own_Status}}
+            </li> -->
+            
+                <b style="font-size: 23px">{{x.trackno}}</b>
+            <br>
+            <li style="padding-bottom: 8px; list-style-type : none">
+                {{x.nickname}}<br>{{x.name}}
+            </li>
+        </div>
+
     </ul>
 
 

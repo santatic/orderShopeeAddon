@@ -126,14 +126,14 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                             value: 1,
                             label: "Đơn mới"
                         },
-                        {
-                            value: 2,
-                            label: "Đủ hàng"
-                        },
-                        {
-                            value: 3,
-                            label: "Thiếu hàng"
-                        },
+                        // {
+                        //     value: 2,
+                        //     label: "Đủ hàng"
+                        // },
+                        // {
+                        //     value: 3,
+                        //     label: "Thiếu hàng"
+                        // },
                         {
                             value: 4,
                             label: "Đã đóng gói"
@@ -154,14 +154,14 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                             value: 8,
                             label: "Đã hoàn về kho"
                         },
-                        {
-                            value: 9,
-                            label: "Đã thanh toán"
-                        },
-                        {
-                            value: "HT",
-                            label: "Đã hoàn tiền"
-                        },
+                        // {
+                        //     value: 9,
+                        //     label: "Đã thanh toán"
+                        // },
+                        // {
+                        //     value: "HT",
+                        //     label: "Đã hoàn tiền"
+                        // },
                         {
                             value: "0",
                             label: "Đã hủy"
@@ -188,59 +188,57 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     // angular.element(document.getElementsByClassName('grid')[0]).css('height', '900px');
     $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
 
-    $('select#selectStatus').on('change', function (e) {
-        var optionSelected = $("option:selected", this);
+    $('input:radio').change(function (e) {
         var valueSelected = this.value;
-
-        if (!valueSelected) {
-
-        } else {
-            console.log(valueSelected);
-            if (valueSelected == "CANCEL") {
-                console.log("cancel");
-                var docRef = firestore.collection("orderShopee").where("exportId", "==", id);
-                docRef.get().then(
-                    function (querySnapshot) {
-                        querySnapshot.forEach(function (doc) {
-                            firestore.collection("orderShopee").doc(doc.id).update({
-                                "exportId": ""
-                            })
+        console.log(valueSelected);
+        if (valueSelected == "CANCEL") {
+            console.log("cancel");
+            var docRef = firestore.collection("orderShopee").where("exportId", "==", id);
+            docRef.get().then(
+                function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                        firestore.collection("orderShopee").doc(doc.id).update({
+                            "exportId": ""
                         })
-                    }).then(function () {
-                    firestore.collection("exportCode").doc(id).update({
-                        "status": "HỦY PHIẾU"
-                    }).then(function () {
-                        new Noty({
-                            layout: 'bottomRight',
-                            timeout: 2000,
-                            theme: "relax",
-                            type: 'success',
-                            text: 'ĐÃ HỦY PHIẾU'
-                        }).show();
-                        $('label#status').text("ĐÃ HỦY")
-                        $scope.cancel = false
-                        $scope.$apply()
                     })
-
-                })
-
-            } else {
-                firestore.collection("exportCode").doc(id).update({
-                    "status": valueSelected
                 }).then(function () {
-                    console.log("done");
-                    $('label#status').text(valueSelected)
+                firestore.collection("exportCode").doc(id).update({
+                    "status": "HỦY PHIẾU"
+                }).then(function () {
                     new Noty({
                         layout: 'bottomRight',
-                        timeout: 2000,
+                        timeout: 1500,
                         theme: "relax",
                         type: 'success',
-                        text: 'ĐÃ CẬP NHẬT TRẠNG THÁI CỦA PHIẾU'
+                        text: 'ĐÃ HỦY PHIẾU'
+                    }).on('afterShow', function() {
+                        window.close()
                     }).show();
+                    $('label#status').text("ĐÃ HỦY")
+                    $scope.cancel = false
+                    $scope.$apply()
                 })
-            }
 
+            })
+
+        } else {
+            firestore.collection("exportCode").doc(id).update({
+                "status": valueSelected
+            }).then(function () {
+                console.log("done");
+                $('label#status').text(valueSelected)
+                new Noty({
+                    layout: 'bottomRight',
+                    timeout: 2000,
+                    theme: "relax",
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT TRẠNG THÁI CỦA PHIẾU'
+                }).show();
+                $('.noty_layout').addClass('noprint')    
+            })
         }
+
+
 
     });
 
@@ -272,10 +270,24 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     var arrTraceno = []
     firestore.collection("exportCode").doc(id).get().then(function (doc) {
         const data = doc.data()
+        $scope.id = doc.id
         $scope.shipperName = data.shipper;
-        $scope.status = data.status
+        
+        if(data.status == "HỦY PHIẾU"){
+            $scope.cancel = false
+            $scope.status = "PHIẾU NÀY ĐÃ BỊ HỦY"
+        }else{
+            $scope.status = data.status
+        }
         $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
         $scope.$apply()
+    }).catch(function(error){
+        new Noty({
+            layout: 'bottomRight',
+            theme: "relax",
+            type: 'error',
+            text: error
+        }).show();
     })
     $('#shipperName').keyup(function (eventObj) {
         if (eventObj.which == 13) {
@@ -289,15 +301,18 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     type: 'success',
                     text: 'ĐÃ CẬP NHẬT TÊN NGƯỜI NHẬN HÀNG'
                 }).show();
+                $('.noty_layout').addClass('noprint')  
             })
         }
     });
-    var docRef = firestore.collection("orderShopee").where("exportId", "==", id);
-    docRef.get().then(
-        function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
+    chrome.storage.local.get('data', function (keys) {
+        var dataOrders = keys.data.filter(function (event) {
+            return event.exportId == id;
+        })
+        if(dataOrders.length >0){
+            dataOrders.forEach(function (doc) {
 
-                const myData = doc.data();
+                const myData = doc;
                 // console.log(myData);
                 ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
                 obj = new Object();
@@ -313,17 +328,18 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     ownStatus: myData.own_status.status
                 }
                 sources.push(obj)
-                arrTraceno.push(obj.trackno)
+                arrTraceno.push((obj.trackno) )
             })
             $scope.carrier = sources[0].carrier
             $scope.arrTraceno = arrTraceno
-            $scope.size = querySnapshot.size
+            // console.log($scope.arrTraceno);
+            $scope.size = dataOrders.length
             $scope.data = sources
             $scope.options.data = $scope.data;
             $scope.loading = false
             $scope.gridApi.core.refresh();
             sources.forEach(function (row, index) {
-
+    
                 switch (row.ownStatus) {
                     case "NEW":
                         row.ownStatus = 1
@@ -364,12 +380,14 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
                 // value.own_Status = names[0];
             })
-            // console.log(querySnapshot.size);
+        }else{
+            $scope.loading = false
+            $scope.$apply()        
         }
-    ).then(function () {
-        console.log($scope);
-        //$scope.apply();
+        
+
     })
+
 
 }
 

@@ -5,9 +5,9 @@ app.controller("logisticCtrl", ['$scope', 'Chat',
         //     mission: "getSuggest"
         // }, function (response) {
         //     console.log(response.suggests);
-        Chat.getSuggests() 
+        Chat.getSuggests()
 
-        function httpGet(theUrl, headers) {
+        function httpGet(theUrl, headers, i) {            
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("GET", theUrl, false); // false for synchronous request
             for (var i = 0; i < headers.length; i++) {
@@ -88,42 +88,47 @@ app.controller("logisticCtrl", ['$scope', 'Chat',
             $scope.data = data
             $scope.$apply()
         })
-        $scope.update = function (status) {            
+        $scope.update = function (status) {
             var idsDaGiao = []
             var updateLogShopee = []
+            $scope.count = false
             var selectedExpTags = [status];
-            var promise = new Promise(function(resolve, reject){
-                new Noty({
+            var promise = new Promise(function (resovle, reject) {
+                var n = new Noty({
                     layout: 'bottomRight',
                     theme: "relax",
                     type: 'warning',
                     text: 'ĐANG CẬP NHẬT TRẠNG THÁI...,Xong sẽ tự load lại trang'
-                }).show();
-                var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
-                resolve(names[0])
-            })
-            promise.then(function(names){
-                console.log(names);
-                $.each(names, function (i, val) {
-                    // console.log(val.logistics);
-                    var sub = "Đã giao hàng"
-                    if (val.logistics.indexOf(sub) !== -1) {
-                        idsDaGiao.push(val.id)
-                    } else {
-                        var data = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [])
-                        // console.log(data);
-                        if (val.logistics !== data) {
-                            var obj = new Object()
-    
-                            obj = {
-                                id: val.id,
-                                log: data
+                }).on('afterShow', function () {
+                    n.close()
+                    var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
+                    $.each(names[0], function (i, val) {
+                        console.log(i);                         
+                        // console.log(val.logistics);
+                        var sub = "Đã giao hàng"
+                        if (val.logistics.indexOf(sub) !== -1) {
+                            idsDaGiao.push(val.id)
+                        } else {
+                            var data = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [], i+1)
+                                                                               
+                            if (val.logistics !== data) {
+                                var obj = new Object()
+
+                                obj = {
+                                    id: val.id,
+                                    log: data
+                                }
+                                updateLogShopee.push(obj)
                             }
-                            updateLogShopee.push(obj)
+
                         }
-    
-                    }
-                })
+                    })
+                    resovle()
+                }).show();
+
+            })
+            promise.then(function () {
+                console.log("then");
                 chrome.runtime.sendMessage({
                     mission: "updateLogFromContent",
                     idsDaGiao: idsDaGiao,
@@ -134,7 +139,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat',
                 })
             })
 
-            
+
         }
     }
 

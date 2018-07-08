@@ -171,10 +171,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             value: 5,
                             label: "Đã gửi đi"
                         },
-                        // {
-                        //     value: 6,
-                        //     label: "Khách đã nhận"
-                        // },
+                        {
+                            value: 6,
+                            label: "Khách đã nhận"
+                        },
                         // {
                         //     value: 7,
                         //     label: "Đang hoàn hàng"
@@ -239,8 +239,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     if (($("#" + val.id)).length) {
                         clearInterval(timer)
                         var qrcode = new QRCode(document.getElementById(val.id), {
-                            width: 100,
-                            height: 100,
+                            width: 60,
+                            height: 60,
                             correctLevel: QRCode.CorrectLevel.H
                         });
 
@@ -310,7 +310,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             obj = {
                 id: myData.id,
                 trackno: myData.shipping_traceno,
-                nickname: myData.user.name + " - " + myData.buyer_address_name,
+                nickname: myData.user.name,
+                name: myData.buyer_address_name,
                 paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                 carrier: myData.actual_carrier,
                 shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
@@ -319,7 +320,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 updateTime: ctime,
                 importId: myData.importMoneyId,
                 ownStatus: myData.own_status.status,
-                fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24))
+                fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)) + " ngày"
             }
             sources.push(obj)
         })
@@ -346,6 +347,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                                     console.log(querySnapshot);
                                     if (querySnapshot.size > 0) {
                                         querySnapshot.forEach(function (doc) {
+                                            $scope.gridApi.grid.clearAllFilters();
                                             var win = window.open(chrome.extension.getURL("options.html#/orders/")+doc.id, "_blank");
                                             win.focus()
                                         })
@@ -362,10 +364,12 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
                         Noty.button('NO', 'btn btn-error', function () {
                             checkFilter = true
+                            $scope.gridApi.grid.clearAllFilters();
                             n.close();
                         })
                     ]
                 }).show();
+                $('input[type="text"]#searchByTraceNo').focus()
             }
         })
 

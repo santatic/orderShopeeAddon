@@ -156,15 +156,25 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
             let index = dataOrders.findIndex(x => x.id == id)
             getDetail(dataOrders[index])
         } else {
-            new Noty({
+            let n = new Noty({
                 layout: 'bottomRight',
-                timeout: 5000,
                 theme: "relax",
                 type: 'success',
-                text: 'ĐƠN NÀY ĐƯỢC GỌI TRỰC TIẾP TỪ FIRESTORE'
+                text: 'ĐANG TRUY VẤN TỪ SERVER...'
             }).show();
             firestore.collection("orderShopee").doc(id).get().then(function (doc) {
-                getDetail(doc.data())
+                if(doc.exists){
+                    n.close()
+                    getDetail(doc.data())
+                }else{
+                    n.close()
+                    new Noty({
+                        layout: 'bottomRight',
+                        theme: "relax",
+                        type: 'error',
+                        text: 'ĐƠN KHÔNG TỒN TẠI'
+                    }).show();
+                }                
             })
         }
     })
