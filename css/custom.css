@@ -276,3 +276,13 @@ table {
 .navbar{
   border: none
 }
+
+.imgageRight {
+  float: left;
+  margin: 5px 5px 5px 70px;
+}
+.imgageLeft {
+  float: left;
+  margin: 5px 5px 5px 30px;
+}
+

@@ -13,60 +13,60 @@ firestore.settings(settings);
 
 //   console.log(data);
 var arrayFilter = [{
-    id: 1,
-    english: "NEW",
-    vietnamese: "đơn mới"
-  },
-  {
-    id: 2,
-    english: "PREPARED",
-    vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-  },
-  {
-    id: 3,
-    english: "UNPREPARED",
-    vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-  },
-  {
-    id: 4,
-    english: "PACKED",
-    vietnamese: "đã đóng gói chờ gửi đi"
-  },
-  {
-    id: 5,
-    english: "SHIPPED",
-    vietnamese: "đã gửi đi"
-  },
-  {
-    id: 6,
-    english: "DELIVERED",
-    vietnamese: "khách đã nhận hàng"
-  },
-  {
-    id: 7,
-    english: "RETURNING",
-    vietnamese: "đang hoàn hàng chưa về đến kho"
-  },
-  {
-    id: 8,
-    english: "RETURNED",
-    vietnamese: "đã hoàn về kho"
-  },
-  {
-    id: 9,
-    english: "PAID",
-    vietnamese: "đã thanh toán"
-  },
-  {
-    id: 10,
-    english: "REFUNDED",
-    vietnamese: "đã hoàn tiền"
-  },
-  {
-    id: 11,
-    english: "CANCELED",
-    vietnamese: "đã hủy"
-  },
+  id: 1,
+  english: "NEW",
+  vietnamese: "đơn mới"
+},
+{
+  id: 2,
+  english: "PREPARED",
+  vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+},
+{
+  id: 3,
+  english: "UNPREPARED",
+  vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+},
+{
+  id: 4,
+  english: "PACKED",
+  vietnamese: "đã đóng gói chờ gửi đi"
+},
+{
+  id: 5,
+  english: "SHIPPED",
+  vietnamese: "đã gửi đi"
+},
+{
+  id: 6,
+  english: "DELIVERED",
+  vietnamese: "khách đã nhận hàng"
+},
+{
+  id: 7,
+  english: "RETURNING",
+  vietnamese: "đang hoàn hàng chưa về đến kho"
+},
+{
+  id: 8,
+  english: "RETURNED",
+  vietnamese: "đã hoàn về kho"
+},
+{
+  id: 9,
+  english: "PAID",
+  vietnamese: "đã thanh toán"
+},
+{
+  id: 10,
+  english: "REFUNDED",
+  vietnamese: "đã hoàn tiền"
+},
+{
+  id: 11,
+  english: "CANCELED",
+  vietnamese: "đã hủy"
+},
 ]
 
 // var Col = firestore.collection('orderShopee')
@@ -284,8 +284,16 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           break;
         case "updateStatusFromShopee":
           updateStatusFromShopee(request, sendResponse)
+          return true;
+          break;
+        case "getProducts":
+          getProducts(request, sendResponse)
           return true
-          break
+          break;
+        case "pushFirestore":
+          pushFirestore(request, sendResponse);
+          return true;
+          break;
       }
     });
 
@@ -429,6 +437,37 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
 
   }
 
+  function getProducts(response, sendResponse) {
+    var states = []
+    firestore.collection("1688_products").get().then(function (querySnapshot) {
+      querySnapshot.forEach(function (doc) {
+        const data = doc.data();
+        states.push({
+          name: data.name,
+          SKU: data.SKU_name,
+          image: data.images ? data.images[0] : ''
+        });
+      })
+    }).then(function () {
+      // console.log(states);
+      sendResponse({ data: states })
+    }
+    );
+  }
+
+  function pushFirestore(response, sendResponse) {
+    // console.log(response);
+    var docRef = firestore.collection("1688_products").doc(response.SKU_name);
+    docRef.update({
+      "images": response.images,
+      "id1688": response.id1688
+    }).then(function () {
+      var docSKUc = docRef.collection('SKU_classify');
+      response.SKU_classify.map(x => {
+        docSKUc.doc(x.spSku.toString()).set(x);
+      })
+    }).then(sendResponse())
+  }
 
   function updatePayment(response, sendResponse) {
     var date = new Date()
@@ -559,7 +598,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   function updateNote(response, sendResponse) {
     firestore.collection("orderShopee").doc(response.url).update({
       "note": response.note
-    }).then(function () {})
+    }).then(function () { })
   }
 
   function update(response, sendRespose) {
@@ -568,7 +607,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
 
       firestore.collection("orderShopee").doc(response.url).update({
         "logistic": $.parseJSON(JSON.stringify(logistic))
-      }).then(function () {})
+      }).then(function () { })
     })
   }
 
@@ -680,7 +719,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       })
     }
 
-    function callback() {}
+    function callback() { }
 
   }
 

@@ -24,14 +24,17 @@
 <body ng-app="app">
 
   <nav ng-controller="header-controller" class="navbar navbar-default">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
 
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <a ui-sref="state" class="navbar-brand" href="#/">BÁO CÁO</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-inverse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <div class="navbar-header">
+
+        <a ui-sref="state" class="navbar-brand" href="#/">Báo Cáo</a>
+      </div>
       <ul class="nav navbar-nav">
         <li ng-class="{active:isActive('/orders')}">
           <a href="#orders">Đơn Hàng</a>
@@ -50,6 +53,9 @@
         </li>
         <li ng-class="{active:isActive('/scan-order')}">
           <a href="#scan-order">Quét QR</a>
+        </li>
+        <li ng-class="{active:isActive('/products')}">
+          <a href="#products">Sản phẩm</a>
         </li>
       </ul>
 
@@ -83,7 +89,7 @@
     <!-- /.container-fluid -->
   </nav>
   <!-- <div class="container"> -->
-    <div ng-view></div>
+  <div ng-view></div>
   <!-- </div> -->
 
   <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
@@ -131,6 +137,7 @@
   <script src="app-options-page\components\export-detail\exportController.js"></script>
   <script src="app-options-page\components\import-detail\importController.js"></script>
   <script src="app-options-page\components\imports\importsController.js"></script>
+  <script src="app-options-page\components\products\productsController.js"></script>
   <script src="app-options-page/services/chromeStorage.js"></script>
   <script src="lib/noty/js/noty.min.js"></script>
   <script src='lib/qrcode.min.js'></script>

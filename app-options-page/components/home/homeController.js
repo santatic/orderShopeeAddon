@@ -29,18 +29,18 @@ app.controller("home-controller", function ($scope, moment) {
             var month = moment(data.create_at.seconds * 1000).format("YYYY-MM").toString()
             var buyer_paid = parseInt((data.buyer_paid_amount) * 100) / 100
 
-            if (thisMonth == month) {
-                monthCount.push(doc.id)
-                paidMonth.push(buyer_paid)
-            }
-            // console.log(create_at);
-            sevenDay.forEach(function (val) {
-                if (create_at == val) {
-                    // console.log("today: ", create_at);
-                    sevenCount.push(doc.id)
-                    paidSeven.push(buyer_paid)
-                }
-            })
+//             if (thisMonth == month) {
+//                 monthCount.push(doc.id)
+//                 paidMonth.push(buyer_paid)
+//             }
+//             // console.log(create_at);
+//             sevenDay.forEach(function (val) {
+//                 if (create_at == val) {
+//                     // console.log("today: ", create_at);
+//                     sevenCount.push(doc.id)
+//                     paidSeven.push(buyer_paid)
+//                 }
+//             })
 
             if (create_at == moment(today).format("YYYY-MM-DD")) {
                 // console.log("today: ", create_at);
