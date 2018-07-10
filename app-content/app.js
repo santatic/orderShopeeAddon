@@ -13,23 +13,157 @@ app.config(function ($compileProvider) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);
 });
 
+app.service('getList', function () {
+    this.getList = function () {
+        var arrayFilter = [{
+                id: 1,
+                english: "NEW",
+                vietnamese: "đơn mới"
+            },
+            {
+                id: 2,
+                english: "PREPARED",
+                vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+            },
+            {
+                id: 3,
+                english: "UNPREPARED",
+                vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+            },
+            {
+                id: 4,
+                english: "PACKED",
+                vietnamese: "đã đóng gói chờ gửi đi"
+            },
+            {
+                id: 5,
+                english: "SHIPPED",
+                vietnamese: "đã gửi đi"
+            },
+            {
+                id: 6,
+                english: "DELIVERED",
+                vietnamese: "khách đã nhận hàng"
+            },
+            {
+                id: 7,
+                english: "RETURNING",
+                vietnamese: "đang hoàn hàng chưa về đến kho"
+            },
+            {
+                id: 8,
+                english: "RETURNED",
+                vietnamese: "đã hoàn về kho"
+            },
+            {
+                id: 9,
+                english: "PAID",
+                vietnamese: "đã thanh toán"
+            },
+            {
+                id: 10,
+                english: "REFUNDED",
+                vietnamese: "đã hoàn tiền"
+            },
+            {
+                id: 11,
+                english: "CANCELED",
+                vietnamese: "đã hủy"
+            },
+        ]
+
+        function getListFromStorage() {
+            chrome.storage.local.get('data', function (keys) {
+                keys.data
+                var timer = setInterval(function () {
+                    $('div.order-items').not('.loading').find(".order-items__item").each(function (index, value) {
+                        var _this = $(this);
+                        var id = $(this).attr("href");
+                        if (id) {
+                            id = id.match(/(\d+)/g).toString();
+                            clearInterval(timer);
+                            var obj = keys.data.find(function (obj) {
+                                return obj.id == id;
+                            });
+
+                            // console.log(obj);
+                            var optionsUrl = chrome.extension.getURL("options.html#/orders/" + id);
+                            if (obj) {
+                                var selectedExpTags = [obj.own_status.status];
+                                var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                                _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((obj.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((obj.shipping_fee) * 100) / 100).toLocaleString() + " VNĐ - " + names[0] + ' | <a target="_blank" href="' + optionsUrl + '">' + obj.id + '</a></b></span>')
+                            } else {
+                                _this.find(".ct-buyer > div").append(' <span style="background: #ff3d3e;color: #fff;" id="test">&nbsp<b>CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span>')
+                            }
+                        }
+
+                    })
+                }, 1000)
+            })
+        }
+        getListFromStorage()
+        $('a.tabs__tab').on('click', function () {
+            getListFromStorage()
+        });        
+
+        var appear = setInterval(function () {
+            var pan = $('.shopee-pagination--footer ul li').text()
+            if (pan) {
+                clearInterval(appear);
+                $('.shopee-pagination--footer ul li').click(function () {
+                    getListFromStorage()
+                })
+            }
+        },1000)
+
+    }
+})
+
 app.service('Chat', function () {
     this.getSuggests = function () {
         var states = []
         chrome.storage.local.get('suggests', function (keys) {
+            states = []
             keys.suggests.forEach(function (val) {
                 states.push(val.suggest_chat)
             })
         })
+        chrome.storage.onChanged.addListener(function (changes) {
+            states = []
+            changes.suggests.newValue.forEach(function (val) {
+                states.push(val.suggest_chat)
+                console.log(val.suggest_chat);
+            });
+            $('.shopee-chat-root .chat-panel textarea').autocomplete({
+                delay: 100,
+                minLength: 1,
+                source: states,
+                appendTo: 'div.chat-content',
+                focus: function (event, ui) {
+                    // prevent autocomplete from updating the textbox
+                    console.log(ui.item.label);
+                    $('li.ui-menu-item').css("color", "black")
+                    $('li:contains("' + ui.item.label + '")').css("color", "red")
+                },
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+
+                $('.ui-helper-hidden-accessible').css({
+                    "display": "none"
+                })
+
+                return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
+            };
+        })
+
         // var states = Chat;
         var timer = setInterval(function () {
 
             var input = $('.shopee-chat-root .chat-panel textarea')
-            input.keyup(function (e) {  
-                setTimeout(function(){
+            input.keyup(function (e) {
+                setTimeout(function () {
                     $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
-                },200)              
-                
+                }, 200)
+
             })
 
             if (input.length && (states.length > 0)) {
@@ -48,22 +182,18 @@ app.service('Chat', function () {
                     focus: function (event, ui) {
                         // prevent autocomplete from updating the textbox
                         console.log(ui.item.label);
-                        $('li.ui-menu-item').css("color","black")
-                        $('li:contains("'+ui.item.label+'")').css("color","red")
+                        $('li.ui-menu-item').css("color", "black")
+                        $('li:contains("' + ui.item.label + '")').css("color", "red")
                     },
-                    // select: function (event, ui) {
-                    //     // alert(input.val());
-                    //     console.log(ui.item.value)
-                    // }
                 }).data("ui-autocomplete")._renderItem = function (ul, item) {
 
                     $('.ui-helper-hidden-accessible').css({
                         "display": "none"
                     })
-                    // console.log(item.label);                   
 
-                    return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);                    
+                    return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
                 };
+
 
 
 

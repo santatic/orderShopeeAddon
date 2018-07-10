@@ -268,6 +268,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     $scope.options.multiSelect = true;
     var sources = []
     var arrTraceno = []
+    var arrShipped = []
     firestore.collection("exportCode").doc(id).get().then(function (doc) {
         const data = doc.data()
         $scope.id = doc.id
@@ -327,9 +328,13 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     updateTime: ctime,
                     ownStatus: myData.own_status.status
                 }
+                if(myData.own_status.status == 5) {
+                    arrShipped.push(doc.id)
+                }
                 sources.push(obj)
                 arrTraceno.push((obj.trackno) )
             })
+            $scope.arrShipped = arrShipped
             $scope.carrier = sources[0].carrier
             $scope.arrTraceno = arrTraceno
             // console.log($scope.arrTraceno);

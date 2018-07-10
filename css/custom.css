@@ -193,10 +193,17 @@ body {
     padding-top: 15px;
     background: #f7f7f7;
     box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);
+    transition: all 0.3s ease;
 }
 table {
   background-color: #f7f7f7;
+  transition: all 0.3s ease;
   box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);
+}
+.form-group-status.noprint:hover,table:hover {
+  transform: translateY(4px);
+  transition: all 0.3s ease;
+  box-shadow: unset;
 }
 .checkboxcontainer {
   display: block;
@@ -204,12 +211,14 @@ table {
   padding-left: 35px;
   margin-bottom: 12px;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 18px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
   float: right;
+  margin-top: 13px;
+  margin-left: 13px;
 }
 
 /* Hide the browser's default checkbox */

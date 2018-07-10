@@ -29,14 +29,15 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         }, {
             name: "Create At",
             enableCellEdit: false,
-            field: "time"
+            field: "time",
+            sort: {
+                direction: 'desc',
+                priority: 0
+            }
         },{
             name: "Trạng thái",
             field: "status",
-            sort: {
-                direction: 'asc',
-                priority: 0
-            }
+            
         }],
         enableFiltering: true,
         onRegisterApi: function (gridApi) {

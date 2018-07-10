@@ -185,9 +185,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 }).show();
 
                 $scope.statusRadio = response.status
-                if (response.status == "PAID") {
-                    $scope.showOption = false
-                }
+                
                 $scope.$apply()
                 chrome.runtime.sendMessage({
                     mission: "update",

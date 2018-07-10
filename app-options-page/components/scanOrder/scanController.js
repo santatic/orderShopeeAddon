@@ -36,17 +36,39 @@ app.controller("scan-controller", function ($scope, $routeParams) {
   }).catch(function (e) {
     console.error(e);
   });
-  // angular.element(document).ready(function() {
-  //     angular.element('#reader').html5_qrcode(function(data) { // start webcam
-  //           console.log(data); // print QR code content
+  $scope.search = function(){
+    var n = new Noty({
+      closeWith: [],
+      layout: "bottomRight",
+      text: 'NHẬP CHÍNH XÁC MÃ VẬN ĐƠN<br><input id="searchByTraceNo" type="text">',
+      buttons: [
+          Noty.button('YES', 'btn btn-success', function () {
+              let input = $('input[type="text"]#searchByTraceNo').val()
+              firestore.collection("orderShopee").where("shipping_traceno", "==", input.toString())
+                  .get().then(function (querySnapshot) {
+                      console.log(querySnapshot);
+                      if (querySnapshot.size > 0) {
+                          querySnapshot.forEach(function (doc) {
+                              var win = window.open(chrome.extension.getURL("options.html#/orders/")+doc.id, "_blank");
+                              win.focus()
+                          })
+                      } else {
+                          alert("404...ĐƠN NÀY CHƯA CÓ TRONG HỆ THỐNG")
+                      }
+                  }).then(function(){
+                      n.close()
+                  }).catch(function(error){
+                    alert("LỖI: "+ error)
+                  })
+          }, {
+              id: 'button1',
+              'data-status': 'ok'
+          }),
 
-  //         },
-  //         function(error) {
-  //           console.log(error);
-  //         },
-  //         function(videoError) {
-  //           console.log(videoError);
-  //         }
-  //     );
-  // });
+          Noty.button('NO', 'btn btn-error', function () {
+              n.close();
+          })
+      ]
+  }).show();
+  }
 })

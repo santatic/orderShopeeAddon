@@ -1,6 +1,25 @@
 <div style="display: inline;position: fixed;bottom: 0px;left: 0px;z-index: 999;">
     <div class="panel-body">
-        <button ng-click="print()" class="btn btn-primary noprint" id="print">IN ĐƠN</button>
+        <!-- <div>
+            <span class="noprint">
+                <label class="checkboxcontainer"> IN SẢN PHẨM
+                    <input type="checkbox" ng-model="printProducts">
+                    <span class="checkmark"></span>
+                </label>
+            </span>
+        </div> -->
+
+
+        <span class="noprint">
+            <button ng-click="print()" style="font-size: 26px;
+                border-radius: 25px" class="btn btn-primary noprint" id="print">
+                <span class="glyphicon glyphicon-print"></span>
+            </button>
+            <label class="checkboxcontainer"> IN SẢN PHẨM
+                <input type="checkbox" ng-model="printProducts">
+                <span class="checkmark"></span>
+            </label>
+        </span>
     </div>
 </div>
 
@@ -15,7 +34,8 @@
                             <div id="trackno" style="font-size: 20px;">
                                 <b>
                                     {{trackingNo}}
-                                    <span ng-show="showStatus > 5"> - {{statusLonhon6}}</span>
+                                    <span style="background: rgba(46, 225, 0, 0.5686274509803921) ; color: #000;padding-right: 6px" ng-show="showStatus > 5">
+                                        - {{statusLonhon6}}</span>
                                 </b>
                             </div>
                         </td>
@@ -87,7 +107,7 @@
                 </table>
             </div>
 
-            <div class="card noprint" style=" box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);">
+            <div class="card noprint" style=" box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);transition: all 0.3s ease;">
                 <div class="card-body">
                     <textarea ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="2" id="noteEdit">{{note}}</textarea>
                     <div class="btn-group" style="margin-top: 10px; float: right">
@@ -106,13 +126,8 @@
         </div>
         <div class="col-md-6">
             <div class="rowProducts row noprint">
-                <span class="noprint">
-                    <label class="checkboxcontainer"> IN CẢ NHỮNG SẢN PHẨM DƯỚI
-                        <input type="checkbox" ng-model="printProducts">
-                        <span class="checkmark"></span>
-                    </label>
-                </span>
-                <table style="margin-top: 10px" id="products" class="table table-bordered">
+
+                <table id="products" class="table table-bordered">
                     <tbody>
                         <tr ng-repeat="item in products">
                             <td class="imageProduct" style="background: #fff;">

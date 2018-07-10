@@ -88,14 +88,14 @@ app.controller("home-controller", function ($scope, moment) {
         newOrder = keys.data.filter(function (event) {
             return event.own_status.status == 1;
         }).length;
-        packedOrder = keys.data.filter(function (event) {
-            return event.own_status.status == 4;
+        shippedOrder = keys.data.filter(function (event) {
+            return event.own_status.status == 5;
         }).length;
 
         var timer = setInterval(function () {
             if (newOrder > 0) {
-                $scope.donutLabels = ["ĐƠN MỚI", "ĐƠN ĐÃ ĐÓNG GÓI"];
-                $scope.donutData = [newOrder, packedOrder];
+                $scope.donutLabels = ["ĐƠN MỚI", "ĐƠN ĐÃ GỬI ĐI"];
+                $scope.donutData = [newOrder, shippedOrder];
                 $scope.$apply()
                 clearInterval(timer)
             }

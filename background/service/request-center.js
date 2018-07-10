@@ -82,30 +82,30 @@ app.service('request_center', function (helper_center) {
             function (details) {
                 if (helper_center.checkUrlContainSubstring(details.url, ["banhang.shopee.vn/api/v2/orders/?", "limit=40", "offset"]) == true) {
                     console.log("done");
-                    var docRef = firestore.collection("orderShopee");
-                    let data = helper_center.httpGet(details.url, [])
-                    data.orders.forEach(function (val) {
-                        docRef.doc((val.id).toString()).get().then(function (doc) {
-                            if (doc.exists) {
-                                arrIdExisted.push(val.id)
-                                // console.log(doc.data());
-                            } else {
-                                arrIdNotExisted.push(val.id)
-                                // console.log("not existed");
-                            }
-                        }).then(function () {})
-                    })
-                    var timer = setInterval(function () {
-                        if (arrIdExisted.length + arrIdNotExisted.length == data.orders.length) {
-                            var res = new Object()
-                            res = {
-                                exist: arrIdExisted,
-                                notExist: arrIdNotExisted
-                            }
-                            // return res
-                            clearInterval(timer)
-                        }
-                    }, 100)
+                    // var docRef = firestore.collection("orderShopee");
+                    // let data = helper_center.httpGet(details.url, [])
+                    // data.orders.forEach(function (val) {
+                    //     docRef.doc((val.id).toString()).get().then(function (doc) {
+                    //         if (doc.exists) {
+                    //             arrIdExisted.push(val.id)
+                    //             // console.log(doc.data());
+                    //         } else {
+                    //             arrIdNotExisted.push(val.id)
+                    //             // console.log("not existed");
+                    //         }
+                    //     }).then(function () {})
+                    // })
+                    // var timer = setInterval(function () {
+                    //     if (arrIdExisted.length + arrIdNotExisted.length == data.orders.length) {
+                    //         var res = new Object()
+                    //         res = {
+                    //             exist: arrIdExisted,
+                    //             notExist: arrIdNotExisted
+                    //         }
+                    //         // return res
+                    //         clearInterval(timer)
+                    //     }
+                    // }, 100)
                 }
             }, {
                 urls: ["https://banhang.shopee.vn/api/v2/orders*"]

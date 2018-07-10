@@ -328,50 +328,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         $scope.options.data = $scope.data;
         $scope.loading = false
         $scope.gridApi.core.refresh();
-        var checkFilter = true
-        $('input[type="text"].ui-grid-filter-input').keyup(function () {
-            var rows = $scope.gridApi.core.getVisibleRows($scope.gridApi.grid)
-            if (checkFilter && rows.length == 0) {
-                console.log("NO ROWS");
 
-                checkFilter = false
-                var n = new Noty({
-                    closeWith: [],
-                    layout: "bottomRight",
-                    text: 'NHẬP CHÍNH XÁC MÃ VẬN ĐƠN ĐỂ TÌM TIẾP? <br><input id="searchByTraceNo" type="text">',
-                    buttons: [
-                        Noty.button('YES', 'btn btn-success', function () {
-                            let input = $('input[type="text"]#searchByTraceNo').val()
-                            firestore.collection("orderShopee").where("shipping_traceno", "==", input.toString())
-                                .get().then(function (querySnapshot) {
-                                    console.log(querySnapshot);
-                                    if (querySnapshot.size > 0) {
-                                        querySnapshot.forEach(function (doc) {
-                                            $scope.gridApi.grid.clearAllFilters();
-                                            var win = window.open(chrome.extension.getURL("options.html#/orders/")+doc.id, "_blank");
-                                            win.focus()
-                                        })
-                                    } else {
-                                        alert("404...ĐƠN NÀY CHƯA CÓ TRONG HỆ THỐNG")
-                                    }
-                                }).then(function(){
-                                    n.close()
-                                })
-                        }, {
-                            id: 'button1',
-                            'data-status': 'ok'
-                        }),
-
-                        Noty.button('NO', 'btn btn-error', function () {
-                            checkFilter = true
-                            $scope.gridApi.grid.clearAllFilters();
-                            n.close();
-                        })
-                    ]
-                }).show();
-                $('input[type="text"]#searchByTraceNo').focus()
-            }
-        })
 
         sources.forEach(function (row, index) {
             switch (row.carrier) {

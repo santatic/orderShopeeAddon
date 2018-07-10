@@ -1,5 +1,15 @@
-app.controller("logisticCtrl", ['$scope', 'Chat',
-    function ($scope, Chat) {
+app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
+    function ($scope, Chat, getList) {
+
+        var timer = setInterval(function(){
+            var url = $(location).attr('href')
+            if(url.indexOf("banhang.shopee.vn/portal/sale") !== -1){
+                clearInterval(timer)
+                getList.getList()
+            }
+        },1000)
+
+        
 
         // chrome.runtime.sendMessage({
         //     mission: "getSuggest"
@@ -80,7 +90,6 @@ app.controller("logisticCtrl", ['$scope', 'Chat',
             console.log(response.data);
             var data = response.data;
             data.forEach(function (val) {
-
             })
             // var selectedExpTags = [parseInt(value.ownStatus)];
             // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)

@@ -137,7 +137,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       })
     } else {
       dataOnSnapshot = obj.data;
-      // console.log(dataOnSnapshot);
+      console.log(dataOnSnapshot);
       chrome.storage.local.get('suggests', function (obj) {
         dataSuggests = obj.suggests;
         console.log(dataSuggests);
@@ -167,7 +167,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 //   return el.id == obj.id;
                 // });
                 // if (!found) {
-                  dataToAdd.push(obj)
+                dataToAdd.push(obj)
                 // }
 
               }
@@ -198,10 +198,13 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
-              var obj = change.doc.data()
+              var obj = {
+                suggest_chat: change.doc.data().suggest_chat,
+                id: change.doc.id
+              }
               if (change.type === "added") {
                 var found = dataSuggests.some(function (el) {
-                  return el.suggest_chat == obj.suggest_chat;
+                  return el.id == obj.id;
                 });
                 if (!found) {
                   // console.log("added", obj);
@@ -210,13 +213,13 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
 
               }
               if (change.type === "modified") {
-                let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
+                let index = dataSuggests.findIndex(x => x.id == obj.id)
                 console.log("modified", obj);
                 dataSuggests[index] = obj
               }
               // console.log(change);
               if (change.type === "removed") {
-                let index = dataSuggests.findIndex(x => x.suggest_chat == obj.suggest_chat)
+                let index = dataSuggests.findIndex(x => x.id == obj.id)
                 console.log("removed", obj);
                 dataSuggests.splice(index, 1);
                 // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
@@ -233,10 +236,6 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     });
 
   });
-
-
-
-
 
 
   chrome.runtime.onMessage.addListener(
@@ -322,7 +321,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       // console.log(log);
       var test = log
 
-      if (log.indexOf('Đóng bảng kê đi') !== -1 || log.indexOf('Đã điều phối giao hàng') !== -1 || log.indexOf('Đã lấy hàng/Đã nhập kho') !== -1 || log.indexOf('Giao hàng lần') !== -1) {
+      if (log.indexOf('Bưu cục gốc:Nhập Phiếu Gủi') !== -1 || log.indexOf('Đóng bảng kê đi') !== -1 || log.indexOf('Đã điều phối giao hàng') !== -1 || log.indexOf('Đã lấy hàng/Đã nhập kho') !== -1 || log.indexOf('Giao hàng lần') !== -1) {
         log = 5;
         var docRef = firestore.collection("orderShopee").doc(val.id.toString());
         batch.update(docRef, {
@@ -385,6 +384,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       4,
       5
     ]
+    
 
     $.each(loop, function (i, val) {
       console.log(val);
@@ -402,7 +402,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         var obj = new Object()
         obj = {
           id: doc.id,
-          logistics: data.logistic['logistics-logs'].length > 0? data.logistic['logistics-logs'][0].description: ""
+          logistics: data.logistic['logistics-logs'].length > 0 ? data.logistic['logistics-logs'][0].description : ""
         }
         logistics.push(obj)
       })
@@ -521,30 +521,31 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   }
 
   function updateList(response, sendResponse) {
-    var id = response.id;
+
+    // 
     // var shopee = httpGet("https://banhang.shopee.vn/api/v2/orders/" + response.id, [])
     // console.log(shopee.order.shipping_traceno);
-    var docRef = firestore.collection("orderShopee").doc(id)
-    docRef.get().then(function (doc) {
-      if (doc.exists) {
-        const data = doc.data()
-        // console.log(doc.id, "=>", doc.data());
-        sendResponse({
-          check: "exist",
-          id: doc.id,
-          traceno: data.shipping_traceno,
-          shipping_fee: ((data.shipping_fee * 100) / 100).toLocaleString(),
-          status: data.own_status.status,
-          user_paid: ((data.buyer_paid_amount * 100) / 100).toLocaleString()
-        })
-      } else {
-        console.log(doc.id + " not exist");
-        sendResponse({
-          check: "not exist",
-          id: id
-        })
-      }
-    })
+    // var docRef = firestore.collection("orderShopee").doc(id)
+    // docRef.get().then(function (doc) {
+    //   if (doc.exists) {
+    //     const data = doc.data()
+    //     // console.log(doc.id, "=>", doc.data());
+    //     sendResponse({
+    //       check: "exist",
+    //       id: doc.id,
+    //       traceno: data.shipping_traceno,
+    //       shipping_fee: ((data.shipping_fee * 100) / 100).toLocaleString(),
+    //       status: data.own_status.status,
+    //       user_paid: ((data.buyer_paid_amount * 100) / 100).toLocaleString()
+    //     })
+    //   } else {
+    //     console.log(doc.id + " not exist");
+    //     sendResponse({
+    //       check: "not exist",
+    //       id: id
+    //     })
+    //   }
+    // })
 
   }
 

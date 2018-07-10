@@ -1,6 +1,6 @@
 <div class="panel panel-default panel-1688-shopee" ng-controller="item-shopee-saleCtrl" id="addTaskModal">
-    <div class="panel-body" ng-show="showSelect">
-        <div class="form-group-status noprint">
+    <div class="panel-body">
+        <div class="form-group-status noprint" ng-show="showSelect">
             <div class="form-check">
                 <input type="radio" ng-model="statusRadio" value="NEW">ĐƠN MỚI
             </div>
@@ -14,18 +14,19 @@
                 <input type="radio" ng-model="statusRadio" value="DELIVERED">KHÁCH ĐÃ NHẬN
             </div>
             <div class="form-check">
+                <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
+            </div>
+            <div class="form-check">
                 <input type="radio" ng-model="statusRadio" value="RETURNED">ĐÃ HOÀN HÀNG
             </div>
             <div class="form-check">
-                    <input type="radio" ng-model="statusRadio" value="CANCELED">ĐÃ HỦY
-                </div>
+                <input type="radio" ng-model="statusRadio" value="CANCELED">ĐÃ HỦY
+            </div>
             </select>
 
         </div>
-        <div class="panel-body">
-            <a href={{printLink}} target="_blank">
-                <button class="btn btn-success" id="print">THEO DÕI</button>
-            </a>
-        </div>
-
+        <a href={{printLink}} target="_blank">
+            <button class="btn btn-success" id="print">THEO DÕI</button>
+        </a>
     </div>
+</div>

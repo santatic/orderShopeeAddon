@@ -14,5 +14,10 @@
     border-radius: 4px;
     padding: 13px;
     background: #f7f7f7;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
 }
+.card:hover {
+    transform: translateY(4px);
+    transition: all 0.3s ease;
+    box-shadow: unset;
+  }
