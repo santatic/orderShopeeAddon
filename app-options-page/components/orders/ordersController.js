@@ -75,29 +75,29 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         enableSorting: true,
         showGridFooter: false,
         columnDefs: [{
-                name: "OrderId",
+                name: "ID",
                 field: "id",
                 enableCellEdit: false,
                 width: '100',
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
             }, {
-                name: "TrackNo",
+                name: "Số Vận Đơn",
                 enableCellEdit: false,
                 width: '200',
                 field: "trackno",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
             }, {
-                name: "NickName",
+                name: "UserName",
                 enableCellEdit: false,
                 width: '150',
                 field: "nickname"
             }, {
-                name: "Buyer Paid",
+                name: "Dự kiến thu",
                 enableCellEdit: false,
                 field: "paid",
                 width: '100'
             }, {
-                name: "Nhà vận chuyển",
+                name: "Nhà Vận Chuyển",
                 width: "150",
                 field: "carrier",
                 filter: {
@@ -115,34 +115,38 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 cellFilter: 'mapCarrier'
             },
             {
-                name: "Shipping Fee",
+                name: "Phí Ship",
                 enableCellEdit: false,
                 width: '100',
                 field: "shippingFee"
             }, {
-                name: "ExportCode",
+                name: "Phiếu Xuất",
                 field: "exId",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
             }, {
-                name: "ImportCode",
+                name: "Phiếu Thu",
                 field: "importId",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.importId}}">{{row.entity.importId}}</a></div>'
             },
             {
-                name: "Status Shopee",
+                name: "Logistics Shopee",
                 enableCellEdit: false,
                 field: "status",
                 cellTooltip: function (row) {
                     return row.entity.status;
                 }
             }, {
-                name: "Status Time",
+                name: "Thời gian của Logistics",
                 enableCellEdit: false,
                 width: '100',
-                field: "updateTime"
+                field: "updateTime",
+                sort: {
+                    direction: 'asc',
+                    priority: 0
+                }
             },
             {
-                name: "Own Status",
+                name: "Trạng Thái",
                 field: "ownStatus",
                 width: '160',
                 filter: {
@@ -151,14 +155,14 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             value: 1,
                             label: "Đơn mới"
                         },
-                        {
-                            value: 2,
-                            label: "Đủ hàng"
-                        },
-                        {
-                            value: 3,
-                            label: "Thiếu hàng"
-                        },
+                        // {
+                        //     value: 2,
+                        //     label: "Đủ hàng"
+                        // },
+                        // {
+                        //     value: 3,
+                        //     label: "Thiếu hàng"
+                        // },
                         {
                             value: 4,
                             label: "Đã đóng gói"
@@ -171,31 +175,31 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             value: 6,
                             label: "Khách đã nhận"
                         },
-                        {
-                            value: 7,
-                            label: "Đang hoàn hàng"
-                        },
-                        {
-                            value: 8,
-                            label: "Đã hoàn về kho"
-                        },
-                        {
-                            value: 9,
-                            label: "Đã thanh toán"
-                        },
-                        {
-                            value: "HT",
-                            label: "Đã hoàn tiền"
-                        },
-                        {
-                            value: "0",
-                            label: "Đã hủy"
-                        }
+                        // {
+                        //     value: 7,
+                        //     label: "Đang hoàn hàng"
+                        // },
+                        // {
+                        //     value: 8,
+                        //     label: "Đã hoàn về kho"
+                        // },
+                        // {
+                        //     value: 9,
+                        //     label: "Đã thanh toán"
+                        // },
+                        // {
+                        //     value: "HT",
+                        //     label: "Đã hoàn tiền"
+                        // },
+                        // {
+                        //     value: "0",
+                        //     label: "Đã hủy"
+                        // }
                     ]
                 },
                 cellFilter: 'mapGender'
             }, {
-                name: "From Now",
+                name: "Trễ",
                 field: "fromNow"
             }
         ],
@@ -235,8 +239,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     if (($("#" + val.id)).length) {
                         clearInterval(timer)
                         var qrcode = new QRCode(document.getElementById(val.id), {
-                            width: 100,
-                            height: 100,
+                            width: 60,
+                            height: 60,
                             correctLevel: QRCode.CorrectLevel.H
                         });
 
@@ -277,29 +281,46 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     }]
 
     $scope.options.multiSelect = true;
-    var sources = []
     var now = new Date
     chrome.storage.local.get('data', function (keys) {
-        var data = keys.data;
+        getData(keys.data)
+    })
+    chrome.storage.onChanged.addListener(function (changes) {
+        getData(changes.data.newValue);
+    })
+
+
+
+    function getData(data) {
+        var sources = []
         data.forEach(function (doc) {
             const myData = doc
-            // console.log(myData);
-            ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
+
+            if (myData.logistic["logistics-logs"].length > 0) {
+                ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
+                description = myData.logistic["logistics-logs"][0].description
+            } else {
+                let date = new Date()
+                ctime = moment(date.getTime()).format('YYYY-MM-DD');
+                description = ""
+            }
+            // console.log(ctime);
             obj = new Object();
             var start = new Date(myData.own_status.create_at.seconds * 1000)
-            obj = { 
+            obj = {
                 id: myData.id,
                 trackno: myData.shipping_traceno,
-                nickname: myData.user.name + " - " + myData.buyer_address_name,
+                nickname: myData.user.name,
+                name: myData.buyer_address_name,
                 paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                 carrier: myData.actual_carrier,
                 shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
                 exId: myData.exportId,
-                status: myData.logistic["logistics-logs"][0].description,
+                status: description,
                 updateTime: ctime,
                 importId: myData.importMoneyId,
                 ownStatus: myData.own_status.status,
-                fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24))
+                fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)) + " ngày"
             }
             sources.push(obj)
         })
@@ -307,6 +328,51 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         $scope.options.data = $scope.data;
         $scope.loading = false
         $scope.gridApi.core.refresh();
+        var checkFilter = true
+        $('input[type="text"].ui-grid-filter-input').keyup(function () {
+            var rows = $scope.gridApi.core.getVisibleRows($scope.gridApi.grid)
+            if (checkFilter && rows.length == 0) {
+                console.log("NO ROWS");
+
+                checkFilter = false
+                var n = new Noty({
+                    closeWith: [],
+                    layout: "bottomRight",
+                    text: 'NHẬP CHÍNH XÁC MÃ VẬN ĐƠN ĐỂ TÌM TIẾP? <br><input id="searchByTraceNo" type="text">',
+                    buttons: [
+                        Noty.button('YES', 'btn btn-success', function () {
+                            let input = $('input[type="text"]#searchByTraceNo').val()
+                            firestore.collection("orderShopee").where("shipping_traceno", "==", input.toString())
+                                .get().then(function (querySnapshot) {
+                                    console.log(querySnapshot);
+                                    if (querySnapshot.size > 0) {
+                                        querySnapshot.forEach(function (doc) {
+                                            $scope.gridApi.grid.clearAllFilters();
+                                            var win = window.open(chrome.extension.getURL("options.html#/orders/")+doc.id, "_blank");
+                                            win.focus()
+                                        })
+                                    } else {
+                                        alert("404...ĐƠN NÀY CHƯA CÓ TRONG HỆ THỐNG")
+                                    }
+                                }).then(function(){
+                                    n.close()
+                                })
+                        }, {
+                            id: 'button1',
+                            'data-status': 'ok'
+                        }),
+
+                        Noty.button('NO', 'btn btn-error', function () {
+                            checkFilter = true
+                            $scope.gridApi.grid.clearAllFilters();
+                            n.close();
+                        })
+                    ]
+                }).show();
+                $('input[type="text"]#searchByTraceNo').focus()
+            }
+        })
+
         sources.forEach(function (row, index) {
             switch (row.carrier) {
                 case "Giao Hàng Tiết Kiệm":
@@ -353,105 +419,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     break
             }
         })
-    })
-
-    // docRef = firestore.collection("orderShopee");
-    // docRef.get().then(
-    //     function (querySnapshot) {
-
-    //         querySnapshot.forEach(function (doc) {
-    //             const myData = doc.data();
-    //             // console.log(myData);
-    //             ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
-    //             obj = new Object();
-    //             var start = new Date(myData.own_status.create_at.seconds*1000)
-    //             obj = {
-    //                 id: doc.id,
-    //                 trackno: myData.shipping_traceno,
-    //                 nickname: myData.user.name + " - " + myData.buyer_address_name,
-    //                 paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
-    //                 carrier: myData.actual_carrier,
-    //                 shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
-    //                 exId: myData.exportId,
-    //                 status: myData.logistic["logistics-logs"][0].description,
-    //                 updateTime: ctime,
-    //                 importId: myData.importMoneyId,
-    //                 ownStatus: myData.own_status.status,
-    //                 fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24))
-    //             }
-    //             sources.push(obj)
-    //         })
-
-    //         $scope.data = sources
-    //         $scope.options.data = $scope.data;
-    //         $scope.loading = false
-    //         $scope.gridApi.core.refresh();
-    //         sources.forEach(function (row, index) {
-    //             switch (row.carrier) {
-    //                 case "Giao Hàng Tiết Kiệm":
-    //                     row.carrier = 1;
-    //                     break;
-    //                 case "Viettel Post":
-    //                     row.carrier = 2
-    //                     break
-    //             }
-
-    //             switch (row.ownStatus) {
-    //                 case "NEW":
-    //                     row.ownStatus = 1
-    //                     break
-    //                 case "PREPARED":
-    //                     row.ownStatus = 2
-    //                     break
-    //                 case "UNPREPARED":
-    //                     row.ownStatus = 3
-    //                     break
-    //                 case "PACKED":
-    //                     row.ownStatus = 4
-    //                     break
-    //                 case "SHIPPED":
-    //                     row.ownStatus = 5
-    //                     break
-    //                 case "DELIVERED":
-    //                     row.ownStatus = 6
-    //                     break
-    //                 case "RETURNING":
-    //                     row.ownStatus = 7
-    //                     break
-    //                 case "RETURNED":
-    //                     row.ownStatus = 8
-    //                     break
-    //                 case "PAID":
-    //                     row.ownStatus = 9
-    //                     break
-    //                 case "REFUNDED":
-    //                     row.ownStatus = "HT"
-    //                     break
-    //                 case "CANCELED":
-    //                     row.ownStatus = "0"
-    //                     break
-    //             }
-    //             // console.log(row.ownStatus);
-    //             // var selectedExpTags = [parseInt(value.ownStatus)];
-    //             // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-    //             // value.own_Status = names[0];
-    //         })
-    //         // console.log(querySnapshot.size);
-    //     }
-    // ).then(function () {
-    //     console.log($scope);
-    //     //$scope.apply();
-    // }).catch(function (error) {
-    //     new Noty({
-    //         layout: 'bottomRight',
-    //         timeout: 5000,
-    //         theme: "relax",
-    //         type: 'error',
-    //         text: error
-    //     }).show();
-    // });
-
+    }
 }
+
+
 
 function mapCarrier() {
     var genderHash = {

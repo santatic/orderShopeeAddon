@@ -7,14 +7,15 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6" id="left">
-            <table class="table table-bordered">
+        <div class="col-md-6" style="padding-right: 67px;">
+            <table id="left" class="table table-bordered">
                 <tbody>
                     <tr>
                         <td>
                             <div id="trackno" style="font-size: 20px;">
                                 <b>
                                     {{trackingNo}}
+                                    <span ng-show="showStatus > 5"> - {{statusLonhon6}}</span>
                                 </b>
                             </div>
                         </td>
@@ -36,76 +37,82 @@
                     </tr>
                 </tbody>
             </table>
+
+
             <div class="form-group-status noprint">
 
-                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="NEW">ĐƠN MỚI
+                <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="NEW">
+                <b>ĐƠN MỚI</b>
 
 
-                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="PACKED">ĐÃ ĐÓNG GÓI
+                <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="PACKED">
+                <b>ĐÃ ĐÓNG GÓI</b>
 
 
-                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="SHIPPED">ĐÃ GỬI ĐI
+                <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="SHIPPED">
+                <b>ĐÃ GỬI ĐI</b>
 
 
-                <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="DELIVERED">KHÁCH ĐÃ NHẬN
+                <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="DELIVERED">
+                <b>KHÁCH ĐÃ NHẬN</b>
 
                 <!-- 
                             <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
                     </div> -->
                 </select>
-                <br>
-                <div class="card">
-                    <div class="card-body">
-                        <textarea ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="3" id="noteEdit">{{note}}</textarea>
-                        <div class="btn-group" style="margin-top: 10px; float: right">
-                            <button id="saveNote" class="btn btn-success" style="margin-right: 10px">SAVE</button>
-                            <button id="cancelNote" class="btn btn-danger">CANCEL</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="    margin-top: 56px;">
-                    <div class="card-body">
-                        {{logistics}}
-                    </div>
-                </div>
-                <br>
-                <span>
-                    
-                </span>
-                IN SẢN PHẨM: 
-                  <button ng-model="printProducts" ng-click="printProducts=!printProducts">{{printProducts}}</button>
-
             </div>
-
-        </div>
-        <div class="col-md-6">
-            <div class="row">
+            <!-- <div class="row"> -->
+            <div>
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <td>{{trackingNo}} - {{carrier}}</td>
-                            <td>+{{phone}}</td>
-                            <td>{{date}}</td>
+                            <td title="Ngày đặt hàng">{{date}}</td>
+                            <td title="Số điện thoại khách mua">+{{phone}}</td>
+                            <td title="Mã vận đơn - Nhà vận chuyển">{{trackingNo}} - {{carrier}}</td>
                         </tr>
                         <tr>
-                            <td>{{orderId}}</td>
-                            <td>
+                            <td title="Mã đơn">{{orderId}}</td>
+                            <td title="ID">
                                 <a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{urlId}}">{{urlId}}</a>
                             </td>
-                            <td>{{pay}} COD</td>
+                            <td title="Dự kiến thu">{{pay}} COD</td>
                         </tr>
                         <tr>
                             <td id="qrcode">
-                                <td>{{name}}</td>
-                                <td>{{address}}</td>
-
+                                <td title="Tên khách">{{name}}</td>
+                                <td title="Địa chỉ">{{address}}</td>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="rowProducts row noprint" style="margin-top: 8px">
-                <table id="products" class="table table-bordered">
+
+            <div class="card noprint" style=" box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);">
+                <div class="card-body">
+                    <textarea ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="2" id="noteEdit">{{note}}</textarea>
+                    <div class="btn-group" style="margin-top: 10px; float: right">
+                        <button id="saveNote" class="btn btn-success" style="margin-right: 10px">SAVE</button>
+                        <button id="cancelNote" class="btn btn-danger">CANCEL</button>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="card noprint" style="margin-top: 56px;">
+                <div class="card-body">
+                    {{logistics}}
+                </div>
+            </div> -->
+            <!-- </div> -->
+
+        </div>
+        <div class="col-md-6">
+            <div class="rowProducts row noprint">
+                <span class="noprint">
+                    <label class="checkboxcontainer"> IN CẢ NHỮNG SẢN PHẨM DƯỚI
+                        <input type="checkbox" ng-model="printProducts">
+                        <span class="checkmark"></span>
+                    </label>
+                </span>
+                <table style="margin-top: 10px" id="products" class="table table-bordered">
                     <tbody>
                         <tr ng-repeat="item in products">
                             <td class="imageProduct" style="background: #fff;">

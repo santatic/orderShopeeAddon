@@ -25,8 +25,11 @@ app.service('Chat', function () {
         var timer = setInterval(function () {
 
             var input = $('.shopee-chat-root .chat-panel textarea')
-            input.keyup(function () {
-                $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+            input.keyup(function (e) {  
+                setTimeout(function(){
+                    $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+                },200)              
+                
             })
 
             if (input.length && (states.length > 0)) {
@@ -42,21 +45,24 @@ app.service('Chat', function () {
                     minLength: 1,
                     source: states,
                     appendTo: 'div.chat-content',
-                    // focus: function (event, ui) {
-                    //     // prevent autocomplete from updating the textbox
-                    //     event.preventDefault();
-                    // },
+                    focus: function (event, ui) {
+                        // prevent autocomplete from updating the textbox
+                        console.log(ui.item.label);
+                        $('li.ui-menu-item').css("color","black")
+                        $('li:contains("'+ui.item.label+'")').css("color","red")
+                    },
                     // select: function (event, ui) {
                     //     // alert(input.val());
                     //     console.log(ui.item.value)
                     // }
                 }).data("ui-autocomplete")._renderItem = function (ul, item) {
-                    // console.log(item.label);
 
-                    $('.shopee-chat-root .shopee-chat__scrollable').scrollTop($('.shopee-chat-root .shopee-chat__scrollable')[0].scrollHeight)
+                    $('.ui-helper-hidden-accessible').css({
+                        "display": "none"
+                    })
+                    // console.log(item.label);                   
 
-                    return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
-
+                    return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);                    
                 };
 
 

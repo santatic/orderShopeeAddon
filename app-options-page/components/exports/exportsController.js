@@ -33,6 +33,10 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         },{
             name: "Trạng thái",
             field: "status",
+            sort: {
+                direction: 'asc',
+                priority: 0
+            }
         }],
         enableFiltering: true,
         onRegisterApi: function (gridApi) {

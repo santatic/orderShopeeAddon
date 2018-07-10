@@ -47,7 +47,7 @@ app.service('helper', function () {
     var date = new Date()
     var first = true
     arrayOrders.forEach(function (val) {
-      docRef = firestore.collection("orderShopee").doc(val.id);
+      var docRef = firestore.collection("orderShopee").doc(val.id.toString());
       docRef.get().then(function (doc) {
         const data = doc.data()
         if (first) {
@@ -91,18 +91,11 @@ app.service('helper', function () {
                 "shipper": "",
                 "create_at": date,
                 "status": "MỚI"
-              }).then(function(){
-                new Noty({
-                  layout: 'bottomRight',
-                  timeout: 5000,
-                  theme: "relax",
-                  type: 'success',
-                  text: 'ĐÃ THÊM MÃ PHIẾU XUẤT'
-                }).show();
-              }).then(function(){
-                location.reload()
+              }).then(function () {
+                var win = window.open(chrome.extension.getURL("options.html#/export/")+date.getTime(), "_blank");
+                win.focus()
               })
-              
+
             });
           }
         }, 500)
@@ -114,15 +107,15 @@ app.service('helper', function () {
   }
 })
 
-app.controller("header-controller", ['$scope', '$location', '$rootScope', function ($scope, $location,$rootScope, $firebaseObject) {
+app.controller("header-controller", ['$scope', '$location', function ($scope, $location, $firebaseObject) {
   $scope.isActive = function (route) {
     return route === $location.path();
   }
-  chrome.storage.local.get('data', function (keys) {    
-    $rootScope.$apply(function () {
-      $rootScope.dataOrders = keys.data
-    });
-  })
+  // chrome.storage.local.get('data', function (keys) {    
+  //   $rootScope.$apply(function () {
+  //     $rootScope.dataOrders = keys.data
+  //   });
+  // })
   $scope.isDisabled = false;
 
   $scope.init = function () {

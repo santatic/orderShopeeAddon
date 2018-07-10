@@ -1,4 +1,4 @@
-app.controller("scan-controller", function ($scope, $rootScope, $routeParams) {
+app.controller("scan-controller", function ($scope, $routeParams) {
 
 
   $scope.typeUrl = "addon"
@@ -9,9 +9,22 @@ app.controller("scan-controller", function ($scope, $rootScope, $routeParams) {
   });
   scanner.addListener('scan', function (content) {
     console.log(content);
-    document.getElementById('play-beep').play()     
+    document.getElementById('play-beep').play()  
+    
+    var url 
+    switch ($scope.typeUrl) {
+      case "addon":
+        url = chrome.extension.getURL("options.html#/orders/") + content
+        break;
+      case "shopee":
+        url = "https://banhang.shopee.vn/portal/sale/" + content
+        break
+      case "exportCode":
+        url = chrome.extension.getURL("options.html#/export/") + content
+      break
+    }
 
-    var win = window.open($scope.typeUrl == "addon"? chrome.extension.getURL("options.html#/orders/") + content : "https://banhang.shopee.vn/portal/sale/" + content,"_self");
+    var win = window.open(url,"_self");
     win.focus()
   });
   Instascan.Camera.getCameras().then(function (cameras) {

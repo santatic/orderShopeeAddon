@@ -1,70 +1,70 @@
-<div class="container">
+<!-- <div class="row"> -->
+<div class="col-md-6">
         <div class="row">
-                <div class="col-md-6">
-                        <form ng-submit="submitRateCNY()" class="form-inline">
-                                <div class="form-group">
-                                        <div class="input-group">
-                                                <div class="input-group-addon">Tỷ Giá Tệ</div>
-                                                <input type="number" required ng-init="configuration.rateCNY=1" ng-model="configuration.rateCNY" type="text" class="form-control"
-                                                        placeholder="Tỉ Giá Tệ">
-                                                <span class="input-group-addon" id="basic-addon2">VNĐ</span>
-                                        </div>
-                                </div>
 
-                                <div class="form-group">
-                                        <div class="input-group">
-                                                <div class="input-group-addon">Giá Vận Chuyển</div>
-                                                <input type="number" required ng-init="configuration.freight=1" ng-model="configuration.freight" type="text" class="form-control"
-                                                        placeholder="Tỉ Giá Tệ">
-                                                <span class="input-group-addon" id="basic-addon2">VNĐ/Kg</span>
-                                        </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Lưu</button>
-                        </form>
-                        <div class="row">
-
-                                <!-- <div class="form-group form-inline">
+                <!-- <div class="form-group form-inline">
                                         <input type="text" class="form-control" name="" id="suggest" placeholder="">
                                         <button type="button" ng-click="addSuggest()" class="btn btn-success">SAVE</button>
                                         <button type="button" ng-click="cancelSuggest()" class="btn btn-danger">CANCEL</button>
                                 </div> -->
-                                <div id="grid1" ui-grid="options" ui-grid-selection ui-grid-pagination ui-grid-edit ui-grid-row-edit
-                                        class="grid noprint"></div>
-                        </div>
-                </div>
-                <div class="col-md-3">
-                        <div class='row'>
-                                <div class='col-md-12'>
-                                        <h5>{{ (todoList | filter: {completed:false}).length}} shop id(s)</h5>
-                                        <form id='todo-form' ng-submit='add()'>
-                                                <div class="form-group">
-                                                        <input type='number' id='new-todo' ng-model='newContent' class="form-control" placeholder="shopid được tô đậm trong danh sách?"
-                                                        />
-                                                </div>
-                                        </form>
-                                </div>
-                        </div>
-
-                        <div class='row' id="todo-list">
-                                <div class='todo-item col-md-12' ng-repeat='todo in todoList track by todo.id' ng-class='{completed: todo.completed}'>
-                                        <input type='checkbox' ng-model='todo.completed' ng-click='toggleCompleted()' />
-                                        <span class='todo-content'>{{todo.content}}</span>
-                                        <a class='btn-remove-todo pull-right' ng-click='remove(todo)'>
-                                                <i class='glyphicon glyphicon-remove'></i>
-                                        </a>
-                                </div>
-                        </div>
-
-                        <div class='row'>
-                                <div class='col-md-12'>
-                                        <div id='toolbar'>
-                                                <a id="btn-remove-all" ng-click='removeAll()' class='btn btn-small btn-default pull-right' ng-show="todoList.length > 0">
-                                                        <i class="glyphicon glyphicon-remove"></i> Clear all
-                                                </a>
-                                        </div>
-                                </div>
-                        </div>
-                </div>
-                <div class="col-md-3"></div>
+                <div id="grid1" ui-grid="options" ui-grid-selection ui-grid-pagination ui-grid-edit ui-grid-row-edit class="grid noprint"></div>
         </div>
 </div>
+<div class="col-md-1"></div>
+<div class="col-md-5">
+        <div class="row">
+                <form ng-submit="submitRateCNY()" class="form-inline">
+                        <div class="form-group">
+                                <div class="input-group">
+                                        <div class="input-group-addon" style="width: 131px" >Tỷ Giá Tệ</div>
+                                        <input type="number" required ng-init="configuration.rateCNY=1" ng-model="configuration.rateCNY" type="text" class="form-control"
+                                                placeholder="Tỉ Giá Tệ">
+                                        <span class="input-group-addon" style="width: 82px;" id="basic-addon2">VNĐ</span>
+                                </div>
+                        </div>
+
+                        <div class="form-group">
+                                <div class="input-group">
+                                        <div class="input-group-addon">Giá Vận Chuyển</div>
+                                        <input type="number" required ng-init="configuration.freight=1" ng-model="configuration.freight" type="text" class="form-control"
+                                                placeholder="Tỉ Giá Tệ">
+                                        <span class="input-group-addon" id="basic-addon2">VNĐ/Kg</span>
+                                </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                </form>
+        </div>
+        <div class='row'>
+                <div class='col-md-12'>
+                        <h5>{{ (todoList | filter: {completed:false}).length}} shop id(s)</h5>
+                        <form id='todo-form' ng-submit='add()'>
+                                <div class="form-group">
+                                        <input type='number' id='new-todo' ng-model='newContent' class="form-control" placeholder="shopid được tô đậm trong danh sách?"
+                                        />
+                                </div>
+                        </form>
+                </div>
+        </div>
+
+        <div class='row' id="todo-list">
+                <div class='todo-item col-md-12' ng-repeat='todo in todoList track by todo.id' ng-class='{completed: todo.completed}'>
+                        <input type='checkbox' ng-model='todo.completed' ng-click='toggleCompleted()' />
+                        <span class='todo-content'>{{todo.content}}</span>
+                        <a class='btn-remove-todo pull-right' ng-click='remove(todo)'>
+                                <i class='glyphicon glyphicon-remove'></i>
+                        </a>
+                </div>
+        </div>
+
+        <div class='row'>
+                <div class='col-md-12'>
+                        <div id='toolbar'>
+                                <a id="btn-remove-all" ng-click='removeAll()' class='btn btn-small btn-default pull-right' ng-show="todoList.length > 0">
+                                        <i class="glyphicon glyphicon-remove"></i> Clear all
+                                </a>
+                        </div>
+                </div>
+        </div>
+</div>
+
+<!-- </div> -->
