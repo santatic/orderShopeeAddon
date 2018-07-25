@@ -47,11 +47,11 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
                 });
             });
         }
-        $('._19OC6A').each(function () {
-            var url = $(this).find('img').attr('src')
-            var filename = url.replace(/.*\//g, "");
-            console.log(filename);
-        })
+        // $('._19OC6A').each(function () {
+        //     var url = $(this).find('img').attr('src')
+        //     var filename = url.replace(/.*\//g, "");
+        //     console.log(filename);
+        // })
 
         $scope.download_images = function () {
             var zip = new JSZip();
@@ -59,21 +59,13 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
 
             folderName = $scope.item.itemid + "-" + $scope.item.shopid;
             // console.log($scope.GLOBAL_FIRST_RESPONSE[$scope.item.itemid]);
-            if ($('._19OC6A') !== 0) {
-
-                $('._19OC6A').each(function () {
-                    var url = $(this).find('img').attr('src')
-                    var filename = url.replace(/.*\//g, "");
-                    zip.file(filename + '.jpg', $scope.urlToPromise(url), {
-                        binary: true
-                    });
+            request.image_list.forEach(function(val){
+                var url = "https://cf.shopee.vn/file/"+val+"_tn"
+                var filename = val
+                zip.file(filename + '.jpg', $scope.urlToPromise(url), {
+                    binary: true
                 });
-            } else
-                new Noty({
-                    layout: 'center',
-                    type: 'success',
-                    text: 'Bạn phải chờ trang load xong đã'
-                }).show();
+            })            
 
             zip.generateAsync({
                 type: "blob"

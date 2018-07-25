@@ -1,4 +1,7 @@
-app.controller("payment-controller", function ($scope, uiGridConstants) {
+app.controller("payment-controller", paymentController)
+  .filter('mapGender', mapGender)
+
+function paymentController($scope, uiGridConstants) {
   // $scope.refresh = false;
 
   $scope.gridOptions = {
@@ -7,6 +10,16 @@ app.controller("payment-controller", function ($scope, uiGridConstants) {
     enableSorting: true,
     showGridFooter: false,
     enableFiltering: true,
+    columnDefs: [{
+      name: "Trạng thái riêng",
+      field: "statuss",
+      // cellTemplate:'<div class="ui-grid-cell-contents" > {{row.entity.ownStatus}}</div>',
+      filter: {
+        type: uiGridConstants.filter.SELECT,
+        selectOptions: []
+      },
+      cellFilter: 'mapGender'
+    }]
     // showGridHeader: false
   };
   $scope.today = function () {
@@ -90,7 +103,7 @@ app.controller("payment-controller", function ($scope, uiGridConstants) {
   });
 
 
-})
+}
 app.directive("fileread", [function () {
   return {
     scope: {
@@ -174,7 +187,7 @@ app.directive("fileread", [function () {
               $scope.gridApi = gridApi
             }
 
-            $scope.opts.columnDefs = [];
+            // $scope.opts.columnDefs = [];
             headerNames.forEach(function (h) {
               $scope.opts.columnDefs.push({
                 field: h
@@ -200,15 +213,13 @@ app.directive("fileread", [function () {
             }, {
               name: "Đối soát",
               field: "offset"
-            }, {
-              name: "Trạng thái riêng",
-              field: "statuss"
             })
 
             var sendOrderno = []
             var totalShopeeMoney = []
             var totalOwnMoney = []
             var arrayId = []
+            var notExist = []
             data.forEach(function (value, i) {
               var orderKey = Object.keys(value)[3];
               var ordernoStr = value[orderKey];
@@ -217,6 +228,7 @@ app.directive("fileread", [function () {
               // console.log(traceno);
               sendOrderno.push(orderno)
             })
+            var arrStt = []
             chrome.runtime.sendMessage({
               mission: "payment",
               arrayOrderno: sendOrderno
@@ -227,6 +239,7 @@ app.directive("fileread", [function () {
                 var shopeeMoney = data[i][Object.keys(data[i])[2]];
                 totalShopeeMoney.push(shopeeMoney);
                 if (val.money == "chua co trong Firestore") {
+                  notExist.push(val.orderId)
                   data[i].offset = "null"
                 } else {
                   let obj = new Object()
@@ -245,14 +258,20 @@ app.directive("fileread", [function () {
                   }
                   data[i].orderId = val.id;
                   data[i].traceno = val.traceno
+
                   var selectedExpTags = [val.status];
-                  var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese)
+                  var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
                   data[i].statuss = names[0]
+                  if (jQuery.inArray(names[0], arrStt) == -1) {
+                    arrStt.push(names[0])
+                  }
                 }
                 // console.log(data[i].offset);
                 data[i].shippingFee = val.shipping_fee
 
               })
+
+              console.log(notExist);
               var sumShopee = 0;
               var sumOwn = 0;
               $.each(totalShopeeMoney, function () {
@@ -263,14 +282,128 @@ app.directive("fileread", [function () {
               });
 
               // alert(sumShopee + "-"+ sumOwn)
+
+              if (notExist.length == 0) {
+                $('p#pNull').remove()
+              } else {
+                $('#null').text(notExist.length)
+              }
               $('#shpm').text(sumShopee.toLocaleString())
               $('#ownm').text(sumOwn.toLocaleString())
               $("#offset").text((sumShopee - sumOwn).toLocaleString())
               var myData = data
               // $scope.disableButtonUpdate = disable
               $scope.opts.data = myData;
+              var arrStatus = []
+              arrStt.forEach(function (val) {
+                let selectedExpTags = [val];
+                let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                let obj = {
+                  value: val,
+                  label: names[0]
+                }
+                arrStatus.push(obj)
+              })
+              $scope.opts.columnDefs[0].filter.selectOptions = arrStatus
+              console.log(arrStatus);
+              // statusDef.filter.selectOptions = arrStatus
+              $scope.notExist = notExist
               $scope.$apply()
-              $('button.update').click(function () {
+
+              function httpGet(theUrl, headers) {
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open("GET", theUrl, false); // false for synchronous request
+                for (var i = 0; i < headers.length; i++) {
+                  xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
+                }
+                xmlHttp.send(null);
+                return JSON.parse(xmlHttp.responseText);
+              }
+              $('span.update').click(function () {
+                var promise = new Promise(function (resolve, reject) {
+                  var n = new Noty({
+                    layout: 'bottomRight',
+                    theme: "relax",
+                    type: 'warning',
+                    text: 'ĐANG THEO DÕI ' + notExist.length + ' ĐƠN...'
+                  }).on('afterShow', function () {
+                    var arrId = []
+                    notExist.forEach(function (val) {
+                      console.log("hi");
+                      var headers = []
+                      var xmlHttp = new XMLHttpRequest();
+                      xmlHttp.open("GET", "https://banhang.shopee.vn/api/v2/orders/hint/?keyword=" + val, false); // false for synchronous request
+                      for (var i = 0; i < headers.length; i++) {
+                        xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
+                      }
+                      xmlHttp.send(null);
+                      let hint = JSON.parse(xmlHttp.responseText)
+                      arrId.push(hint['order-hint'].orders[0])
+                    })
+                    resolve(arrId)
+                  }).show();
+                })
+                promise.then(function (dataOrderId) {
+                  // console.log(dataOrderId);
+                  dataOrderId.forEach(function (valid, i) {
+                    var val;
+                    var user = new Object();
+                    console.log("hello");
+                    var promise1 = new Promise(function (resolve, reject) {
+                      resolve(httpGet("https://banhang.shopee.vn/api/v2/orders/" + valid, []))
+                    })
+                    promise1.then(function (data) {
+                      val = data
+                    }).then(function () {
+                      user = {
+                        id: val.users[0].id,
+                        name: val.users[0].username,
+                        phone: val.users[0].phone,
+                        email: val.users[0].email,
+                        gender: val.users[0].gender,
+                        create_at: val.users[0].ctime,
+                        birth: val.users[0].birth_timestamp
+                      }
+                      delete val['bundle-deals'];
+                      delete val['users'];
+                      val.own_status = {
+                        status: 1,
+                        create_at: new Date()
+                      }
+                      val.user = user
+                      val.create_at = new Date();
+                      val.note = "";
+                      val.cancel_status = false;
+                      val.logistic = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + valid, []);
+                      // console.log(val);
+                      for (var key in val['order']) {
+                        if (val['order'].hasOwnProperty(key)) {
+                          val[key] = val['order'][key];
+                        }
+                      }
+
+                    }).then(function () {
+                      delete val['order'];
+                      firestore.collection("orderShopee").doc(valid.toString()).set(
+                        val
+                      ).then(function () {
+                        firestore.collection("userShopee").doc(user.id.toString()).set(
+                          user
+                        ).then(() => {
+                          console.log("save successful");
+                          $('#null').text(notExist.length - (i + 1))
+                          n.close()
+                        })
+                      })
+
+                    })
+                  })
+
+                })
+
+
+              })
+              $('.updatePay').on('click', function () {
                 $('#loading').text('loading....')
                 if ($('#bank').text() == "Chọn Ngân Hàng") {
                   alert("Vui lòng chọn Ngân Hàng")
@@ -279,7 +412,9 @@ app.directive("fileread", [function () {
                     mission: "updatePayment",
                     id: arrayId,
                     date: $('#datepicker').val(),
-                    bank: $('#bank').text()
+                    bank: $('#bank').text(),
+                    sumShopeePaid: sumShopee,
+                    sumBuyerPaid: sumOwn
                   }, function (response) {
                     $('#loading').text("")
                     new Noty({
@@ -291,7 +426,6 @@ app.directive("fileread", [function () {
                     }).show();
                   })
                 }
-
               })
               // $scope.gridApi.core.refresh()
             })
@@ -305,3 +439,27 @@ app.directive("fileread", [function () {
     }
   }
 }]);
+
+function mapGender() {
+  var genderHash = {
+    1: "Đơn mới",
+    2: "Đã nhặt đủ hàng để chờ đóng gói",
+    3: "Chưa nhặt đủ hàng",
+    4: "Đã đóng gói chờ gửi đi",
+    5: "Đã gửi đi",
+    6: "Khách đã nhận hàng",
+    7: "Đang hoàn hàng chưa về đến kho",
+    8: "Đã hoàn về kho",
+    9: "Đã thanh toán",
+    "HT": "Đã hoàn tiền",
+    "0": "Đã hủy"
+  };
+
+  return function (input) {
+    if (!input) {
+      return '';
+    } else {
+      return genderHash[input];
+    }
+  }
+};

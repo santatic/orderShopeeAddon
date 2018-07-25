@@ -64,6 +64,17 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             vietnamese: "đã hủy"
         },
     ]
+    var statusDef = {
+        name: "Own Status",
+        field: "ownStatus",
+        width: '160',
+        // cellTemplate:'<div class="ui-grid-cell-contents" > {{row.entity.ownStatus}}</div>',
+        filter: {
+            type: uiGridConstants.filter.SELECT,
+            selectOptions: []
+        },
+        cellFilter: 'mapGender'
+    }
 
     $scope.options = {
         // enableHorizontalScrollbar = 0,
@@ -89,7 +100,6 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             }, {
                 name: "NickName",
                 enableCellEdit: false,
-                width: '150',
                 field: "nickname"
             }, {
                 name: "Buyer Paid",
@@ -103,73 +113,22 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 width: '100',
                 field: "shippingFee"
             },
-            {
-                name: "Status Shopee",
-                enableCellEdit: false,
-                field: "status",
-                cellTooltip: function (row) {
-                    return row.entity.status;
-                }
-            }, {
-                name: "Status Time",
-                enableCellEdit: false,
-                width: '100',
-                field: "updateTime"
-            },
-            {
-                name: "Own Status",
-                field: "ownStatus",
-                width: '160',
-                filter: {
-                    type: uiGridConstants.filter.SELECT,
-                    selectOptions: [{
-                            value: 1,
-                            label: "Đơn mới"
-                        },
-                        // {
-                        //     value: 2,
-                        //     label: "Đủ hàng"
-                        // },
-                        // {
-                        //     value: 3,
-                        //     label: "Thiếu hàng"
-                        // },
-                        {
-                            value: 4,
-                            label: "Đã đóng gói"
-                        },
-                        {
-                            value: 5,
-                            label: "Đã gửi đi"
-                        },
-                        {
-                            value: 6,
-                            label: "Khách đã nhận"
-                        },
-                        {
-                            value: 7,
-                            label: "Đang hoàn hàng"
-                        },
-                        {
-                            value: 8,
-                            label: "Đã hoàn về kho"
-                        },
-                        // {
-                        //     value: 9,
-                        //     label: "Đã thanh toán"
-                        // },
-                        // {
-                        //     value: "HT",
-                        //     label: "Đã hoàn tiền"
-                        // },
-                        {
-                            value: "0",
-                            label: "Đã hủy"
-                        }
-                    ]
-                },
-                cellFilter: 'mapGender'
-            }
+            // {
+            //     name: "Status Shopee",
+            //     enableCellEdit: false,
+            //     field: "status",
+            //     cellTooltip: function (row) {
+            //         return row.entity.status;
+            //     }
+            // }, 
+            // {
+            //     name: "Status Time",
+            //     enableCellEdit: false,
+            //     width: '100',
+            //     field: "updateTime"
+            // },
+            statusDef
+
         ],
         enableFiltering: true,
         onRegisterApi: function (gridApi) {
@@ -211,7 +170,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                         theme: "relax",
                         type: 'success',
                         text: 'ĐÃ HỦY PHIẾU'
-                    }).on('afterShow', function() {
+                    }).on('afterShow', function () {
                         window.close()
                     }).show();
                     $('label#status').text("ĐÃ HỦY")
@@ -234,7 +193,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     type: 'success',
                     text: 'ĐÃ CẬP NHẬT TRẠNG THÁI CỦA PHIẾU'
                 }).show();
-                $('.noty_layout').addClass('noprint')    
+                $('.noty_layout').addClass('noprint')
             })
         }
 
@@ -273,16 +232,16 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         const data = doc.data()
         $scope.id = doc.id
         $scope.shipperName = data.shipper;
-        
-        if(data.status == "HỦY PHIẾU"){
+
+        if (data.status == "HỦY PHIẾU") {
             $scope.cancel = false
             $scope.status = "PHIẾU NÀY ĐÃ BỊ HỦY"
-        }else{
+        } else {
             $scope.status = data.status
         }
         $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
         $scope.$apply()
-    }).catch(function(error){
+    }).catch(function (error) {
         new Noty({
             layout: 'bottomRight',
             theme: "relax",
@@ -302,7 +261,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     type: 'success',
                     text: 'ĐÃ CẬP NHẬT TÊN NGƯỜI NHẬN HÀNG'
                 }).show();
-                $('.noty_layout').addClass('noprint')  
+                $('.noty_layout').addClass('noprint')
             })
         }
     });
@@ -310,12 +269,16 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         var dataOrders = keys.data.filter(function (event) {
             return event.exportId == id;
         })
-        if(dataOrders.length >0){
+        if (dataOrders.length > 0) {
+            var arrStt = []
             dataOrders.forEach(function (doc) {
 
                 const myData = doc;
+                if (jQuery.inArray(myData.own_status.status, arrStt) == -1) {
+                    arrStt.push(myData.own_status.status)
+                }
                 // console.log(myData);
-                ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
+                // ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
                 obj = new Object();
                 obj = {
                     id: doc.id,
@@ -324,16 +287,41 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     carrier: myData.actual_carrier,
                     paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                     shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
-                    status: myData.logistic["logistics-logs"][0].description,
-                    updateTime: ctime,
+                    // status: myData.logistic["logistics-logs"][0].description,
+                    // updateTime: ctime,
                     ownStatus: myData.own_status.status
                 }
-                if(myData.own_status.status == 5) {
+                if (myData.own_status.status == 5) {
                     arrShipped.push(doc.id)
                 }
                 sources.push(obj)
-                arrTraceno.push((obj.trackno) )
+                arrTraceno.push((obj.trackno))
             })
+            var arrStatus = []
+            arrStt.forEach(function (val) {
+                let selectedExpTags = [val];
+                let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                let obj = {
+                    value: val,
+                    label: names[0]
+                }
+                arrStatus.push(obj)
+            })
+
+            statusDef.filter.selectOptions = arrStatus
+            if (arrShipped.length == dataOrders.length) {
+                $('span#shipped').css({
+                    "padding": "5px",
+                    "background": " #45da0a",
+                    "color": "#fff"
+                })
+            }else{
+                $('span#shipped').css({
+                    "padding": "5px",
+                    "background": " #000",
+                    "color": "#fff"
+                })
+            }
             $scope.arrShipped = arrShipped
             $scope.carrier = sources[0].carrier
             $scope.arrTraceno = arrTraceno
@@ -344,7 +332,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             $scope.loading = false
             $scope.gridApi.core.refresh();
             sources.forEach(function (row, index) {
-    
+
                 switch (row.ownStatus) {
                     case "NEW":
                         row.ownStatus = 1
@@ -385,11 +373,11 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
                 // value.own_Status = names[0];
             })
-        }else{
+        } else {
             $scope.loading = false
-            $scope.$apply()        
+            $scope.$apply()
         }
-        
+
 
     })
 

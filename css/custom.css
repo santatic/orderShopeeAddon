@@ -17,6 +17,19 @@
 {
 	background-color: #000000;
 }
+input[type=radio] {
+  cursor: pointer;
+}
+#dropContainer{
+  border: 2px dashed white;
+    /* height: 100px; */
+    padding: 29px;
+    background: rgba(0, 0, 0, 0.66);
+    margin-top: 10px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
 body {
     font-family: 'Quicksand', sans-serif;
     font-style: normal;

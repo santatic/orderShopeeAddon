@@ -71,8 +71,20 @@ app.service('getList', function () {
                 vietnamese: "đã hủy"
             },
         ]
+        function httpGet(theUrl, headers, i) {            
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", theUrl, false); // false for synchronous request
+            for (var i = 0; i < headers.length; i++) {
+                xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
+            }
+            xmlHttp.send(null);
+            return JSON.parse(xmlHttp.responseText);
+        }
 
         function getListFromStorage() {
+            
+
+            
             chrome.storage.local.get('data', function (keys) {
                 keys.data
                 var timer = setInterval(function () {
@@ -84,14 +96,66 @@ app.service('getList', function () {
                             clearInterval(timer);
                             var obj = keys.data.find(function (obj) {
                                 return obj.id == id;
-                            });
+                            });                           
+                            
+                            var optionsUrl = chrome.extension.getURL("options.html#/");
 
-                            // console.log(obj);
-                            var optionsUrl = chrome.extension.getURL("options.html#/orders/" + id);
+                            _this.find(".ct-buyer > div").find('span#test').remove()
                             if (obj) {
-                                var selectedExpTags = [obj.own_status.status];
-                                var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                                _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((obj.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((obj.shipping_fee) * 100) / 100).toLocaleString() + " VNĐ - " + names[0] + ' | <a target="_blank" href="' + optionsUrl + '">' + obj.id + '</a></b></span>')
+                                var exportId
+                                if (!obj.exportId) {
+                                    exportId = "Chưa có Mã Phiếu Xuất"
+                                } else {
+                                    exportId = obj.exportId
+                                }
+                                var logistics = obj.logistic['logistics-logs'][0].description
+                                logistics = logistics.indexOf('[Vietnam]') !== -1? logistics.replace('[Vietnam]', ''):logistics
+                                console.log(logistics);
+                                if (logistics.indexOf('Thành công - Phát thành công') !== -1 || logistics.indexOf('Đã giao hàng/Chưa đối soát') !== -1) {
+                                    // var ItemId = []
+                                    obj['order-items'].forEach((item, index) => {
+                                        // console.log(item.snapshotid + " = " + item.modelid);
+                                        let product = obj['products'].find(o => o.id === item.snapshotid);
+                                        // console.log(product);
+                                        // let productImage = data['products'].find(o => o.id === item.images[0]);
+                                        let model = obj['item-models'].find(o => o.id === item.modelid)
+                                        var promise = new Promise(function(resolve, reject){
+                                            resolve((httpGet("https://shopee.vn/api/v1/comment_list/?item_id="+ model.itemid +"&shop_id=20340126&limit=50",[])).comments)
+                                        })
+                                        promise.then(function(comments){
+                                            var found = comments.find(el => el.username == obj.user.name);
+                                            if(found){
+                                                // console.log(found);
+                                                var linkcomment = "https://shopee.vn/"+ product.name +"-i.20340126."+ model.itemid
+                                                _this.find(".item:eq("+index+")").find(".ct-item-product-inner").append("<b style='font-size:18px;color:#000'><a target='_blank' href='"+linkcomment+"'>"+ found.rating_star+"<span style='color:#ff5722'>&bigstar;</span></a></b>"+ "<span title='"+found.comment+"'>" +found.comment+"</span>")
+                                            }else{
+                                                // _this.find(".ct-buyer > div").append("Khách chưa đánh giá")
+                                                console.log("notFound");
+                                            }
+                                            // ItemId.push({
+                                            //     comments: found,
+                                            //     modelId : model.itemid,
+                                            //     name: product.name,
+                                            //     model: model.name,
+                                            //     imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"                            
+                                            // })
+                                        })
+                                    });
+                                    // console.log(id, ItemId);
+                                    
+                                }
+                                if(logistics){
+                                    _this.find(".ct-status").html(logistics)
+                                }
+                                var status 
+                                if(obj.own_status.status == 1 || obj.own_status.status ==4 ){
+                                    var selectedExpTags = [obj.own_status.status];
+                                    var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                                    status = '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' +  names[0] + ' </a>'    
+                                }else{
+                                    status= ""
+                                }
+                                _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((obj.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((obj.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + obj.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank" href="' + optionsUrl + "export/" + exportId + '">#' + exportId + '</a>'+status+'</b></span>')
                             } else {
                                 _this.find(".ct-buyer > div").append(' <span style="background: #ff3d3e;color: #fff;" id="test">&nbsp<b>CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span>')
                             }
@@ -104,7 +168,7 @@ app.service('getList', function () {
         getListFromStorage()
         $('a.tabs__tab').on('click', function () {
             getListFromStorage()
-        });        
+        });
 
         var appear = setInterval(function () {
             var pan = $('.shopee-pagination--footer ul li').text()
@@ -114,7 +178,7 @@ app.service('getList', function () {
                     getListFromStorage()
                 })
             }
-        },1000)
+        }, 1000)
 
     }
 })
@@ -130,30 +194,13 @@ app.service('Chat', function () {
         })
         chrome.storage.onChanged.addListener(function (changes) {
             states = []
+            // console.log(changes.suggests);
             changes.suggests.newValue.forEach(function (val) {
                 states.push(val.suggest_chat)
-                console.log(val.suggest_chat);
+                // console.log(val.suggest_chat);
             });
-            $('.shopee-chat-root .chat-panel textarea').autocomplete({
-                delay: 100,
-                minLength: 1,
-                source: states,
-                appendTo: 'div.chat-content',
-                focus: function (event, ui) {
-                    // prevent autocomplete from updating the textbox
-                    console.log(ui.item.label);
-                    $('li.ui-menu-item').css("color", "black")
-                    $('li:contains("' + ui.item.label + '")').css("color", "red")
-                },
-            }).data("ui-autocomplete")._renderItem = function (ul, item) {
-
-                $('.ui-helper-hidden-accessible').css({
-                    "display": "none"
-                })
-
-                return $("<li style='cursor: pointer' >" + item.label + "</li>").appendTo(ul);
-            };
         })
+
 
         // var states = Chat;
         var timer = setInterval(function () {

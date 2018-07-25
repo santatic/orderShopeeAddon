@@ -180,6 +180,7 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
     })
 
     function getDetail(data) {
+        console.log(data);
         // const data = dataOrders[index]
         // console.log(data.own_status);
         $scope.trackingNo = data.shipping_traceno;
@@ -208,12 +209,17 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
         var statusLonhon6 = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
         $scope.statusLonhon6 = statusLonhon6[0]
         $scope.statusRadio = names[0]
+        $scope.exportId = data.exportId
+        $scope.showEx = false
+        if($scope.exportId){           
+            $scope.showEx = true                        
+        }
         $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
         $scope.carrier = data.actual_carrier
         $scope.name = data.buyer_address_name;
         $scope.address = data.shipping_address;
         $scope.phone = data.buyer_address_phone;
-
+        
         $scope.orderId = data.ordersn;
         $scope.urlId = id;
         $scope.logistics = data.logistic['logistics-logs'][0].description

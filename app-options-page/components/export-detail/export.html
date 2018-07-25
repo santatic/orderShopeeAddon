@@ -12,7 +12,10 @@
                 <span id="size">{{id}}</span>
             </li>
             <li class="list-group-item">Số lượng đơn đã gửi:
-                {{arrShipped.length}}/<span id="size">{{size}}</span></li>
+               <span id="shipped">{{arrShipped.length}}/<span id="size">{{size}}</span></span> </li>
+            <li class="list-group-item">
+                {{carrier}}
+            </li>
             <li class="list-group-item">Người nhận:
                 <input type="text" name="" id="shipperName" value="{{shipperName}}">
             </li>
@@ -42,7 +45,7 @@
                 <td>{{carrier}}</td>
                 <td>{{date}}</td>
             </tr>
-            <tr id="haveQR">
+            <tr id="haveQR">                
                 <td>Người giao:</td>
                 <td>
                     SỐ LƯỢNG:
@@ -54,7 +57,7 @@
     </table>
     <p>
         <span style="line-height: 40px;font-size: 20px;margin-right: 12px;" ng-repeat="x in arrTraceno | orderBy">
-            <b>{{x}}, </b>
+            {{x}}, 
         </span>
     </p>
 </div>

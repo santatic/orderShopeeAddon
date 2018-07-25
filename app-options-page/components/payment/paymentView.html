@@ -1,5 +1,5 @@
 <div class="col-md-10">
-    <div id="grid1" ui-grid="gridOptions" ui-grid-resize-columns ui-grid-pagination class="grid">
+    <div id="grid1" ui-grid="gridOptions" ui-grid-edit ui-grid-resize-columns ui-grid-pagination class="grid">
         <div class="grid-msg-overlay" ng-show="!gridOptions.data.length">
             <div class="msg">
                 <div class="center">
@@ -42,8 +42,12 @@
 
         </select>
     </p>
-    <p>
-        <button disabled type="button" class="btn btn-primary update">CẬP NHẬT</button>
+    <p id="pNull">
+        <span id="null"></span> ĐƠN CHƯA THEO DÕI <b><span style="cursor: pointer;" class="glyphicon glyphicon-refresh update"></span></b> 
     </p>
+    <p>
+        <button type="button" class="btn btn-primary updatePay">CẬP NHẬT</button>
+    </p>    
     <p id="loading"></p>
+
 </div>

@@ -24,6 +24,9 @@ function myMain(evt) {
             //set attribute to use angularjs
             document.getElementsByTagName("body")[0].setAttribute("ng-app", "myapp");
             document.getElementsByTagName("body")[0].setAttribute("ng-csp", "");
+
+            
+
             switch (true) {
 
                 case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?') !== -1:

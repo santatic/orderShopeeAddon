@@ -27,10 +27,25 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
             name: "Ngày nhận tiền",
             enableCellEdit: false,
             field: "time",
+            sort: {
+                direction: 'desc',
+                priority: 0
+            }
         },{
             name: "Ngân hàng",
             field: "bank",
-        }],
+        },{
+            name: "A.Thực Thu",
+            field: "shopeePaid",
+        },
+        {
+            name: "B.Dự kiến",
+            field: "buyerPaid",
+        },
+        {
+            name: "A-B",
+            field: "offset"
+        },],
         enableFiltering: true,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
@@ -96,6 +111,11 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                     bank: myData.myBank,
                     time: ctime,
                     size: myData.orders.length
+                }
+                if (myData.shopeePaid && myData.buyerPaid) {
+                    obj.shopeePaid = myData.shopeePaid.toLocaleString()
+                    obj.buyerPaid = myData.buyerPaid.toLocaleString()
+                    obj.offset = (myData.shopeePaid - myData.buyerPaid).toLocaleString()
                 }
                 sources.push(obj)
             })

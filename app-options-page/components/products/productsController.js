@@ -113,7 +113,7 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
                     }, { id: 'button1', 'data-status': 'ok' }),
 
                     Noty.button('NO', 'btn btn-error', function () {
-                        $('input#suggest').val("")
+                        // $('input#suggest').val("")
                         n.close();
                     })
                 ]

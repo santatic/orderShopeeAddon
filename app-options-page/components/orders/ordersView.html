@@ -1,9 +1,61 @@
 <!-- <div class="container"> -->
+<div class="printBut" style="display: none;position: fixed;bottom: 0px;left: 0px;z-index: 2147483647;">
+    <div class="panel-body noprint">
+        <button ng-click="printProduct()" style="font-size: 26px;
+             border-radius: 25px" class="btn btn-primary noprint" id="print">
+            <span class="glyphicon glyphicon-print"></span>
+        </button>
+        <form id="imgur">
+            <div id="dropContainer" >
+                <img src="../../../images/upload.png" id="upfile" style="cursor:pointer" />
+                <input type="file" style="display:none" id="fileInput" class="imgur noprint" accept="image/*" />
+            </div>
+        </form>
+    </div>
+</div>
 <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
-<div id="grid1" ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-cellnav ui-grid-pagination ui-grid-edit
+
+<div id="grid1" ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-cellnav ui-grid-pagination 
     class="grid noprint">
 </div>
-<div class="printt">
+<div class="modal fade noprint" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group-status">
+
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="NEW">
+                    <b>ĐƠN MỚI</b>
+
+
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="PACKED">
+                    <b>ĐÃ ĐÓNG GÓI</b>
+
+
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="SHIPPED">
+                    <b>ĐÃ GỬI ĐI</b>
+
+
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="DELIVERED">
+                    <b>KHÁCH ĐÃ NHẬN</b>
+
+                    <!-- 
+                                        <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
+                                </div> -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="print">
     <ul ng-repeat="x in rowSelected" class="list-group">
         <div class="col-sm-6" style="display: inline-block;">
             <div id="{{x.id}}"></div>
@@ -12,11 +64,12 @@
             <!-- <li class="list-group-item">
                 ID: {{x.id}} - {{x.own_Status}}
             </li> -->
-            
-                <b style="font-size: 23px">{{x.trackno}}</b>
+
+            <b style="font-size: 23px">{{x.trackno}}</b>
             <br>
             <li style="padding-bottom: 8px; list-style-type : none">
-                {{x.nickname}}<br>{{x.name}}
+                {{x.nickname}}
+                <br>{{x.name}}
             </li>
         </div>
 
@@ -24,9 +77,40 @@
 
 
     <!-- <div class="col-sm-6"> -->
-
     <!-- </div>     -->
-
 </div>
+<div class="modal fade noprint" id="modalProduct" role="dialog">
+    <div class="modal-dialog " style="padding: 8px;
+        background: #fff;
+        border-radius: 6px;">
+        <!-- Modal content-->
+
+        <div id="previewPro" class="noprint"></div>
+
+    </div>
+</div>
+
+<table id="html2image" class="table table-bordered products noprint" style="width: 587px;">
+    <tbody>
+        <tr ng-repeat="item in products">
+            <td style="background: #fff;">
+                <img class="imgPro" src="{{item.imageUrl}}" width="80px" height="80px" alt=""> </td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.model }}</td>
+            <td>{{ item.amount }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table table-bordered print">
+    <tbody>
+        <tr ng-repeat="item in products">
+
+            <td>{{ item.name }}</td>
+            <td>{{ item.model }}</td>
+            <td>{{ item.amount }}</td>
+        </tr>
+    </tbody>
+</table>
 
 <!-- </div> -->

@@ -16,29 +16,35 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         enableSorting: true,
         showGridFooter: false,
         columnDefs: [{
-            name: "Export Id",
-            field: "id",
-            enableCellEdit: false,
-            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.id}}">{{row.entity.id}}</a></div>'
-        },{
-            name: "Size",
-            field: "size",
-        }, {
-            name: "Shiper Name",
-            field: "shipper",
-        }, {
-            name: "Create At",
-            enableCellEdit: false,
-            field: "time",
-            sort: {
-                direction: 'desc',
-                priority: 0
+                name: "Export Id",
+                field: "id",
+                enableCellEdit: false,
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.id}}">{{row.entity.id}}</a></div>'
+            }, {
+                name: "Size",
+                field: "size",
+            }, {
+                name: "Shiper Name",
+                field: "shipper",
+            }, {
+                name: "Create At",
+                enableCellEdit: false,
+                field: "time",
+                sort: {
+                    direction: 'desc',
+                    priority: 0
+                }
+            },{
+                name: "Nhà vận chuyển",
+                field: "carrier"
+            },
+
+            {
+                name: "Trạng thái",
+                field: "status",
+
             }
-        },{
-            name: "Trạng thái",
-            field: "status",
-            
-        }],
+        ],
         enableFiltering: true,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
@@ -90,35 +96,55 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
     }]
 
     $scope.options.multiSelect = true;
-    var sources = []
-    var docRef = firestore.collection("exportCode")
-    docRef.get().then(
-        function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                const myData = doc.data();
-                // console.log(myData);
-                ctime = moment(myData.create_at.seconds * 1000).format("DD-MM-YYYY")
-                obj = new Object();
-                obj = {
-                    id: doc.id,
-                    shipper: myData.shipper,
-                    time: ctime,
-                    size: myData.orders.length,
-                    status: myData.status
-                }
-                sources.push(obj)
-            })
-            console.log(sources);
-            $scope.data = sources
-            $scope.options.data = $scope.data;
-            $scope.loading = false
-            $scope.gridApi.core.refresh();
-
-            // console.log(querySnapshot.size);
-        }
-    ).then(function () {
-        console.log($scope);
-        //$scope.apply();
+    
+    chrome.storage.local.get('export', function (keys) {
+        getExport(keys.export)
     })
+
+    chrome.storage.onChanged.addListener(function (changes) {
+        getExport(changes.export.newValue);
+    })
+
+    function getExport(arr){
+        var sources = []
+        arr.forEach(function (doc) {
+            const myData = doc;
+            // console.log(myData);
+            ctime = moment(myData.create_at.seconds * 1000).format("DD-MM-YYYY")
+            // obj = new Object();
+
+            // if (myData.status == "HỦY PHIẾU") {
+            //     console.log(myData.status);
+            // } else {
+            //     var selectedExpTags = myData.orders;
+            //     var names = keys.data.filter(obj => {
+            //         return obj.exportId == doc.id
+            //     })
+
+            //     console.log(doc.id, names);
+            // }
+
+            obj = {
+                id: doc.id,
+                shipper: myData.shipper,
+                time: ctime,
+                size: myData.orders.length,
+                status: myData.status,
+                carrier: myData.carrier
+            }
+            if (myData.shopeePaid && myData.buyerPaid) {
+                obj.shopeePaid = myData.shopeePaid.toLocaleString()
+                obj.buyerPaid = myData.buyerPaid.toLocaleString()
+                obj.offset = (myData.shopeePaid - myData.buyerPaid).toLocaleString()
+            }
+            sources.push(obj)
+        })
+        console.log(sources);
+        $scope.data = sources
+        $scope.options.data = $scope.data;
+        $scope.loading = false
+        $scope.gridApi.core.refresh();
+    }
+
 
 }

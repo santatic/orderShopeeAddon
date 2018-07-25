@@ -30,7 +30,7 @@ app.service('request_center', function (helper_center) {
                                     var objRes = httpGet(details.url, [
                                         ['If-None-Match-', details.requestHeaders[i - 1].value]
                                     ]);
-                                    objRes = JSON.stringify(objRes)
+                                    // objRes = JSON.stringify(objRes)
                                     objRes = JSON.parse(objRes)
                                     objRes.key = details.requestHeaders[i - 1].value;
                                     objRes.createdTime = firebase.database.ServerValue.TIMESTAMP;

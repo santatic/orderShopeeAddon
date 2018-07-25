@@ -2,6 +2,7 @@ app.service('storageFirestore', function ($q) {
     var _this = this;
     this.data = [];
     this.suggests = []
+    this.exports = []
     
     this.findAll = function (callback) {
         chrome.storage.local.get('data', function (keys) {
@@ -22,6 +23,16 @@ app.service('storageFirestore', function ($q) {
         }, function () {
             console.log('Suggests is stored in Chrome storage');
             chrome.storage.local.get('suggests', function (keys) {
+                console.log(keys);
+            });
+        }); 
+    }
+    this.syncExports = function(){
+        chrome.storage.local.set({
+            export: this.exports
+        }, function () {
+            console.log('Suggests is stored in Chrome storage');
+            chrome.storage.local.get('export', function (keys) {
                 console.log(keys);
             });
         }); 

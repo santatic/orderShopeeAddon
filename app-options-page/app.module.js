@@ -41,34 +41,66 @@ app.config(function ($compileProvider) {
 app.service('helper', function () {
 
   this.validateExportOrder = function (arrayOrders) {
+    var arrCarrier = [{
+        id: 1,
+        carrier: "Giao Hàng Tiết Kiệm"
+      }, {
+        id: 2,
+        carrier: "Viettel Post"
+      }, {
+        id: 3,
+        carrier: "Giao Hàng Nhanh"
+      },
+      {
+        id: 4,
+        carrier: "VNPost Tiết Kiệm"
+      }, {
+        id: 5,
+        carrier: "VNPost Nhanh"
+      }
+    ]
     var arrayTempExportId = []
     var arrExportId = []
     var arrElse = []
     var date = new Date()
     var first = true
-    arrayOrders.forEach(function (val) {
-      var docRef = firestore.collection("orderShopee").doc(val.id.toString());
-      docRef.get().then(function (doc) {
-        const data = doc.data()
+    var dataSingle = []
+    chrome.storage.local.get('data', function (keys) {
+      dataSingle = keys.data
+      act(dataSingle)
+    })
+    //   chrome.storage.onChanged.addListener(function (changes) {
+    //     dataSingle = changes.data.newValue
+    // })
+
+
+    function act(dataSingle) {
+      arrayOrders.forEach(function (val) {
+        // var docRef = firestore.collection("orderShopee").doc(val.id.toString());
+        // docRef.get().then(function (doc) {
+        let index = dataSingle.findIndex(x => x.id == val.id)
+        const data = dataSingle[index]
         if (first) {
           arrayTempExportId.push(data.actual_carrier);
           first = false
         }
         if (!data.exportId && $.inArray(data.actual_carrier, arrayTempExportId) == 0) {
-          arrExportId.push(doc.id)
+          arrExportId.push(val.id)
         } else {
           console.log("no" + data.actual_carrier);
-          arrElse.push(doc.id)
+          arrElse.push(val.id)
           new Noty({
             layout: 'bottomRight',
             timeout: 5000,
             theme: "relax",
             type: 'success',
-            text: 'ĐƠN ' + doc.id + ' KHÁC ĐƠN VỊ VẬN CHUYỂN HOẶC ĐÃ CÓ EXPORTID'
+            text: 'ĐƠN ' + val.id + ' KHÁC ĐƠN VỊ VẬN CHUYỂN HOẶC ĐÃ CÓ EXPORTID'
           }).show();
         }
+        // })
       })
-    })
+    }
+
     var timer = setInterval(function () {
       if (arrExportId.length == arrayOrders.length) {
         clearInterval(timer)
@@ -76,7 +108,8 @@ app.service('helper', function () {
         var batch = firestore.batch()
         var check = []
         arrExportId.forEach(function (val, i) {
-          var docEx = firestore.collection("orderShopee").doc(val);
+          var docEx = firestore.collection("orderShopee").doc(val.toString());
+
           batch.update(docEx, {
             "exportId": date.getTime().toString()
           })
@@ -85,14 +118,17 @@ app.service('helper', function () {
         var timerSec = setInterval(function () {
           if (check.length == arrExportId.length) {
             clearInterval(timerSec)
+            var selectedExpTags = [arrayOrders[0].carrier];
+            var names = selectedExpTags.map(x => arrCarrier.find(y => y.id === x).carrier)
             batch.commit().then(function () {
               firestore.collection("exportCode").doc(date.getTime().toString()).set({
                 "orders": arrExportId,
                 "shipper": "",
                 "create_at": date,
-                "status": "MỚI"
+                "status": "MỚI",
+                "carrier": names[0]
               }).then(function () {
-                var win = window.open(chrome.extension.getURL("options.html#/export/")+date.getTime(), "_blank");
+                var win = window.open(chrome.extension.getURL("options.html#/export/") + date.getTime(), "_blank");
                 win.focus()
               })
 
