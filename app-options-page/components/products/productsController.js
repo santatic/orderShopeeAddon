@@ -63,7 +63,7 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
         query.forEach(doc => {
             var data = doc.data();
             console.log(data);
-            docRef.doc(data.SKU_name).collection('SKU_classify').get().then(query2 => {
+            // docRef.doc(data.SKU_name).collection('SKU_classify').get().then(query2 => {
                 dataui.push({
                     img: data.images ? data.images[0].replace('400x400', '50x50') : '',
                     name: data.name,
@@ -72,17 +72,19 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
                     $$treeLevel: 0
                 });
                 stt++;
-                query2.forEach(doc2 => {
-                    var data2 = doc2.data();
-                    dataui.push({
-                        img: data2.skuUrl_Image.replace('jpg', '50x50.jpg'),
-                        name: '',
-                        sku: data2.spSku,
-                        $$treeLevel: 1
-                    })
-                });
+                data.SKU_classify.map(x => {
+                        dataui.push({
+                            img: x.skuUrl_Image,
+                            name: '',
+                            sku: x.spSku,
+                            $$treeLevel: 1
+                        })
+                })
+                // query2.forEach(doc2 => {
+                //     var data2 = doc2.data();
+                // });
                 $scope.gridApi.core.refresh();
-            })
+            // })
             // return {img: data.images[0], name: data.name}
         });
         console.log(dataui);

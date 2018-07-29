@@ -3,6 +3,7 @@ app.service('storageFirestore', function ($q) {
     this.data = [];
     this.suggests = []
     this.exports = []
+    this.products = [];
     
     this.findAll = function (callback) {
         chrome.storage.local.get('data', function (keys) {
@@ -33,6 +34,16 @@ app.service('storageFirestore', function ($q) {
         }, function () {
             console.log('Suggests is stored in Chrome storage');
             chrome.storage.local.get('export', function (keys) {
+                console.log(keys);
+            });
+        }); 
+    }
+    this.syncProducts = function(){
+        chrome.storage.local.set({
+            products: this.products
+        }, function () {
+            console.log('Products is stored in Chrome storage');
+            chrome.storage.local.get('products', function (keys) {
                 console.log(keys);
             });
         }); 

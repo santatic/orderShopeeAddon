@@ -44,32 +44,73 @@ app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
             });
         }
 
+
+
+
+        var id1688 = $('meta[name=b2c_auction]').attr("content");
+        var Products = [];
+        chrome.storage.local.get('products', function (obj) {
+            Products = obj.products;
+            console.log(Products);
+            found = false;
+            Products.forEach(function (pro) {
+                var find = pro.linked_classify.some(function (el) {
+                    return el.id == id1688;
+                });
+                if (find) {
+                    let index = pro.linked_classify.findIndex(x => x.id == id1688)
+                    console.log(pro.linked_classify[index])
+                    // break;
+                } else {
+                    console.log('không thấy');
+                }
+                console.log(id1688)
+            })
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //
         var images = [];
         var SKU_classify = [];
-        var id1688 = '';
         var read_data = function () {
-            var i = 1;
             $(".mod-detail-gallery #dt-tab .nav-tabs .tab-trigger").each(function (index) {
                 if (index < 5) {
                     images.push(JSON.parse($(this).attr('data-imgs')).preview)
                 }
             })
-            $('[data-sku-config]').each(function (index) {
+            $('[data-sku-config]').each(function (i) {
                 SKU_classify.push({
                     skuName: JSON.parse($(this).attr('data-sku-config')).skuName,
-                    skuUrl_Image: $(this).find("img").attr('src').replace('.32x32.', '.')
+                    skuUrl_Image: $(this).find("img").attr('src'),
+                    // .replace('.32x32.', '.')
+                    height: 0,
+                    long: 0,
+                    weight: 0,
+                    width: 0,
+                    spSku: new Date().getTime() + i + 2,
                 })
             })
-            SKU_classify.map(x => {
-                x.height = 0;
-                x.long = 0;
-                x.weight = 0;
-                x.width = 0;
-                var d = new Date();
-                x.spSku = d.getTime() + i;
-                i++;
-            })
-            id1688 = $('meta[name=b2c_auction]').attr("content");
+            // id1688 = $('meta[name=b2c_auction]').attr("content");
             // console.log(SKU_classify);
         }
 
@@ -81,11 +122,13 @@ app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
                 // timeout: 2000,
                 text: 'Product name? <input id="product_name" style="display: block" type="text"><div class="suggestProducts"></div>',
                 buttons: [
-                    Noty.button('YES', 'btn btn-success', function () {
+                    Noty.button('Tạo mới', 'btn btn-success', function () {
                         read_data();
+                        console.log('a');
                         chrome.runtime.sendMessage({
                             mission: "pushFirestore",
-                            SKU_name: titleProducts.getSKU()? titleProducts.getSKU(): '',
+                            name: $('#product_name').val(),
+                            SKU_name: new Date().getTime(),
                             images: images,
                             id1688: id1688,
                             SKU_classify: SKU_classify
