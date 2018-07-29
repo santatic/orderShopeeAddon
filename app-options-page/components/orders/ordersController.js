@@ -237,20 +237,21 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         title: "IN ĐƠN",
         action: function () {
             var selected = $scope.gridApi.selection.getSelectedRows();
-            console.log(selected);
-            $.each(selected, function (i, value) {
-                var selectedExpTags = [parseInt(value.ownStatus)];
-                var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                value.own_Status = names[0];
-            })
-            console.log(selected);
+            // console.log(selected);
+            // $.each(selected, function (i, value) {
+            //     var selectedExpTags = [parseInt(value.ownStatus)];
+            //     var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+            //     value.own_Status = names[0];
+            // })
+            selected.sort(function(a,b) {return (a.trackno > b.trackno) ? 1 : ((b.trackno > a.trackno) ? -1 : 0)} )
             $scope.rowSelected = selected;
             // window.onload = function () {
             selected.forEach(function (val) {
-                console.log(val.id);
+                // console.log(val.id);
                 var timer = setInterval(function () {
                     if (($("#" + val.id)).length) {
                         clearInterval(timer)
+                        console.log(val.id);
                         var qrcode = new QRCode(document.getElementById(val.id), {
                             width: 60,
                             height: 60,
@@ -258,7 +259,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         });
 
                         function makeCode() {
-                            qrcode.makeCode(val.id);
+                            qrcode.makeCode(val.id.toString());
                         }
                         makeCode();
                     }
@@ -331,10 +332,11 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     let model = obj['item-models'].find(o => o.id === item.modelid)
                     var productsObj = new Object();
                     productsObj = {
-                        name: product.name,
+                        name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^",""),
                         model: model.name,
                         amount: item.amount,
-                        imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"
+                        imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
+                        orders: [obj.shipping_traceno]
                     }
                     var found = products.some(function (el) {
                         return el.name == productsObj.name && el.model == productsObj.model;
@@ -344,11 +346,14 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     } else {
                         let index = products.findIndex(x => x.name == productsObj.name && x.model == productsObj.model)
                         products[index].amount = products[index].amount + productsObj.amount
+                        products[index].orders.push(obj.shipping_traceno)
                     }
+                    ;
 
                 });
 
             })
+            console.log(products);
             products.sort(function(a,b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)} )
             products.unshift({
                 imageUrl:"TỔNG",
@@ -598,7 +603,7 @@ function mapGender() {
         1: "Đơn mới",
         2: "Đã nhặt đủ hàng để chờ đóng gói",
         3: "Chưa nhặt đủ hàng",
-        4: "Đã đóng gói chờ gửi đi",
+        4: "Đã đóng gói",
         5: "Đã gửi đi",
         6: "Khách đã nhận hàng",
         7: "Đang hoàn hàng chưa về đến kho",

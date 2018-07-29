@@ -85,7 +85,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         paginationPageSize: 15,
         enableSorting: true,
         showGridFooter: false,
-        columnDefs: [{
+        columnDefs: [statusDef, {
                 name: "OrderId",
                 field: "id",
                 enableCellEdit: false,
@@ -127,7 +127,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             //     width: '100',
             //     field: "updateTime"
             // },
-            statusDef
+
 
         ],
         enableFiltering: true,
@@ -204,9 +204,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     $scope.options.gridMenuCustomItems = [{
         title: "IN PHIẾU XUẤT",
         action: function () {
-            $('#haveQR').append('<td id="qrcode"></td>')
+            $('#haveQR').append('<td id="qrcodeEx" ></td>')
             $scope.id = id;
-            var qrcode = new QRCode("qrcode", {
+            var qrcode = new QRCode("qrcodeEx", {
                 width: 100,
                 height: 100,
                 correctLevel: QRCode.CorrectLevel.H
@@ -225,9 +225,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     }]
 
     $scope.options.multiSelect = true;
-    var sources = []
-    var arrTraceno = []
-    var arrShipped = []
+
     firestore.collection("exportCode").doc(id).get().then(function (doc) {
         const data = doc.data()
         $scope.id = doc.id
@@ -266,7 +264,17 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         }
     });
     chrome.storage.local.get('data', function (keys) {
-        var dataOrders = keys.data.filter(function (event) {
+        getData(keys.data)
+    })
+    chrome.storage.onChanged.addListener(function (changes) {
+        getData(changes.data.newValue);
+    })
+
+    function getData(arrayData) {
+        var sources = []
+        var arrTraceno = []
+        var arrShipped = []
+        var dataOrders = arrayData.filter(function (event) {
             return event.exportId == id;
         })
         if (dataOrders.length > 0) {
@@ -315,7 +323,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     "background": " #45da0a",
                     "color": "#fff"
                 })
-            }else{
+            } else {
                 $('span#shipped').css({
                     "padding": "5px",
                     "background": " #000",
@@ -375,11 +383,8 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             })
         } else {
             $scope.loading = false
-            $scope.$apply()
         }
-
-
-    })
+    }
 
 
 }

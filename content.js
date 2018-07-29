@@ -6,28 +6,19 @@ function myMain(evt) {
     function checkForJS_Finish() {
         if (document.readyState === 'complete' //document.querySelector (".footer__policy-item")  && $('a').filter(function() {return this.href.match(/\/.*i\.\d+\.\d+/);}).length > 5
         ) {
-            // if ($(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale') !== -1) {
-
-            //     if (document.querySelector(".tabs")) {
-
-            //         clearInterval(jsInitChecktimer);
-            //         console.log("xoa xong interval");
-            //         $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
-            //             $(data).prependTo('body');
-            //             angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-            //         });
-            //     }
-
-            // }
-
             clearInterval(jsInitChecktimer);
             //set attribute to use angularjs
             document.getElementsByTagName("body")[0].setAttribute("ng-app", "myapp");
             document.getElementsByTagName("body")[0].setAttribute("ng-csp", "");
 
-            
-
             switch (true) {
+
+                case $(location).attr('href').indexOf('work.1688.com/home/page/index') !== -1:
+                    $.get(chrome.extension.getURL('app-content/1688/backend/listOrders/ordersList.html'), function (data) {
+                        $(data).prependTo('body');
+                        angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
+                    });
+                    break
 
                 case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?') !== -1:
                     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
