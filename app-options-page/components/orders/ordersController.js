@@ -128,8 +128,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         {
                             value: 4,
                             label: "VNPost Tiết Kiệm"
-                        },{
-                            value:5,
+                        }, {
+                            value: 5,
                             label: "VNPost Nhanh"
                         }
                     ]
@@ -243,7 +243,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             //     var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
             //     value.own_Status = names[0];
             // })
-            selected.sort(function(a,b) {return (a.trackno > b.trackno) ? 1 : ((b.trackno > a.trackno) ? -1 : 0)} )
+            selected.sort(function (a, b) {
+                return (a.trackno > b.trackno) ? 1 : ((b.trackno > a.trackno) ? -1 : 0)
+            })
             $scope.rowSelected = selected;
             // window.onload = function () {
             selected.forEach(function (val) {
@@ -313,14 +315,22 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     $scope.options.gridMenuCustomItems.push({
         title: "IN SẢN PHẨM",
         action: function () {
-            $('.printBut').css("display", "block")
+            
             var selected = $scope.gridApi.selection.getSelectedRows();
             // console.log(selected);
             var products = []
+
+            var condi = true
+
             selected.forEach(function (val) {
                 var obj = dataForPro.find(function (obj) {
                     return obj.id == val.id;
                 });
+
+                if (!val.exId && val.ownStatus == 1) {} else {
+                    condi = false
+                }
+
                 console.log(obj['order-items']);
                 obj['order-items'].forEach((item, index) => {
                     // console.log(item.snapshotid + " = " + item.modelid);
@@ -332,7 +342,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     let model = obj['item-models'].find(o => o.id === item.modelid)
                     var productsObj = new Object();
                     productsObj = {
-                        name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^",""),
+                        name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^", ""),
                         model: model.name,
                         amount: item.amount,
                         imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
@@ -347,13 +357,13 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         let index = products.findIndex(x => x.name == productsObj.name && x.model == productsObj.model)
                         products[index].amount = products[index].amount + productsObj.amount
                         products[index].orders.push(obj.shipping_traceno)
-                    }
-                    ;
+                    };
 
                 });
 
             })
-            console.log(products);
+            if(condi){
+                console.log(products);
             products.sort(function(a,b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)} )
             products.unshift({
                 imageUrl:"TỔNG",
@@ -380,6 +390,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             var timer = setInterval(function () {
                 if ($scope.products.length > 0) {
                     clearInterval(timer)
+                    $('.printBut').css("display", "block")
                     $('#modalProduct').modal()
 
                     html2canvas(element, {
@@ -492,6 +503,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     window.print()
                 }, 500)
             }
+            }else{
+                alert("ĐƠN BẠN CHỌN KHÔNG PHẢI ĐƠN MỚI HOẶC ĐÃ CÓ MÃ PHIẾU XUẤT")
+            }
+            
 
         }
     })
@@ -569,7 +584,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     row.carrier = 4
                     break
                 case "VNPost Nhanh":
-                    row.carrier  = 5
+                    row.carrier = 5
                     break
             }
 
