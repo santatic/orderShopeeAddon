@@ -97,11 +97,7 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
         title: "THÊM SẢN PHẨM",
         action: function () {
             $('#myModal').modal()
-        }
-
-    }, ];
-
-    var currentTab = 0; // Current tab is set to be the first tab (0)
+            var currentTab = 0; // Current tab is set to be the first tab (0)
     showTab(currentTab); // Display the current tab
 
     function showTab(n) {
@@ -332,6 +328,12 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
         // Otherwise, display the correct tab:
         showTab(currentTab);
     }
+    $("#modalProduct").on("hidden.bs.modal", function () {
+        $('input#productName').val("");
+        $('ul.list-sku').html("")
+        $('input#skuName').val("")
+        $('p#previewImage img.imgPreview').remove()
+    })
 
     function validateForm() {
         // This function deals with validation of the form fields
@@ -364,5 +366,10 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
         //... and adds the "active" class to the current step:
         x[n].className += " active";
     }
+        }
+
+    }, ];
+
+    
 
 }

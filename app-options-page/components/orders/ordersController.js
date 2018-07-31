@@ -85,7 +85,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         paginationPageSizes: [15, 30, 45],
         paginationPageSize: 15,
         enableSorting: true,
-        showGridFooter: false,
         columnDefs: [{
                 name: "ID",
                 field: "id",

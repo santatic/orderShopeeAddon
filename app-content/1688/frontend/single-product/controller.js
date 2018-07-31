@@ -65,7 +65,14 @@ app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
         var id1688 = $('meta[name=b2c_auction]').attr("content");
         var Products = [];
         chrome.storage.local.get('products', function (obj) {
-            Products = obj.products;
+            getData(obj.products);            
+        })
+
+        chrome.storage.onChanged.addListener(function (changes) {
+            getData(changes.products.newValue);
+        })
+
+        function getData(Products){
             console.log(Products);
             found = false;
             Products.forEach(function loop(pro) {
@@ -88,8 +95,7 @@ app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
                 }
                 console.log(id1688)
             })
-        })
-
+        }
 
 
 
