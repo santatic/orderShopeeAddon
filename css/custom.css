@@ -330,14 +330,19 @@ table:hover {
   border: none
 }
 
-.imgageRight {
+.imgageRight, .imgClassify, .nameRight {
   float: left;
   margin: 5px 5px 5px 70px;
 }
 
-.imgageLeft {
+.imgageLeft, .nameLeft {
   float: left;
   margin: 5px 5px 5px 30px;
+}
+
+.imgageLeft, .imgageRight {
+  width: 45px;
+  border: solid 1px #ccc;
 }
 
 

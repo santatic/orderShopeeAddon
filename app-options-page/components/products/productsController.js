@@ -4,12 +4,24 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
     $scope.loading = true;
     var saleUrl = chrome.extension.getURL("options.html#/");
 
-    docRef = firestore.collection("1688_products");
+    var data = [];
+    docRef = firestore.collection("products");
+    chrome.storage.local.get('products', obj => {
+        data = obj.products;
+        getDataForTable(obj.products);
+    })
+
+    chrome.storage.onChanged.addListener(function (changes) {
+        getDataForTable(changes.products.newValue);
+        data = changes.products.newValue;
+        dataForPro = changes.products.newValue
+    })
 
     $scope.options = {
         // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
         enableSelectAll: true,
+        multiSelect: true,
         enableGridMenu: true,
         showTreeExpandNoChildren: false,
         paginationPageSizes: [15, 30, 45],
@@ -23,83 +35,137 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
             width: 40
         }, {
             name: "Hình ảnh",
-            cellTemplate: "<img ng-if='row.entity.img' src='{{row.entity.img}}' ng-class='{imgageRight: row.entity.$$treeLevel == 1, imgageLeft: row.entity.$$treeLevel == 0 }' alt='{{row.entity.name}}'/><span ng-if='!row.entity.img'>Không có ảnh</span>",
+            cellTemplate: "<img ng-if='row.entity.img' src='{{row.entity.img}}' ng-class='{imgageRight: row.entity.$$treeLevel == 1, imgageLeft: row.entity.$$treeLevel == 0 }' alt='{{row.entity.name}}'/><span ng-if='!row.entity.img' class='imgClassify'>Không có ảnh</span>",
             enableCellEdit: false,
         }, {
-            name: "Tên sản phẩm",
-            field: "name",
+            name: "Tên sản phẩm/Phân loại",
+            cellTemplate: "<span ng-class='{nameLeft: row.entity.$$treeLevel == 1}'>{{row.entity.name}}</span>",
+            // field: "name",
         }, {
             name: "SKU",
             enableCellEdit: false,
-            field: "sku",
+            cellTemplate: "<span ng-class='{nameLeft: row.entity.$$treeLevel == 1}'>{{row.entity.sku}}</span>",
         }, {
             name: "Action",
-            cellTemplate: '<button class="btn btn-info" ng-click="">Delete</button>'
+            cellTemplate: '<button class="btn btn-info" ng-click="">Delete</button>',
+            visible: false,
         }],
         enableFiltering: true,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
 
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
+                // console.log(row);
+                // // $scope.gridApi.selection.selectRow($scope.options.data[3]);
+                // if(row.treeLevel == 0){
+                //     if(row.isSelected == true){
+                //         console.log('a');
+                //     }else {
+                //         console.log("b");
+                //     }
+                // }
             });
 
             gridApi.selection.on.rowSelectionChangedBatch($scope, function (rows) {
                 // var msg = 'rows changed ' + rows;
-                console.log(rows);
+                // console.log(rows);
             });
-            gridApi.rowEdit.on.saveRow($scope, $scope.saveRow);
+            gridApi.rowEdit.on.saveRow($scope, function (rowEntity) {
+                // console.log(rowEntity['Tên sản phẩm/Phân loại']);
+                // console.log(rowEntity);
+                // console.log(newValue);
+                var promise = $q.defer();
+                $scope.gridApi.rowEdit.setSavePromise(rowEntity, promise.promise);
+                if (rowEntity.$$treeLevel == 0) {
+                    var jobskill_query = firestore.collection('products').doc(rowEntity.sku)
+                    jobskill_query.update({
+                        "productName": rowEntity['Tên sản phẩm/Phân loại']
+                    }).then(function () {
+                        new Noty({
+                            layout: 'bottomRight',
+                            theme: 'relax',
+                            timeout: 3000,
+                            type: 'success',
+                            text: 'ĐÃ CẬP NHẬT THÀNH CÔNG'
+                        }).show();
+                    });
+                }
+                if (rowEntity.$$treeLevel == 1) {
+                    // console.log(data);
+                    // var checks = false;
+                    data.every(obj => {
+                        var found = obj.classify.forEach(function (el, index) {
+                            if(el.original_sku == rowEntity.sku){
+                                console.log(obj.id);
+                                console.log(index);
+                                return false;
+                            }else{
+                                return true;
+                            }
+                            // var jobskill_query = firestore.collection('products').doc(obj.id)
+                            // jobskill_query.update({
+                            //     "classify": rowEntity['Tên sản phẩm/Phân loại']
+                            // }).then(function () {
+                            //     new Noty({
+                            //         layout: 'bottomRight',
+                            //         theme: 'relax',
+                            //         timeout: 3000,
+                            //         type: 'success',
+                            //         text: 'ĐÃ CẬP NHẬT THÀNH CÔNG'
+                            //     }).show();
+                            // });
+                        });
+                        return found? false : true;
+                    })
+                    // rowEntity.sku
+                }
+            });
         },
-
-        // [{
-        //     img: "https://cbu01.alicdn.com/img/ibank/2016/641/751/3365157146_1945083708.32x32.jpg",
-        //     name: "hihi",
-        // }]
     };
 
-    var dataui = [];
-    docRef.get().then(query => {
+    function getDataForTable(storage) {
+        var dataui = [];
         var stt = 1;
-        query.forEach(doc => {
-            var data = doc.data();
-            console.log(data);
-            // docRef.doc(data.SKU_name).collection('SKU_classify').get().then(query2 => {
+        storage.forEach(data => {
             dataui.push({
-                img: data.images ? data.images[0].replace('400x400', '50x50') : '',
-                name: data.name,
-                sku: data.SKU_name,
+                img: data.imagesPreview ? data.imagesPreview[0] : '',
+                name: data.productName,
+                sku: data.id,
                 stt: stt,
                 $$treeLevel: 0
             });
             stt++;
-            data.SKU_classify.map(x => {
+            data.classify.map(x => {
                 dataui.push({
-                    img: x.skuUrl_Image,
-                    name: '',
-                    sku: x.spSku,
+                    img: x.image ? x.image : '',
+                    name: x.name,
+                    sku: x.original_sku,
                     $$treeLevel: 1
                 })
             })
-            // query2.forEach(doc2 => {
-            //     var data2 = doc2.data();
-            // });
             $scope.gridApi.core.refresh();
-            // })
-            // return {img: data.images[0], name: data.name}
         });
-        console.log(dataui);
         $scope.options.data = dataui;
-        // $scope.loading = false;
         $scope.gridApi.core.refresh();
-    })
+    }
 
-    $scope.options.gridMenuCustomItems = [{
-        title: "THÊM SẢN PHẨM",
-        action: function () {
-            $('#myModal').modal()
+    $scope.options.gridMenuCustomItems = [
+        {
+            title: "THÊM SẢN PHẨM",
+            action: function () {
+                $('#myModal').modal()
+            }
+        },
+        {
+            title: "XÓA SẢN PHẨM",
+            action: function () {
+
+            }
         }
+    ];
 
-    }, ];
+    // $scope.saveRow = 
+
 
     var currentTab = 0; // Current tab is set to be the first tab (0)
     showTab(currentTab); // Display the current tab
@@ -143,9 +209,9 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
                     n.close()
 
                 }, {
-                    id: 'button1',
-                    'data-status': 'ok'
-                }),
+                        id: 'button1',
+                        'data-status': 'ok'
+                    }),
 
                 Noty.button('CANCEL', 'btn btn-error', function () {
                     n.close();
@@ -177,9 +243,9 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
                     n.close()
 
                 }, {
-                    id: 'button1',
-                    'data-status': 'ok'
-                }),
+                        id: 'button1',
+                        'data-status': 'ok'
+                    }),
 
                 Noty.button('CANCEL', 'btn btn-error', function () {
                     n.close();
@@ -191,7 +257,7 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
     }
 
     $scope.addSku = function () {
-        
+
         $('p#addSku span.glyphicon-picture').css({
             "color": "#000000"
         })
@@ -205,27 +271,27 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
                 <button id="Sku" class="previewSku">
                     <span class="glyphicon glyphicon-picture" style="color: #000"></span>
                 </button>
-                <span id="skuNameSpan" style="width: 77%;margin-right: 6px;background: #ddd;display: inline-block;padding: 12px;font-size: 17px;">`+skuName.toUpperCase()+`</span>
+                <span id="skuNameSpan" style="width: 77%;margin-right: 6px;background: #ddd;display: inline-block;padding: 12px;font-size: 17px;">`+ skuName.toUpperCase() + `</span>
                 <button class="removeLi" id="Sku" style="margin-right:0px">
                     <span class="glyphicon glyphicon-remove" style="color: #e51e1e; "></span>
                 </button>
             </li>
             `
             $('ul.list-sku').prepend(element)
-            $('li#'+ id +' button.previewSku').css({
-                "background-image": "url(" +bg+ ")",
+            $('li#' + id + ' button.previewSku').css({
+                "background-image": "url(" + bg + ")",
                 "background-size": "cover"
             })
 
-            $('li#'+ id +' button.removeLi').click(function(){
-              $(this).parent('li#'+ id +'').remove()
+            $('li#' + id + ' button.removeLi').click(function () {
+                $(this).parent('li#' + id + '').remove()
             })
 
-            if(bg!== ""){
-                $('li#'+ id +' span.glyphicon-picture').css({
-                    "color":"#0000"
+            if (bg !== "") {
+                $('li#' + id + ' span.glyphicon-picture').css({
+                    "color": "#0000"
                 })
-            }            
+            }
 
         } else {
             alert("Vui lòng nhập tên Phân Loại")
@@ -303,12 +369,13 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
                 productName: $('input#productName').val().toString(),
                 id: ((new Date()).getTime()).toString(),
                 imagesPreview: imagePreviewUrl,
-                classify: []
+                classify: [],
+                linked_classify: [],
             }
-            $('ul.list-sku .list-group-item').each(function(index){
+            $('ul.list-sku .list-group-item').each(function (index) {
                 let bg = $(this).find('button.previewSku').css('background-image');
                 bg = bg.replace('url(', '').replace(')', '').replace(/\"/gi, "");
-                bg = bg.indexOf('chrome-extension://') !== -1? "": bg
+                bg = bg.indexOf('chrome-extension://') !== -1 ? "" : bg
                 objProduct.classify.push({
                     original_sku: $(this).attr('id').toString(),
                     name: $(this).find('span#skuNameSpan').text(),
@@ -318,15 +385,15 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
             $('#myModal').modal('hide');
             console.log(objProduct);
             firestore.collection('products').doc(objProduct.id).set(objProduct)
-            .then(function(){
-                new Noty({
-                    layout: 'bottomRight',
-                    timeout: 1500,
-                    theme: "relax",
-                    type: 'success',
-                    text: 'ĐÃ ĐĂNG SẢN PHẨM THÀNH CÔNG!'
-                }).show()                
-            })           
+                .then(function () {
+                    new Noty({
+                        layout: 'bottomRight',
+                        timeout: 1500,
+                        theme: "relax",
+                        type: 'success',
+                        text: 'ĐÃ ĐĂNG SẢN PHẨM THÀNH CÔNG!'
+                    }).show()
+                })
             return false;
         }
         // Otherwise, display the correct tab:
