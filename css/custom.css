@@ -330,18 +330,68 @@ table:hover {
   border: none
 }
 
-.imgageRight {
+.imgageRight, .imgClassify, .nameRight {
   float: left;
   margin: 5px 5px 5px 70px;
 }
 
-.imgageLeft {
+.imgageLeft, .nameLeft {
   float: left;
   margin: 5px 5px 5px 30px;
 }
 
+.imgageLeft, .imgageRight {
+  width: 45px;
+  border: solid 1px #ccc;
+}
+.popover.awesome-popover-class{
+  max-width: 200px;
+  margin-left: 100px;
+    display: block;/* Max Width of the popover (depending on the container!) */
+}
+li.addClassify {
+  list-style-type: none;
+  margin-bottom: 25px;
+  padding: 0px 20px;
+}
+input#addClassifyName {
+  padding: 9px;
+  width: 70%;
+  border: #ddd solid 2px;
+  border-radius: 3px;
+  text-transform: uppercase
+}
+li.addClassify button {
+  padding: 9px 12px;
+  background: #eee;
+  border: #ddd solid 2px;
+}
 
-
+li.classifyItem {
+  list-style-type: none;
+  margin: 13px 0;
+}
+li.classifyItem input[type="text"] {
+  padding: 13px 0 15px 18px;
+    border: #4cae4c5e solid 1px;
+    background: #f5f5f58f;
+    border-radius: 4px;
+    margin-left: 11px;
+    text-transform: uppercase;
+}
+ul#listClassify{
+  padding-left: 20px;
+  padding-right: 20px;
+}
+button.removeClassify {
+  padding: 10px 17px 16px 17px;
+  border: #ccc solid 1px;
+  font-size: 18px;
+  margin-left: 9px;
+  color: #ca0e0ea8;
+  border-radius: 4px;
+  background: #f7f7f7;
+}
 
 #regForm {
   background-color: #ffffff;
