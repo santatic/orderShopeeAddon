@@ -27,9 +27,10 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                 name: "Shiper Name",
                 field: "shipper",
             }, {
-                name: "Create At",
+                name: "Create At (m-d-y)",
                 enableCellEdit: false,
                 field: "time",
+                
                 sort: {
                     direction: 'desc',
                     priority: 0
@@ -110,7 +111,7 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         arr.forEach(function (doc) {
             const myData = doc;
             // console.log(myData);
-            ctime = moment(myData.create_at.seconds * 1000).format("DD-MM-YYYY")
+            ctime = moment(myData.create_at.seconds * 1000).format("MM-DD-YYYY")
             // obj = new Object();
 
             // if (myData.status == "HỦY PHIẾU") {

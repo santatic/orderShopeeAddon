@@ -349,6 +349,63 @@ table:hover {
   margin-left: 100px;
     display: block;/* Max Width of the popover (depending on the container!) */
 }
+.popover.preview-classify {
+  display: block !important;
+  margin-left: -10px;
+}
+.popover.preview-dis {
+  display: block !important;
+  margin-left: -55px;
+}
+.popover{
+  max-width: 400px;
+}
+span.itemLinked{
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 25px;
+  margin: 5px;
+  background: #a42be8;
+  font-family: quicksand;
+  display: inline-block
+}
+input#Disname, input#Disid {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 6px;
+  border: #ddd solid 2px;
+  border-radius: 4px;
+}
+.listDis {
+  list-style-type: none;
+  padding: 0 22px;
+}
+.listDis li{
+  margin-bottom: 10px;
+}
+button.removeDis {
+  padding: 10px 14px 11px 15px;
+  border: #f3f3f3 solid 1px;
+  font-size: 16px;
+  margin-left: 6px;
+  color: #ca0e0ea8;
+  border-radius: 4px;
+  background: #eeec;
+}
+.listDis input[type="text"] {
+  padding: 10px;
+  font-size: 17px;
+  border: #eee solid 1px;
+  border-radius: 3px;
+  background: #f3f3f3;
+}
+button.addDis {
+  padding: 9px 15px;
+    border: none;
+    border-radius: 25px;
+    color: #fff;
+    background: #d008089e;
+}
 li.addClassify {
   list-style-type: none;
   margin-bottom: 25px;

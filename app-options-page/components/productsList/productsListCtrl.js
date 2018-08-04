@@ -41,7 +41,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
         }, {
             name: "Nhà Phân Phối",
             field: "countDistribution",
-            enableCellEdit: false
+            enableCellEdit: false,
+            cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click xem chi tiết các nhà phân phối" ng-click = "grid.appScope.addDistribution(row)" style="cursor:pointer;color:#31708f" class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp; <b><span ng-click = "grid.appScope.showDistribution(row)" style="cursor:pointer" > {{row.entity.countDistribution}}</span></b></div>'
         }, {
             name: "Mã sku",
             field: "skuProduct",
@@ -69,6 +70,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
         const data = row.entity
         $scope.titleProductName = data.productName
         $scope.listClassify = data.classify
+        var linked_data = data.linked_classify
         $("#showClassify").modal();
         $("#showClassify").on("hidden.bs.modal", function () {
             $scope.listClassify = []
@@ -85,11 +87,9 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     content: function () {
                         let img = $(this).attr('src')
                         return img == "https://i.imgur.com/NWUJZb1.png" ? '<span>Phân loại này không có hình ảnh</span>' : '<img min-width="100px" width="100%" src="' + img + '" />';
-                        $('.popover').css({
-                            "margin-left": "0px",
-                            "display": "block"
-                        })
-                    }
+                        
+                    },
+                    template: '<div class="popover preview-classify" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                 });
             }
         }, 1000)
@@ -130,15 +130,6 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     image: img == 'https://i.imgur.com/NWUJZb1.png' ? "" : img,
                     original_sku: (new Date()).getTime().toString()
                 })
-                // let elementToAdd = `<li id="{{i.original_sku}}" class="classifyItem" ng-repeat="i in listClassify">
-                //                         <img class="previewSkuImg" style="border: #ccc solid 1px;" height="50" width="50" src="`+img+`"
-                //                             alt="">
-                //                         <input type="text" id="classifyName" title="`+skuNameToAdd+`" value="`+skuNameToAdd+`">
-                //                         <button ng-click="removeClassify($event)" class="removeClassify">
-                //                             <span class="glyphicon glyphicon-remove"></span>
-                //                         </button>
-                //                     </li>`
-                // $('ul#listClassify').prepend(elementToAdd)
                 $('input#addClassifyName').val("")
                 $('.skuPreviewUrl img').attr('src', 'https://i.imgur.com/NWUJZb1.png')
             } else {
@@ -161,7 +152,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
             }
             // console.log(arrClassify);
             firestore.collection('products').doc(data.skuProduct).update({
-                "classify": arrClassify
+                "classify": arrClassify,
+                "linked_classify": linked_data
             }).then(function () {
                 new Noty({
                     layout: 'bottomRight',
@@ -173,12 +165,133 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                 $('#showClassify').modal('hide');
             })
         }
+        // console.log(linked_data);
+        $scope.removeClassify = function (target) {
+            $this = target.currentTarget;
+            linked_data = linked_data.filter(obj => obj.original_sku !== angular.element($this).parent().attr('id'));
+            angular.element($this).parent().remove()
+            console.log(linked_data);
+        }
 
     }
-    $scope.removeClassify = function (target) {
-        $this = target.currentTarget;
-        angular.element($this).parent().remove()
+
+
+    $scope.addDistribution = function (row) {
+        const data = row.entity
+        $scope.titleProductName = data.productName
+        $scope.classifyToDis = data.classify
+        $('#addDistributor').modal()
+        $scope.toggle = function (event) {
+            console.log(event.currentTarget.checked);
+            checkboxes = document.getElementsByName('classify');
+            for (var i = 0, n = checkboxes.length; i < n; i++) {
+                checkboxes[i].checked = event.currentTarget.checked;
+            }
+        }
+
+        $("#addDistributor").on("hidden.bs.modal", function () {
+            $('#checkall').prop('checked', false);
+            $('input#Disname').val("")
+            $('input#Disid').val("")
+            // $('ul#listClassify').html("")
+        })
+        $scope.addDis = function () {
+            var disName = $('input#Disname').val().toString().toUpperCase()
+            var id = $('input#Disid').val().toString()
+            if (disName && id) {
+                $('input[name="classify"]:checked').each(function () {
+                    var selectedExpTags = [$(this).val()];
+                    var names = selectedExpTags.map(x => data.classify.find(y => y.name === x).original_sku)
+                    console.log(names[0]);
+                    data.linked_classify.push({
+                        name: disName,
+                        id: id,
+                        original_sku: names[0].toString()
+                    })
+                })
+                firestore.collection('products').doc(data.skuProduct).update({
+                    "linked_classify": data.linked_classify
+                }).then(function () {
+                    new Noty({
+                        layout: 'bottomRight',
+                        timeout: 1500,
+                        theme: "relax",
+                        type: 'success',
+                        text: 'ĐÃ THÊM NHÀ PHÂN PHỐI!'
+                    }).show()
+                    $('#addDistributor').modal('hide');
+                })
+
+            } else {
+                alert("Vui lòng điền đủ thông tin")
+            }
+        }
     }
+
+    $scope.showDistribution = function (row) {
+        $('#showDistributor').modal()
+        $scope.titleProductName = row.entity.productName
+        $scope.linkedToShow = row.entity.linked_filltered
+        $scope.linked_classify = row.entity.linked_classify
+        $scope.classify = row.entity.classify
+        console.log($scope.linkedToShow);
+        var timer3 = setInterval(function () {
+            console.log("notyet");
+            if ($('li.disItem').length) {
+                clearInterval(timer3)
+                // $('li.disItem').each(function(){
+                //     let id = $(this).attr('id')
+                //     let linked_data = $scope.linked_classify.filter(obj => obj.id == id);
+                //     console.log(linked_data);
+                //     var arrOrigin = []
+                //     linked_data.forEach(function(val){
+                //         arrOrigin.push(val.original_sku)
+                //     })                    
+                //     var names = arrOrigin.map(x => $scope.classify.find(y => y.original_sku === x).name)
+                //     console.log(names);
+                // })
+                $('li.disItem span.disName').popover({
+                    html: true,
+                    trigger: 'hover',
+                    placement: 'left',
+                    content: function () {
+                        let id = $(this).parent().attr('id')
+                        let linked_data = $scope.linked_classify.filter(obj => obj.id == id);
+                        var arrOrigin = []
+                        linked_data.forEach(function (val) {
+                            arrOrigin.push(val.original_sku)
+                        })
+                        var names = arrOrigin.map(x => $scope.classify.find(y => y.original_sku === x).name)
+                        // $scope.names = names
+                        return '<span style="background: #1fc2fa" class= "itemLinked">'+id+'</span><span class= "itemLinked">' + names.join('</span><span class= "itemLinked">')+'</span>'
+                        
+                    },
+                    template: '<div class="popover preview-dis" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                });
+            }
+        }, 1000)
+        $scope.removeDis = function (target) {
+            $this = target.currentTarget;
+            $scope.linked_classify = $scope.linked_classify.filter(obj => obj.id !== angular.element($this).parent().attr('id'));
+            angular.element($this).parent().remove()
+            console.log(linked_data);
+        }
+        $scope.saveDis = function(){
+            firestore.collection('products').doc(row.entity.skuProduct).update({
+                "linked_classify": $scope.linked_classify
+            }).then(function () {
+                new Noty({
+                    layout: 'bottomRight',
+                    theme: 'relax',
+                    timeout: 1500,
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT NHÀ PHÂN PHỐI!'
+                }).show();
+                $('#showDistributor').modal('hide');
+            });
+        }
+    }
+
     $scope.saveRow = function (rowEntity) {
         // create a fake promise - normally you'd use the promise returned by $http or $resource
         var promise = $q.defer();
@@ -196,8 +309,6 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
             }).show();
         });
     };
-
-
 
     function upload() {
         $('input#uploadPreview[type=file]').on("change", function () {
@@ -514,18 +625,34 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
 
     function getProducts(arr) {
         var sources = []
-        arr.forEach(function (myData) {
-            // console.log(myData);
-            time = moment(myData.create_at.seconds * 1000).format("DD-MM-YYYY")
 
+        arr.forEach(function (myData) {
+            var arrDis = []
+            // console.log(myData);
+            time = moment(myData.create_at.seconds * 1000).format("MM-DD-YYYY")
+
+            myData.linked_classify.forEach(function (linked) {
+                var found = arrDis.some(function (el) {
+                    return el.id == linked.id;
+                });
+                if (!found) {
+                    arrDis.push({
+                        id: linked.id,
+                        name: linked.name
+                    })
+                }
+            })
+
+            console.log(arrDis);
             obj = {
                 skuProduct: myData.id,
                 time: time,
-                countDistribution: myData.linked_classify.length + " Nhà Phân Phối",
+                countDistribution: arrDis.length + " Nhà Phân Phối",
                 countClassify: myData.classify.length,
                 productName: myData.productName,
                 classify: myData.classify,
                 linked_classify: myData.linked_classify,
+                linked_filltered: arrDis,
                 imgPreview: myData.imagesPreview[0] ? myData.imagesPreview[0] : "https://i.imgur.com/NWUJZb1.png"
             }
 
@@ -536,29 +663,30 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
         $scope.options.data = $scope.data;
         $scope.loading = false
         $scope.gridApi.core.refresh();
+        var timer = setInterval(function () {
+            console.log("notyet");
+            if ($('img.previewImg').length) {
+                clearInterval(timer)
+                $('img.previewImg').popover({
+                    html: true,
+                    trigger: 'hover',
+                    placement: 'bottom',
+                    //placement: 'bottom',
+                    content: function () {
+                        let img = $(this).attr('src')
+                        return img == "https://i.imgur.com/NWUJZb1.png" ? '<span>Sản phẩm này không có hình ảnh</span>' : '<img width="100%" src="' + img + '" />';
+
+                    },
+                    template: '<div class="popover awesome-popover-class" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+
+                });
+
+            }
+        }, 100)
 
     }
 
-    var timer = setInterval(function () {
-        console.log("notyet");
-        if ($('img.previewImg').length) {
-            clearInterval(timer)
-            $('img.previewImg').popover({
-                html: true,
-                trigger: 'hover',
-                placement: 'bottom',
-                //placement: 'bottom',
-                content: function () {
-                    let img = $(this).attr('src')
-                    return img == "https://i.imgur.com/NWUJZb1.png" ? '<span>Sản phẩm này không có hình ảnh</span>' : '<img width="100%" src="' + img + '" />';
 
-                },
-                template: '<div class="popover awesome-popover-class" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
-
-            });
-
-        }
-    }, 100)
 
 
 

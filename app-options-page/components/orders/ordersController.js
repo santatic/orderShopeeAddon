@@ -7,6 +7,9 @@ app.controller("orders-controller", ordersController)
 
 function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     $scope.loading = true;
+    $('.navbar').css({
+        "margin-bottom": "0"
+    })
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
             id: 1,
@@ -173,6 +176,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             }
         ],
         enableFiltering: true,
+        showGridFooter:true,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
 

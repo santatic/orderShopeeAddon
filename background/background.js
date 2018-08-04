@@ -15,60 +15,60 @@ firestore.settings(settings);
 
 //   console.log(data);
 var arrayFilter = [{
-  id: 1,
-  english: "NEW",
-  vietnamese: "đơn mới"
-},
-{
-  id: 2,
-  english: "PREPARED",
-  vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-},
-{
-  id: 3,
-  english: "UNPREPARED",
-  vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-},
-{
-  id: 4,
-  english: "PACKED",
-  vietnamese: "đã đóng gói chờ gửi đi"
-},
-{
-  id: 5,
-  english: "SHIPPED",
-  vietnamese: "đã gửi đi"
-},
-{
-  id: 6,
-  english: "DELIVERED",
-  vietnamese: "khách đã nhận hàng"
-},
-{
-  id: 7,
-  english: "RETURNING",
-  vietnamese: "đang hoàn hàng chưa về đến kho"
-},
-{
-  id: 8,
-  english: "RETURNED",
-  vietnamese: "đã hoàn về kho"
-},
-{
-  id: 9,
-  english: "PAID",
-  vietnamese: "đã thanh toán"
-},
-{
-  id: 10,
-  english: "REFUNDED",
-  vietnamese: "đã hoàn tiền"
-},
-{
-  id: 11,
-  english: "CANCELED",
-  vietnamese: "đã hủy"
-},
+    id: 1,
+    english: "NEW",
+    vietnamese: "đơn mới"
+  },
+  {
+    id: 2,
+    english: "PREPARED",
+    vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+  },
+  {
+    id: 3,
+    english: "UNPREPARED",
+    vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+  },
+  {
+    id: 4,
+    english: "PACKED",
+    vietnamese: "đã đóng gói chờ gửi đi"
+  },
+  {
+    id: 5,
+    english: "SHIPPED",
+    vietnamese: "đã gửi đi"
+  },
+  {
+    id: 6,
+    english: "DELIVERED",
+    vietnamese: "khách đã nhận hàng"
+  },
+  {
+    id: 7,
+    english: "RETURNING",
+    vietnamese: "đang hoàn hàng chưa về đến kho"
+  },
+  {
+    id: 8,
+    english: "RETURNED",
+    vietnamese: "đã hoàn về kho"
+  },
+  {
+    id: 9,
+    english: "PAID",
+    vietnamese: "đã thanh toán"
+  },
+  {
+    id: 10,
+    english: "REFUNDED",
+    vietnamese: "đã hoàn tiền"
+  },
+  {
+    id: 11,
+    english: "CANCELED",
+    vietnamese: "đã hủy"
+  },
 ]
 
 // var Col = firestore.collection('orderShopee')
@@ -355,6 +355,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           break;
         case "detailOrder":
           detailOrder(request, sendResponse)
+          return true;
           break;
         case "update":
           update(request, sendResponse)
@@ -713,7 +714,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   function updateNote(response, sendResponse) {
     firestore.collection("orderShopee").doc(response.url).update({
       "note": response.note
-    }).then(function () { })
+    }).then(function () {})
   }
 
   function update(response, sendRespose) {
@@ -722,7 +723,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
 
       firestore.collection("orderShopee").doc(response.url).update({
         "logistic": $.parseJSON(JSON.stringify(logistic))
-      }).then(function () { })
+      }).then(function () {})
     })
   }
 
@@ -773,11 +774,21 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         ).then(function () {
           firestore.collection("userShopee").doc(user.id.toString()).set(
             user
-          ).then(() => {
+          ).then((doc) => {
             console.log("save successful");
+            sendResponse({
+              check: "success",
+              buyer_paid_amount: val.buyer_paid_amount,
+              shipping_fee: val.shipping_fee,
+              id: response.url,
+              exportId: "Chưa có Mã Phiếu Xuất",
+              status: val.own_status.status
+            })
           })
         })
-      } else console.log("chua co mvd");
+      } else sendResponse({
+        check: "fail"
+      })
 
     })
   }
@@ -834,7 +845,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       })
     }
 
-    function callback() { }
+    function callback() {}
 
   }
 

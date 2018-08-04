@@ -105,7 +105,17 @@ app.service('helper', function () {
       if (arrExportId.length == arrayOrders.length) {
         clearInterval(timer)
         console.log(arrExportId);
+        var selectedExpTags = [arrayOrders[0].carrier];
+        var names = selectedExpTags.map(x => arrCarrier.find(y => y.id === x).carrier)
         var batch = firestore.batch()
+        var exCol = firestore.collection("exportCode").doc(date.getTime().toString())
+        batch.set(exCol, {
+                "orders": arrExportId,
+                "shipper": "",
+                "create_at": date,
+                "status": "MỚI",
+                "carrier": names[0]
+        })
         var check = []
         arrExportId.forEach(function (val, i) {
           var docEx = firestore.collection("orderShopee").doc(val.toString());
@@ -118,21 +128,13 @@ app.service('helper', function () {
         var timerSec = setInterval(function () {
           if (check.length == arrExportId.length) {
             clearInterval(timerSec)
-            var selectedExpTags = [arrayOrders[0].carrier];
-            var names = selectedExpTags.map(x => arrCarrier.find(y => y.id === x).carrier)
+           
             batch.commit().then(function () {
-              firestore.collection("exportCode").doc(date.getTime().toString()).set({
-                "orders": arrExportId,
-                "shipper": "",
-                "create_at": date,
-                "status": "MỚI",
-                "carrier": names[0]
-              }).then(function () {
                 var win = window.open(chrome.extension.getURL("options.html#/export/") + date.getTime(), "_blank");
                 win.focus()
               })
 
-            });
+            ;
           }
         }, 500)
 

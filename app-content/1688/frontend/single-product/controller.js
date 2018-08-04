@@ -1,5 +1,5 @@
-app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
-    function ($scope, moment, titleProducts) {
+app.controller("1688Ctrl", ['$scope', 'moment',
+    function ($scope, moment) {
 
 
         $scope.urlToPromise = function (url) {
@@ -78,22 +78,21 @@ app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
             Products.forEach(function loop(pro) {
                 if(loop.stop){ return; }
 
-                let index = pro.linked_classify.findIndex(x => x.id == id1688);
+                let index = pro.linked_classify.findIndex(x => x.id == id1688.toString());
                 $scope.dontfound = index >0? false : true
                 $scope.$apply()
 
                 if (index>0) {
                     loop.stop = true; 
-                    console.log(pro.linked_classify[index]);
+                    console.log(pro.id, pro.linked_classify[index]);
+                    $scope.id_products = pro.id
+                    $scope.$apply()
                     // break;
                 } else {                    
                     console.log('không thấy');
-                    $scope.add_products = function () {
-                        $('#myModal').modal();
-
-                    }
+                    $scope.add_products_link = chrome.extension.getURL("options.html#/products/");
+                    
                 }
-                console.log(id1688)
             })
         }
 
@@ -125,7 +124,7 @@ app.controller("1688Ctrl", ['$scope', 'moment', 'titleProducts',
         }
 
         // thêm sản phẩm
-        titleProducts.getSuggests();
+        // titleProducts.getSuggests();
         // $scope.add_products = function () {
         //     $('#myModal').modal();
             // var n = new Noty({
