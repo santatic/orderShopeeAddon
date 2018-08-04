@@ -24,10 +24,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"></h4>
+                <h4 class="modal-title modal-single"></h4>
             </div>
             <div class="modal-body">
-                <div class="form-group-status">
+                <div class="form-group-status singleStatus" id="singleStatus">
 
                     <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="NEW">
                     <b>ĐƠN MỚI</b>
@@ -42,6 +42,43 @@
 
 
                     <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="DELIVERED">
+                    <b>KHÁCH ĐÃ NHẬN</b>
+
+                    <!-- 
+                                        <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
+                                </div> -->
+                </div>
+            </div>
+            <div class="modal-footer modal-single" >
+                <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade noprint" id="changeBulkStatus" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{BulkChangeStatus.length}} ĐƠN</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group-status" id="bulkStatus">
+
+                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="NEW">
+                    <b>ĐƠN MỚI</b>
+
+
+                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="PACKED">
+                    <b>ĐÃ ĐÓNG GÓI</b>
+
+
+                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="SHIPPED">
+                    <b>ĐÃ GỬI ĐI</b>
+
+
+                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="DELIVERED">
                     <b>KHÁCH ĐÃ NHẬN</b>
 
                     <!-- 

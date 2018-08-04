@@ -12,60 +12,60 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     })
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
-            id: 1,
-            english: "NEW",
-            vietnamese: "đơn mới"
-        },
-        {
-            id: 2,
-            english: "PREPARED",
-            vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-        },
-        {
-            id: 3,
-            english: "UNPREPARED",
-            vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-        },
-        {
-            id: 4,
-            english: "PACKED",
-            vietnamese: "đã đóng gói"
-        },
-        {
-            id: 5,
-            english: "SHIPPED",
-            vietnamese: "đã gửi đi"
-        },
-        {
-            id: 6,
-            english: "DELIVERED",
-            vietnamese: "khách đã nhận"
-        },
-        {
-            id: 7,
-            english: "RETURNING",
-            vietnamese: "đang hoàn hàng"
-        },
-        {
-            id: 8,
-            english: "RETURNED",
-            vietnamese: "đã hoàn về kho"
-        },
-        {
-            id: 9,
-            english: "PAID",
-            vietnamese: "đã thanh toán"
-        },
-        {
-            id: 10,
-            english: "REFUNDED",
-            vietnamese: "đã hoàn tiền"
-        },
-        {
-            id: 11,
-            english: "CANCELED",
-            vietnamese: "đã hủy"
-        },
+        id: 1,
+        english: "NEW",
+        vietnamese: "đơn mới"
+    },
+    {
+        id: 2,
+        english: "PREPARED",
+        vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+    },
+    {
+        id: 3,
+        english: "UNPREPARED",
+        vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+    },
+    {
+        id: 4,
+        english: "PACKED",
+        vietnamese: "đã đóng gói"
+    },
+    {
+        id: 5,
+        english: "SHIPPED",
+        vietnamese: "đã gửi đi"
+    },
+    {
+        id: 6,
+        english: "DELIVERED",
+        vietnamese: "khách đã nhận"
+    },
+    {
+        id: 7,
+        english: "RETURNING",
+        vietnamese: "đang hoàn hàng"
+    },
+    {
+        id: 8,
+        english: "RETURNED",
+        vietnamese: "đã hoàn về kho"
+    },
+    {
+        id: 9,
+        english: "PAID",
+        vietnamese: "đã thanh toán"
+    },
+    {
+        id: 10,
+        english: "REFUNDED",
+        vietnamese: "đã hoàn tiền"
+    },
+    {
+        id: 11,
+        english: "CANCELED",
+        vietnamese: "đã hủy"
+    },
     ]
 
     var statusDef = {
@@ -89,94 +89,94 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         paginationPageSize: 15,
         enableSorting: true,
         columnDefs: [{
-                name: "ID",
-                field: "id",
-                enableCellEdit: false,
-                width: '100',
-                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
-            }, {
-                name: "Số Vận Đơn",
-                enableCellEdit: false,
-                field: "trackno",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để chỉnh sửa nhanh trạng thái" ng-click = "grid.appScope.doSomething(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp; <a target="_blank" title="{{row.entity.trackno}}" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
-            }, {
-                name: "UserName",
-                enableCellEdit: false,
-                width: '150',
-                field: "nickname"
-            }, {
-                name: "Dự kiến thu",
-                enableCellEdit: false,
-                field: "paid",
-                width: '100'
-            }, {
-                name: "Nhà Vận Chuyển",
-                width: "150",
-                field: "carrier",
-                filter: {
-                    type: uiGridConstants.filter.SELECT,
-                    selectOptions: [{
-                            value: 1,
-                            label: "Giao Hàng Tiết Kiệm"
-                        },
-                        {
-                            value: 2,
-                            label: "Viettel Post"
-                        },
-                        {
-                            value: 3,
-                            label: "Giao Hàng Nhanh"
-                        },
-                        {
-                            value: 4,
-                            label: "VNPost Tiết Kiệm"
-                        }, {
-                            value: 5,
-                            label: "VNPost Nhanh"
-                        }
-                    ]
+            name: "ID",
+            field: "id",
+            enableCellEdit: false,
+            width: '100',
+            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
+        }, {
+            name: "Số Vận Đơn",
+            enableCellEdit: false,
+            field: "trackno",
+            cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để chỉnh sửa nhanh trạng thái" ng-click = "grid.appScope.doSomething(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp; <a target="_blank" title="{{row.entity.trackno}}" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
+        }, {
+            name: "UserName",
+            enableCellEdit: false,
+            width: '150',
+            field: "nickname"
+        }, {
+            name: "Dự kiến thu",
+            enableCellEdit: false,
+            field: "paid",
+            width: '100'
+        }, {
+            name: "Nhà Vận Chuyển",
+            width: "150",
+            field: "carrier",
+            filter: {
+                type: uiGridConstants.filter.SELECT,
+                selectOptions: [{
+                    value: 1,
+                    label: "Giao Hàng Tiết Kiệm"
                 },
-                cellFilter: 'mapCarrier'
-            },
-            {
-                name: "Phí Ship",
-                enableCellEdit: false,
-                width: '100',
-                field: "shippingFee"
-            }, {
-                name: "Phiếu Xuất",
-                field: "exId",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
-            },
-            // {
-            //     name: "Phiếu Thu",
-            //     field: "importId",
-            //     cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.importId}}">{{row.entity.importId}}</a></div>'
-            // },
-            {
-                name: "Logistics Shopee",
-                enableCellEdit: false,
-                field: "status",
-                cellTooltip: function (row) {
-                    return row.entity.status;
+                {
+                    value: 2,
+                    label: "Viettel Post"
+                },
+                {
+                    value: 3,
+                    label: "Giao Hàng Nhanh"
+                },
+                {
+                    value: 4,
+                    label: "VNPost Tiết Kiệm"
+                }, {
+                    value: 5,
+                    label: "VNPost Nhanh"
                 }
-            }, {
-                name: "Thời gian của Logistics",
-                enableCellEdit: false,
-                width: '100',
-                field: "updateTime",
-                sort: {
-                    direction: 'asc',
-                    priority: 0
-                }
+                ]
             },
-            statusDef, {
-                name: "Trễ",
-                field: "fromNow"
+            cellFilter: 'mapCarrier'
+        },
+        {
+            name: "Phí Ship",
+            enableCellEdit: false,
+            width: '100',
+            field: "shippingFee"
+        }, {
+            name: "Phiếu Xuất",
+            field: "exId",
+            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
+        },
+        // {
+        //     name: "Phiếu Thu",
+        //     field: "importId",
+        //     cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.importId}}">{{row.entity.importId}}</a></div>'
+        // },
+        {
+            name: "Logistics Shopee",
+            enableCellEdit: false,
+            field: "status",
+            cellTooltip: function (row) {
+                return row.entity.status;
             }
+        }, {
+            name: "Thời gian của Logistics",
+            enableCellEdit: false,
+            width: '100',
+            field: "updateTime",
+            sort: {
+                direction: 'asc',
+                priority: 0
+            }
+        },
+            statusDef, {
+            name: "Trễ",
+            field: "fromNow"
+        }
         ],
         enableFiltering: true,
-        showGridFooter:true,
+        showGridFooter: true,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
 
@@ -209,10 +209,11 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         console.log(amount);
         // $scope.$apply()
         $('#myModal').modal();
-        $('h4.modal-title').html('<span id="rowId">' + row.entity.id + '</span>' + ' - <span style="background:#00bfa5; color: #fff;padding: 0 7px;"># ' + row.entity.trackno + '</span> - ' + row.entity.nickname)
-        $('.modal-footer').html('<b>ĐƠN NÀY CÓ TẤT CẢ ' + row.entity.size + ' MẶT HÀNG, TỔNG SỐ LƯỢNG: ' + amount + '</b>')
+        $('h4.modal-single').html('<span id="rowId">' + row.entity.id + '</span>' + ' - <span style="background:#00bfa5; color: #fff;padding: 0 7px;"># ' + row.entity.trackno + '</span> - ' + row.entity.nickname)
+        $('.modal-footer.modal-single').html('<b>ĐƠN NÀY CÓ TẤT CẢ ' + row.entity.size + ' MẶT HÀNG, TỔNG SỐ LƯỢNG: ' + amount + '</b>')
+        
     }
-    $('.form-group-status input:radio').change(function (e) {
+    $('.singleStatus input:radio').change(function (e) {
         // console.log((this.value));
         var selectedExpTags = [this.value];
         var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
@@ -235,7 +236,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         })
 
     });
-
+    var BulkChangeStatus = []
     $scope.options.gridMenuCustomItems = [{
         title: "IN ĐƠN",
         action: function () {
@@ -301,8 +302,53 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             //         }
             //     })
             // })
-        },
-    }, ]
+        },        
+    },{
+        title: "ĐỔI TRẠNG THÁI",
+        action: function() {
+            
+            var selected = $scope.gridApi.selection.getSelectedRows();            
+            $scope.BulkChangeStatus = selected
+            BulkChangeStatus = selected
+            if(selected.length>1){
+                                
+                $('#changeBulkStatus').modal()
+                $("#changeBulkStatus").on("hidden.bs.modal", function () {
+                    $scope.BulkStatusRadio = null
+                })
+
+            }else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
+
+           
+        }
+    }]
+    $('#bulkStatus input:radio').change(function (e) {
+        var n = new Noty({
+            layout: 'bottomRight',
+            theme: "relax",
+            type: 'warning',
+            text: 'ĐANG THAY ĐỔI TRẠNG THÁI HÀNG LOẠT...<br>HOÀN THÀNH KHI THÔNG BÁO NÀY BIẾN MẤT'
+        }).show();
+        
+        var selectedExpTags = [this.value];
+        var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
+        console.log(names[0], BulkChangeStatus)
+        var batch = firestore.batch();
+        BulkChangeStatus.forEach(function(val){
+            var DocRef = firestore.collection("orderShopee").doc(val.id.toString())
+            batch.update(DocRef,{
+                "own_status": {
+                    status: names[0],
+                    create_at: new Date()
+                }
+            })
+        })
+        batch.commit().then(function(){
+            n.close()
+            $("#changeBulkStatus").modal("hide")
+        })
+
+    })
 
     $scope.options.multiSelect = true;
     var now = new Date
@@ -318,7 +364,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     $scope.options.gridMenuCustomItems.push({
         title: "IN SẢN PHẨM",
         action: function () {
-            
+
             var selected = $scope.gridApi.selection.getSelectedRows();
             // console.log(selected);
             var products = []
@@ -330,7 +376,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     return obj.id == val.id;
                 });
 
-                if (!val.exId && val.ownStatus == 1) {} else {
+                if (!val.exId && val.ownStatus == 1) { } else {
                     condi = false
                 }
 
@@ -365,151 +411,151 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 });
 
             })
-            if(condi){
+            if (condi) {
                 console.log(products);
-            products.sort(function(a,b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)} )
-            products.unshift({
-                imageUrl:"TỔNG",
-                name: selected.length +" ĐƠN, "+products.length + " MẶT HÀNG",
-                model: "",
-                amount: ""
-            })
-            console.log(products);
-            $scope.products = products
-            $("#modalProduct").on("hidden.bs.modal", function () {
-                // put your default event here
+                products.sort(function (a, b) { return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0) })
+                products.unshift({
+                    imageUrl: "TỔNG",
+                    name: selected.length + " ĐƠN, " + products.length + " MẶT HÀNG",
+                    model: "",
+                    amount: ""
+                })
+                console.log(products);
+                $scope.products = products
+                $("#modalProduct").on("hidden.bs.modal", function () {
+                    // put your default event here
 
-                $(".previewPro").html("")
-                $('canvas').remove()
-                $('.printBut').css("display", "none")
-                element.css("display", "block")
-                $scope.products = []
-                $scope.$apply()
-            });
+                    $(".previewPro").html("")
+                    $('canvas').remove()
+                    $('.printBut').css("display", "none")
+                    element.css("display", "block")
+                    $scope.products = []
+                    $scope.$apply()
+                });
 
 
-            var element = $("#html2image"); // global variable
-            let getCanvas
-            var timer = setInterval(function () {
-                if ($scope.products.length > 0) {
-                    clearInterval(timer)
-                    $('.printBut').css("display", "block")
-                    $('#modalProduct').modal()
+                var element = $("#html2image"); // global variable
+                let getCanvas
+                var timer = setInterval(function () {
+                    if ($scope.products.length > 0) {
+                        clearInterval(timer)
+                        $('.printBut').css("display", "block")
+                        $('#modalProduct').modal()
 
-                    html2canvas(element, {
-                        onrendered: function (canvas) {
+                        html2canvas(element, {
+                            onrendered: function (canvas) {
 
-                            var context = canvas.getContext("2d");
-                            var img = new Image()
-                            var elements = document.getElementsByClassName('imgPro')
-                            for (var i = 0; i < elements.length; i++) {
+                                var context = canvas.getContext("2d");
+                                var img = new Image()
+                                var elements = document.getElementsByClassName('imgPro')
+                                for (var i = 0; i < elements.length; i++) {
 
-                                var offsets = elements[i].getBoundingClientRect();
-                                // console.log(offsets);
-                                var imgTop = offsets.top;
-                                var imgLeft = offsets.left;
+                                    var offsets = elements[i].getBoundingClientRect();
+                                    // console.log(offsets);
+                                    var imgTop = offsets.top;
+                                    var imgLeft = offsets.left;
 
-                                //Find actual position with parent cotainer
-                                var offsetsContainer = document.getElementById('html2image').getBoundingClientRect();
-                                imageLeft = parseInt(imgLeft) - parseInt(offsetsContainer.left);
-                                imageTop = parseInt(imgTop) - parseInt(offsetsContainer.top);
-                                // console.log(offsetsContainer);
-                                img.src = elements[i].src; // specifies the location of the image
+                                    //Find actual position with parent cotainer
+                                    var offsetsContainer = document.getElementById('html2image').getBoundingClientRect();
+                                    imageLeft = parseInt(imgLeft) - parseInt(offsetsContainer.left);
+                                    imageTop = parseInt(imgTop) - parseInt(offsetsContainer.top);
+                                    // console.log(offsetsContainer);
+                                    img.src = elements[i].src; // specifies the location of the image
 
-                                context.drawImage(img, imageLeft, imageTop, 80, 80); // draws the image at the specified x and y location
-                                // console.log(imageLeft, imageTop);
+                                    context.drawImage(img, imageLeft, imageTop, 80, 80); // draws the image at the specified x and y location
+                                    // console.log(imageLeft, imageTop);
+                                }
+                                // document.body.appendChild(canvas);
+                                console.log(canvas);
+                                $("#previewPro").html(canvas);
+                                getCanvas = canvas;
+                                // canvas = null                        
+                                element.css("display", "none")
                             }
-                            // document.body.appendChild(canvas);
-                            console.log(canvas);
-                            $("#previewPro").html(canvas);
-                            getCanvas = canvas;
-                            // canvas = null                        
-                            element.css("display", "none")
-                        }
-                    });
+                        });
+                    }
+                }, 300)
+
+                dropContainer.ondragover = dropContainer.ondragenter = function (evt) {
+                    evt.preventDefault();
+                };
+
+                dropContainer.ondrop = function (evt) {
+                    // pretty simple -- but not for IE :(
+                    fileInput.files = evt.dataTransfer.files;
+                    evt.preventDefault();
+                };
+                $("#upfile").click(function () {
+                    $("#fileInput").trigger('click');
+                });
+
+                $('#fileInput').on("change", function () {
+
+                    var $files = $(this).get(0).files;
+                    var n2 = new Noty({
+                        layout: 'topLeft',
+                        theme: "relax",
+                        type: 'warning',
+                        text: 'ĐANG UPLOAD...'
+                    }).on('afterShow', function () {
+                        var settings = {
+
+                            async: false,
+                            crossDomain: true,
+                            processData: false,
+                            contentType: false,
+                            type: 'POST',
+                            url: 'https://api.imgur.com/3/image',
+                            headers: {
+                                Authorization: 'Client-ID 1a75998a3de24bd',
+                                Accept: 'application/json'
+                            },
+                            mimeType: 'multipart/form-data'
+                        };
+
+                        var formData = new FormData();
+                        formData.append("image", $files[0]);
+                        settings.data = formData;
+
+                        $.ajax(settings).done(function (response) {
+                            n2.close()
+                            var obj = JSON.parse(response)
+                            var $temp = $("<input>");
+                            $("body").append($temp);
+                            $temp.val(obj.data.link).select();
+                            var successful = document.execCommand('copy');
+                            var msg = successful ? new Noty({
+                                layout: 'topLeft',
+                                timeout: 4000,
+                                theme: "relax",
+                                type: 'success',
+                                text: 'ĐÃ COPY LINK ẢNH'
+                            }).show() : new Noty({
+                                timeout: 3500,
+                                layout: 'topLeft',
+                                theme: "relax",
+                                type: 'error',
+                                text: 'Copy LỖI'
+                            }).show()
+                            $temp.remove();
+                            $(this).val("")
+                            $('.noty_layout').addClass('noprint')
+                        });
+                    }).show();
+                    console.log("Uploading file to Imgur..");
+                    // Replace ctrlq with your own API key
+
+                    // $("#btn-Download-Image").attr("download", selected.length + "orders-"+ $scope.products.length + "products.png").attr("href", newData);
+                });
+                $scope.printProduct = function () {
+                    $timeout(function () {
+                        window.print()
+                    }, 500)
                 }
-            }, 300)
-
-            dropContainer.ondragover = dropContainer.ondragenter = function (evt) {
-                evt.preventDefault();
-            };
-
-            dropContainer.ondrop = function (evt) {
-                // pretty simple -- but not for IE :(
-                fileInput.files = evt.dataTransfer.files;
-                evt.preventDefault();
-            };
-            $("#upfile").click(function () {
-                $("#fileInput").trigger('click');
-            });
-
-            $('#fileInput').on("change", function () {
-
-                var $files = $(this).get(0).files;
-                var n2 = new Noty({
-                    layout: 'topLeft',
-                    theme: "relax",
-                    type: 'warning',
-                    text: 'ĐANG UPLOAD...'
-                }).on('afterShow', function () {
-                    var settings = {
-
-                        async: false,
-                        crossDomain: true,
-                        processData: false,
-                        contentType: false,
-                        type: 'POST',
-                        url: 'https://api.imgur.com/3/image',
-                        headers: {
-                            Authorization: 'Client-ID 1a75998a3de24bd',
-                            Accept: 'application/json'
-                        },
-                        mimeType: 'multipart/form-data'
-                    };
-
-                    var formData = new FormData();
-                    formData.append("image", $files[0]);
-                    settings.data = formData;
-
-                    $.ajax(settings).done(function (response) {
-                        n2.close()
-                        var obj = JSON.parse(response)
-                        var $temp = $("<input>");
-                        $("body").append($temp);
-                        $temp.val(obj.data.link).select();
-                        var successful = document.execCommand('copy');
-                        var msg = successful ? new Noty({
-                            layout: 'topLeft',
-                            timeout: 4000,
-                            theme: "relax",
-                            type: 'success',
-                            text: 'ĐÃ COPY LINK ẢNH'
-                        }).show() : new Noty({
-                            timeout: 3500,
-                            layout: 'topLeft',                            
-                            theme: "relax",
-                            type: 'error',
-                            text: 'Copy LỖI'
-                        }).show()
-                        $temp.remove();
-                        $(this).val("")
-                        $('.noty_layout').addClass('noprint')
-                    });
-                }).show();
-                console.log("Uploading file to Imgur..");
-                // Replace ctrlq with your own API key
-
-                // $("#btn-Download-Image").attr("download", selected.length + "orders-"+ $scope.products.length + "products.png").attr("href", newData);
-            });
-            $scope.printProduct = function () {
-                $timeout(function () {
-                    window.print()
-                }, 500)
-            }
-            }else{
+            } else {
                 alert("ĐƠN BẠN CHỌN KHÔNG PHẢI ĐƠN MỚI HOẶC ĐÃ CÓ MÃ PHIẾU XUẤT")
             }
-            
+
 
         }
     })
@@ -528,6 +574,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             if (myData.logistic["logistics-logs"].length > 0) {
                 ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
                 description = myData.logistic["logistics-logs"][0].description
+                description = description.indexOf('[Vietnam]') !== -1 ? description.replace('[Vietnam]', '') : description
             } else {
                 let date = new Date()
                 ctime = moment(date.getTime()).format('YYYY-MM-DD');

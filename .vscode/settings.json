@@ -1,2 +1,6 @@
 {
+    "files.exclude": {
+        "**/._*": true
+    },
+    "editor.fontSize": 16
 }

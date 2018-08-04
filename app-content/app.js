@@ -85,7 +85,6 @@ app.service('getList', function () {
         function getListFromStorage() {
 
 
-
             chrome.storage.local.get('data', function (keys) {
                 keys.data
                 var timer = setInterval(function () {
@@ -162,6 +161,10 @@ app.service('getList', function () {
                                 _this.find(".ct-buyer > div").append(' <span style="background: #ff3d3e;border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" class="'+id+'">&nbsp<b>CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span> <a style="background: rgba(46, 192, 20, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" href="javascript:void(0)" id="'+id+'" class="folow"><b>THEO DÕI</b></a>')
                                 $('a#'+id+'').click(function(){
                                     console.log($(this).attr("id"));
+                                    _this.find(".ct-buyer > div").find('#'+id+'').css({
+                                        "display": "none"
+                                    })
+                                    _this.find(".ct-buyer > div").find('.'+id+'').text("ĐANG THEO DÕI...")
                                     chrome.runtime.sendMessage({
                                         mission: "detailOrder",
                                         url: $(this).attr("id")
@@ -178,6 +181,10 @@ app.service('getList', function () {
                                             
                                         }else{
                                             alert("đơn chưa có mã phiếu xuất")
+                                            _this.find(".ct-buyer > div").find('#'+id+'').css({
+                                                "display": "block"
+                                            })
+                                            _this.find(".ct-buyer > div").find('.'+id+'').text("CHƯA ĐƯỢC THEO DÕI")
                                         }
                                     })
                                 })
