@@ -56,35 +56,37 @@
     </div>
 </div>
 <div class="modal fade noprint" id="changeBulkStatus" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width: 450px;">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">{{BulkChangeStatus.length}} ĐƠN</h4>
+                <h4 class="modal-title">{{BulkChangeStatus.length}} ĐƠN ĐÃ ĐƯỢC ĐỔI TRẠNG THÁI</h4>
             </div>
             <div class="modal-body">
-                <input placeholder="Nhập id để đổi trạng thái" type="text" id="testScan">
+                
                 <div class="form-group-status" id="bulkStatus">
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="NEW">
-                    <b>ĐƠN MỚI</b>
-
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="PACKED">
-                    <b>ĐÃ ĐÓNG GÓI</b>
-
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="SHIPPED">
-                    <b>ĐÃ GỬI ĐI</b>
-
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="DELIVERED">
-                    <b>KHÁCH ĐÃ NHẬN</b>
+                    <div class="changeStatus">
+                        <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="NEW">
+                        <b>ĐƠN MỚI</b>
+    
+    
+                        <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="PACKED">
+                        <b>ĐÃ ĐÓNG GÓI</b>
+                    </div>
+                   
 
                     <!-- 
                                         <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
                                 </div> -->
+                </div>
+                <input placeholder="Nhập id để đổi trạng thái" type="text" id="testScan" autofocus>
+                <div id="listChangeSuccess">
+                    <li ng-repeat="i in BulkChangeStatus" class="success-change">
+                        <span class="idSuccess">{{i.id}}</span>
+                        <span class="statusSuccess">( {{i.status}} )</span>
+                        <span class="success">success</span>
+                    </li>
                 </div>
             </div>
             <div class="modal-footer">
