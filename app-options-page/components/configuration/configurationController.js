@@ -1,5 +1,19 @@
 app.controller("configuration-controller", function ($scope, $q, chromeStorage, uiGridConstants) {
 
+    var timeout = null;
+    $('#testScan').on('keyup', function () {
+        var that = this;
+        if (timeout !== null) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(function () {
+            console.log($(that).val());
+            $(that).val("")
+        }, 500);
+    });
+
+    
+
     $scope.options = {
         // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
@@ -30,24 +44,24 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
         }
     }
 
-    $scope.saveRow = function( rowEntity ) {
+    $scope.saveRow = function (rowEntity) {
         // create a fake promise - normally you'd use the promise returned by $http or $resource
         var promise = $q.defer();
-        $scope.gridApi.rowEdit.setSavePromise( rowEntity, promise.promise );
+        $scope.gridApi.rowEdit.setSavePromise(rowEntity, promise.promise);
         var jobskill_query = firestore.collection('suggest').doc(rowEntity.id)
-                jobskill_query.update({
-                    "suggest_chat": rowEntity.suggest
-                }).then(function(){
-                    new Noty({
-                        layout: 'bottomRight',
-                        theme: 'relax',
-                        timeout: 3000,
-                        type: 'success',
-                        text: 'ĐÃ CẬP NHẬT SUGGEST'
-                    }).show();
-                });
-      };
-      
+        jobskill_query.update({
+            "suggest_chat": rowEntity.suggest
+        }).then(function () {
+            new Noty({
+                layout: 'bottomRight',
+                theme: 'relax',
+                timeout: 3000,
+                type: 'success',
+                text: 'ĐÃ CẬP NHẬT SUGGEST'
+            }).show();
+        });
+    };
+
     $scope.options.multiSelect = true;
     var check = []
     $scope.options.gridMenuCustomItems = [{
@@ -61,47 +75,47 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
                     querySnapshot.forEach(function (doc) {
                         doc.ref.delete();
                     });
-                }).then(function(){
+                }).then(function () {
                     check.push(i)
                 });
             })
-            var timer =setInterval(function(){
-                if(check.length == selected.length){
+            var timer = setInterval(function () {
+                if (check.length == selected.length) {
                     clearInterval(timer)
                     getSuggest()
                 }
-            },500)
+            }, 500)
 
         }
 
     },
-{
-    title: "THÊM CÂU",
+    {
+        title: "THÊM CÂU",
         action: function () {
             var n = new Noty({
                 closeWith: [],
                 text: 'Do you want to continue? <input id="suggest" type="text">',
                 buttons: [
-                  Noty.button('YES', 'btn btn-success', function () {
-                    var input = $('input#suggest').val()
-                    if (input) {
-                        docRef.doc().set({
-                            "suggest_chat": input
-                        }).then(function () {
-                            getSuggest()
-                            n.close();
-                        })
-                    }
-                  }, {id: 'button1', 'data-status': 'ok'}),
-              
-                  Noty.button('NO', 'btn btn-error', function () {
-                    $('input#suggest').val("")
-                      n.close();
-                  })
+                    Noty.button('YES', 'btn btn-success', function () {
+                        var input = $('input#suggest').val()
+                        if (input) {
+                            docRef.doc().set({
+                                "suggest_chat": input
+                            }).then(function () {
+                                getSuggest()
+                                n.close();
+                            })
+                        }
+                    }, { id: 'button1', 'data-status': 'ok' }),
+
+                    Noty.button('NO', 'btn btn-error', function () {
+                        $('input#suggest').val("")
+                        n.close();
+                    })
                 ]
-              }).show();
+            }).show();
         }
-}]
+    }]
 
     docRef = firestore.collection("suggest");
 
@@ -109,7 +123,7 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
         chrome.storage.local.get('suggests', function (keys) {
             dataOnSnapshot = keys.suggests;
             console.log(dataOnSnapshot);
-          })
+        })
         var sources_suggest = []
         docRef.get().then(
             function (querySnapshot) {
@@ -148,7 +162,7 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
         console.log(keys);
     });
 
-    chrome.storage.sync.get( /* String or Array */ ["configuration"], function (items) {
+    chrome.storage.sync.get( /* String or Array */["configuration"], function (items) {
         console.log(items);
         $scope.configuration = items.configuration;
         //  items = [ { "yourBody": "myBody" } ]
@@ -195,51 +209,51 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
     $scope.toggleCompleted = function () {
         chromeStorage.sync();
     }
-    $('input[type=file]').on("change", function() {
+    $('input[type=file]').on("change", function () {
 
         var $files = $(this).get(0).files;
-    
+
         if ($files.length) {
-    
-          // Reject big files
-          if ($files[0].size > $(this).data("max-size") * 1024) {
-            console.log("Please select a smaller file");
-            return false;
-          }
-    
-          // Begin file upload
-          console.log("Uploading file to Imgur..");
-    
-          // Replace ctrlq with your own API key
-          var apiUrl = 'https://api.imgur.com/3/image';
-          var apiKey = '1a75998a3de24bd';
-    
-          var settings = {
-            async: false,
-            crossDomain: true,
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            url: apiUrl,
-            headers: {
-              Authorization: 'Client-ID ' + apiKey,
-              Accept: 'application/json'
-            },
-            mimeType: 'multipart/form-data'
-          };
-    
-          var formData = new FormData();
-          formData.append("image", $files[0]);
-          settings.data = formData;
-    
-          // Response contains stringified JSON
-          // Image URL available at response.data.link
-          $.ajax(settings).done(function(response) {
-            var obj = JSON.parse(response)
-            console.log( obj.data.link);
-          });
-    
+
+            // Reject big files
+            if ($files[0].size > $(this).data("max-size") * 1024) {
+                console.log("Please select a smaller file");
+                return false;
+            }
+
+            // Begin file upload
+            console.log("Uploading file to Imgur..");
+
+            // Replace ctrlq with your own API key
+            var apiUrl = 'https://api.imgur.com/3/image';
+            var apiKey = '1a75998a3de24bd';
+
+            var settings = {
+                async: false,
+                crossDomain: true,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                url: apiUrl,
+                headers: {
+                    Authorization: 'Client-ID ' + apiKey,
+                    Accept: 'application/json'
+                },
+                mimeType: 'multipart/form-data'
+            };
+
+            var formData = new FormData();
+            formData.append("image", $files[0]);
+            settings.data = formData;
+
+            // Response contains stringified JSON
+            // Image URL available at response.data.link
+            $.ajax(settings).done(function (response) {
+                var obj = JSON.parse(response)
+                console.log(obj.data.link);
+            });
+
         }
-      });
-    
+    });
+
 });

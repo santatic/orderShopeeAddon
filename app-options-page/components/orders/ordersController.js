@@ -211,7 +211,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         $('#myModal').modal();
         $('h4.modal-single').html('<span id="rowId">' + row.entity.id + '</span>' + ' - <span style="background:#00bfa5; color: #fff;padding: 0 7px;"># ' + row.entity.trackno + '</span> - ' + row.entity.nickname)
         $('.modal-footer.modal-single').html('<b>ĐƠN NÀY CÓ TẤT CẢ ' + row.entity.size + ' MẶT HÀNG, TỔNG SỐ LƯỢNG: ' + amount + '</b>')
-        
+
     }
     $('.singleStatus input:radio').change(function (e) {
         // console.log((this.value));
@@ -302,51 +302,65 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             //         }
             //     })
             // })
-        },        
-    },{
+        },
+    }, {
         title: "ĐỔI TRẠNG THÁI",
-        action: function() {
-            
-            var selected = $scope.gridApi.selection.getSelectedRows();            
+        action: function () {
+
+            var selected = $scope.gridApi.selection.getSelectedRows();
             $scope.BulkChangeStatus = selected
             BulkChangeStatus = selected
-            if(selected.length>1){
-                                
+            $scope.BulkStatusRadio = null
+            if (selected.length > 1) {
+
                 $('#changeBulkStatus').modal()
+                var timeout = null;
+                $('#testScan').on('keyup', function () {
+                    var that = this;
+                    if (timeout !== null) {
+                        clearTimeout(timeout);
+                    }
+                    timeout = setTimeout(function () {
+                        console.log($scope.BulkStatusRadio, $(that).val());
+                        $(that).val("")
+                    }, 500);
+                });
                 $("#changeBulkStatus").on("hidden.bs.modal", function () {
                     $scope.BulkStatusRadio = null
                 })
 
-            }else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
+            } else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
 
-           
+
         }
     }]
     $('#bulkStatus input:radio').change(function (e) {
-        var n = new Noty({
-            layout: 'bottomRight',
-            theme: "relax",
-            type: 'warning',
-            text: 'ĐANG THAY ĐỔI TRẠNG THÁI HÀNG LOẠT...<br>HOÀN THÀNH KHI THÔNG BÁO NÀY BIẾN MẤT'
-        }).show();
-        
-        var selectedExpTags = [this.value];
-        var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
-        console.log(names[0], BulkChangeStatus)
-        var batch = firestore.batch();
-        BulkChangeStatus.forEach(function(val){
-            var DocRef = firestore.collection("orderShopee").doc(val.id.toString())
-            batch.update(DocRef,{
-                "own_status": {
-                    status: names[0],
-                    create_at: new Date()
-                }
-            })
-        })
-        batch.commit().then(function(){
-            n.close()
-            $("#changeBulkStatus").modal("hide")
-        })
+        $scope.BulkStatusRadio = this.value
+
+        // var n = new Noty({
+        //     layout: 'bottomRight',
+        //     theme: "relax",
+        //     type: 'warning',
+        //     text: 'ĐANG THAY ĐỔI TRẠNG THÁI HÀNG LOẠT...<br>HOÀN THÀNH KHI THÔNG BÁO NÀY BIẾN MẤT'
+        // }).show();
+
+        // var selectedExpTags = [this.value];
+        // var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
+        // console.log(names[0], BulkChangeStatus)
+        // var batch = firestore.batch();
+        // BulkChangeStatus.forEach(function(val){
+        //     var DocRef = firestore.collection("orderShopee").doc(val.id.toString())
+        //     batch.update(DocRef,{
+        //         "own_status": {
+        //             status: names[0],
+        //             create_at: new Date()
+        //         }
+        //     })
+        // })
+        // batch.commit().then(function(){
+        //     n.close()
+        //     $("#changeBulkStatus").modal("hide")
+        // })
 
     })
 
