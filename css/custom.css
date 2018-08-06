@@ -330,39 +330,6 @@ table:hover {
   border: none
 }
 
-input#testScan {
-  width: 100%;
-  padding: 5px;
-  border: #ddd solid 1px;
-  background: #f7f7f7;
-  box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);
-}
-
-div#listChangeSuccess {
-  margin-top: 20px;
-}
-li.success-change {
-  list-style-type: circle;
-    margin: 5px 0px;
-    padding: 4px 0px;
-    background: #e8e8e8;
-    font-size: 16px;
-    border-radius: 3px;
-    transition: all 0.3s ease;
-}
-.changeStatus{
-  display: block;
-    width: 245px;
-    margin: 0 auto;
-}
-span.success {
-  float: right;
-  background: #38bf29;
-  color: #fff;
-  padding: 0px 8px;
-  border-radius: 17px;
-  margin-right: 5px;
-}
 .imgageRight, .imgClassify, .nameRight {
   float: left;
   margin: 5px 5px 5px 70px;

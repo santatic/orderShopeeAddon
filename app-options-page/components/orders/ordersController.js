@@ -306,66 +306,34 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     }, {
         title: "ĐỔI TRẠNG THÁI",
         action: function () {
-            $scope.BulkChangeStatus = []
-            $scope.BulkStatusRadio = "PACKED"
-            // if (selected.length > 1) {
 
-            $('#changeBulkStatus').modal()
-           
-           
-            $("#changeBulkStatus").on("hidden.bs.modal", function () {
-                $scope.BulkStatusRadio = "PACKED"
-                $scope.BulkChangeStatus = []
-            })
+            var selected = $scope.gridApi.selection.getSelectedRows();
+            $scope.BulkChangeStatus = selected
+            BulkChangeStatus = selected
+            $scope.BulkStatusRadio = null
+            if (selected.length > 1) {
 
-            // } else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
+                $('#changeBulkStatus').modal()
+                var timeout = null;
+                $('#testScan').on('keyup', function () {
+                    var that = this;
+                    if (timeout !== null) {
+                        clearTimeout(timeout);
+                    }
+                    timeout = setTimeout(function () {
+                        console.log($scope.BulkStatusRadio, $(that).val());
+                        $(that).val("")
+                    }, 500);
+                });
+                $("#changeBulkStatus").on("hidden.bs.modal", function () {
+                    $scope.BulkStatusRadio = null
+                })
+
+            } else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
 
 
         }
     }]
-    var timeout = null;
-    $('#testScan').on('keyup', function () {
-        var that = this;
-        if (timeout !== null) {
-            clearTimeout(timeout);
-        }
-
-        timeout = setTimeout(function () {
-            var inputScan = $(that).val()
-            if ($scope.BulkStatusRadio && inputScan) {
-                var n = new Noty({
-                    layout: 'bottomRight',
-                    theme: "relax",
-                    type: 'warning',
-                    text: 'ĐANG THAY ĐỔI TRẠNG THÁI...'
-                }).show();
-                console.log($scope.BulkStatusRadio, $(that).val());
-                let selectedExpTags = [$scope.BulkStatusRadio];
-                let names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
-                firestore.collection("orderShopee").doc(inputScan.toString()).update({
-                    "own_status": {
-                        status: names[0],
-                        create_at: new Date()
-                    }
-                }).then((doc)=>{
-                    $scope.BulkChangeStatus.unshift({
-                        id: inputScan,
-                        status: (selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese))[0]
-                    })
-                    $scope.$apply()
-                    n.close()
-                    $(that).val("")
-                }).catch(function(error) {
-                    alert("LỖI: ", error)
-                });                       
-            }
-            if (!$scope.BulkStatusRadio) {
-                alert("Vui lòng chọn trạng thái cần chuyển")
-                $(that).val("")
-            }
-
-        }, 500);
-    });
     $('#bulkStatus input:radio').change(function (e) {
         $scope.BulkStatusRadio = this.value
 
@@ -459,9 +427,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             })
             if (condi) {
                 console.log(products);
-                products.sort(function (a, b) {
-                    return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)
-                })
+                products.sort(function (a, b) { return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0) })
                 products.unshift({
                     imageUrl: "TỔNG",
                     name: selected.length + " ĐƠN, " + products.length + " MẶT HÀNG",
