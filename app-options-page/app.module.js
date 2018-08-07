@@ -41,6 +41,12 @@ app.config(function ($compileProvider) {
 app.service('helper', function () {
 
   this.validateExportOrder = function (arrayOrders) {
+    var n = new Noty({
+      layout: 'bottomRight',
+      theme: "relax",
+      type: 'warning',
+      text: 'ĐANG KIỂM TRA...'
+    }).show();
     var arrCarrier = [{
         id: 1,
         carrier: "Giao Hàng Tiết Kiệm"
@@ -65,6 +71,7 @@ app.service('helper', function () {
     var date = new Date()
     var first = true
     var dataSingle = []
+    var carrier
     chrome.storage.local.get('data', function (keys) {
       dataSingle = keys.data
       act(dataSingle)
@@ -85,6 +92,7 @@ app.service('helper', function () {
           first = false
         }
         if (!data.exportId && $.inArray(data.actual_carrier, arrayTempExportId) == 0) {
+          carrier = data.actual_carrier
           arrExportId.push(val.id)
         } else {
           console.log("no" + data.actual_carrier);
@@ -105,8 +113,8 @@ app.service('helper', function () {
       if (arrExportId.length == arrayOrders.length) {
         clearInterval(timer)
         console.log(arrExportId);
-        var selectedExpTags = [arrayOrders[0].carrier];
-        var names = selectedExpTags.map(x => arrCarrier.find(y => y.id === x).carrier)
+        // var selectedExpTags = [arrayOrders[0].carrier];
+        // var names = selectedExpTags.map(x => arrCarrier.find(y => y.id === x).carrier)
         var batch = firestore.batch()
         var exCol = firestore.collection("exportCode").doc(date.getTime().toString())
         batch.set(exCol, {
@@ -114,7 +122,7 @@ app.service('helper', function () {
                 "shipper": "",
                 "create_at": date,
                 "status": "MỚI",
-                "carrier": names[0]
+                "carrier": carrier
         })
         var check = []
         arrExportId.forEach(function (val, i) {
@@ -130,6 +138,7 @@ app.service('helper', function () {
             clearInterval(timerSec)
            
             batch.commit().then(function () {
+                n.close()
                 var win = window.open(chrome.extension.getURL("options.html#/export/") + date.getTime(), "_blank");
                 win.focus()
               })

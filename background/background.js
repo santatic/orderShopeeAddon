@@ -402,8 +402,26 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           pushFirestore(request, sendResponse);
           return true;
           break;
+        case "getSingle":
+          getSingle(request, sendResponse)
+          return true
+          break
       }
     });
+
+  function getSingle(response, sendResponse){
+    firestore.collection("orderShopee").doc(response.id.toString()).get()
+    .then(function(doc){
+      const data = doc.data()
+      sendResponse({
+        buyer_paid_amount: data.buyer_paid_amount,
+        shipping_fee: data.shipping_fee,
+        id: response.id,
+        exportId: data.exportId? data.exportId: "Chưa có Mã Phiếu Xuất",
+        status: data.own_status.status
+      })
+    })
+  }
 
   function updateStatusFromShopee(response, sendResponse) {
     console.log(response);

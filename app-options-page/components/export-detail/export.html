@@ -1,4 +1,24 @@
+<div class="modal fade noprint" id="modalProduct" role="dialog">
+    <div class="modal-dialog " style="padding: 8px;
+        background: #fff;
+        border-radius: 6px;">
+        <!-- Modal content-->
 
+        <div id="previewPro" class="noprint"></div>
+
+    </div>
+</div>
+<table id="html2image" class="table table-bordered products noprint" style="width: 587px;">
+    <tbody>
+        <tr ng-repeat="item in products">
+            <td style="background: #fff;">
+                <img class="imgPro" src="{{item.imageUrl}}" width="80px" height="80px" alt=""> </td>
+            <td>{{ item.name }} <br><b  ng-show="item.orders.length > 0">[ <span style="color:rgb(255, 87, 34)" ng-repeat="order in item.orders">{{order}}<span ng-show="item.orders.length >1 " style="color:#000">, </span></span> ]</b> </td>
+            <td>{{ item.model }}</td>
+            <td>{{ item.amount }}</td>
+        </tr>
+    </tbody>
+</table>
 <div class="noprint">
     <div class="col-md-9">
         <div>

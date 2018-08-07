@@ -172,7 +172,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         },
             statusDef, {
             name: "Trễ",
-            field: "fromNow"
+            field: "fromNow",
+            type: "number"
         }
         ],
         enableFiltering: true,
@@ -304,65 +305,184 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             // })
         },
     }, {
-        title: "ĐỔI TRẠNG THÁI",
+        title: "QUÉT SCAN",
         action: function () {
-
-            var selected = $scope.gridApi.selection.getSelectedRows();
-            $scope.BulkChangeStatus = selected
-            BulkChangeStatus = selected
+            $scope.BulkChangeStatus = []
             $scope.BulkStatusRadio = null
-            if (selected.length > 1) {
+            // if (selected.length > 1) {
 
-                $('#changeBulkStatus').modal()
-                var timeout = null;
-                $('#testScan').on('keyup', function () {
-                    var that = this;
-                    if (timeout !== null) {
-                        clearTimeout(timeout);
-                    }
-                    timeout = setTimeout(function () {
-                        console.log($scope.BulkStatusRadio, $(that).val());
-                        $(that).val("")
-                    }, 500);
-                });
-                $("#changeBulkStatus").on("hidden.bs.modal", function () {
-                    $scope.BulkStatusRadio = null
+            $('#changeBulkStatus').modal()
+
+
+            $("#changeBulkStatus").on("hidden.bs.modal", function () {
+                $scope.BulkStatusRadio = null
+                $scope.BulkChangeStatus = []
+            })
+            $scope.toggle = function (event) {
+                console.log(event.currentTarget.checked);
+                checkboxes = document.getElementsByName('scanId');
+                for (var i = 0, n = checkboxes.length; i < n; i++) {
+                    checkboxes[i].checked = event.currentTarget.checked;
+                }
+            }
+            $scope.removeScan = function (target) {
+                $this = target.currentTarget;
+                $scope.BulkChangeStatus = $scope.BulkChangeStatus.filter(obj => obj.id !== angular.element($this).parent().attr('id'));
+                angular.element($this).parent().remove()
+                console.log($scope.BulkChangeStatus);
+            }
+            $scope.createExport = function(){
+                var arrayCreateEx = []
+                $('input[name="scanId"]:checked').each(function () {
+                    arrayCreateEx.push({
+                        id: $(this).val()
+                    })
                 })
+                var timer = setInterval(function(){
+                    if(arrayCreateEx.length > 0){
+                        clearInterval(timer)
+                        helper.validateExportOrder(arrayCreateEx)
+                    }
+                })
+                
 
-            } else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
+            }
 
-
+            // } else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
         }
     }]
     $('#bulkStatus input:radio').change(function (e) {
-        $scope.BulkStatusRadio = this.value
+        var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI CÁC ĐƠN ĐÃ CHỌN")
+        if (confirmChange) {
+            var that = this
+            var n = new Noty({
+                layout: 'bottomRight',
+                theme: "relax",
+                type: 'warning',
+                text: 'ĐANG THAY ĐỔI TRẠNG THÁI...'
+            }).show();
+            var batch = firestore.batch()
+            var arrayAfterChange = $scope.BulkChangeStatus
+            $('input[name="scanId"]:checked').each(function () {
+                console.log($(that).val())
+                let selectedExpTags = [$(that).val()];
+                let names = selectedExpTags.map(x => arrayFilter.find(y => y.english == x).id)
+                let status = selectedExpTags.map(x => arrayFilter.find(y => y.english == x).vietnamese)
+                var docRef = firestore.collection("orderShopee").doc($(this).val())
+                // console.log($(that).val(), $(this).val(), {
+                //     status: names[0],
+                //     create_at: new Date()
+                // });
+                var obj = {
+                    "own_status": {
+                        status: names[0],
+                        create_at: new Date()
+                    }
+                }
+                batch.update(docRef, obj)
+                let index = arrayAfterChange.findIndex(x => x.id == $(this).val())
+                arrayAfterChange[index].new_status = status[0]
 
-        // var n = new Noty({
-        //     layout: 'bottomRight',
-        //     theme: "relax",
-        //     type: 'warning',
-        //     text: 'ĐANG THAY ĐỔI TRẠNG THÁI HÀNG LOẠT...<br>HOÀN THÀNH KHI THÔNG BÁO NÀY BIẾN MẤT'
-        // }).show();
+            })
+            batch.commit().then(() => {
+                n.close()
+                $scope.BulkStatusRadio = null
+                $scope.BulkChangeStatus = arrayAfterChange
+                $('#checkall').prop('checked', false);
+                $('input[name="scanId"]:checked').prop('checked', false);
+                $scope.$apply()
+                var n1 = new Noty({
+                    layout: 'bottomRight',
+                    timeout: 1500,
+                    theme: "relax",
+                    type: 'success',
+                    text: 'ĐÃ THAY ĐỔI TRẠNG THÁI!'
+                }).show();
+            })
+        } else $scope.BulkStatusRadio = null
 
-        // var selectedExpTags = [this.value];
-        // var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
-        // console.log(names[0], BulkChangeStatus)
-        // var batch = firestore.batch();
-        // BulkChangeStatus.forEach(function(val){
-        //     var DocRef = firestore.collection("orderShopee").doc(val.id.toString())
-        //     batch.update(DocRef,{
-        //         "own_status": {
-        //             status: names[0],
-        //             create_at: new Date()
-        //         }
-        //     })
-        // })
-        // batch.commit().then(function(){
-        //     n.close()
-        //     $("#changeBulkStatus").modal("hide")
-        // })
 
     })
+    var timeout = null;
+    $('#testScan').on('keyup', function () {
+        var that = this;
+        if (timeout !== null) {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(function () {
+            var inputScan = $(that).val()
+            if (inputScan) {
+
+                // console.log($scope.BulkStatusRadio, $(that).val());
+                let index = dataForPro.findIndex(x => x.id == inputScan)
+                const data = dataForPro[index]
+                let indexAfterScan = $scope.BulkChangeStatus.findIndex(x => x.id == inputScan)
+                if (indexAfterScan == -1) {
+                    let selectedExpTags = [data.own_status.status];
+                    let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                    $scope.BulkChangeStatus.unshift({
+                        id: inputScan,
+                        status: names[0],
+                        new_status: ""
+                    })
+                    $scope.$apply()
+                    $(that).val("")
+                } else {
+                    alert("Đơn này đã có trong danh sách quét")
+                    $(that).val("")
+                }
+                // firestore.collection("orderShopee").doc(inputScan.toString()).update({
+                //     "own_status": {
+                //         status: names[0],
+                //         create_at: new Date()
+                //     }
+                // }).then(() => {
+                //     $scope.BulkChangeStatus.unshift({
+                //         id: inputScan,
+                //         status: (selectedExpTags.map(x => arrayFilter.find(y => y.english === x).vietnamese))[0]
+                //     })
+                //     $scope.$apply()
+                //     n.close()
+                //     $(that).val("")
+                // }).catch(function (error) {
+                //     alert("LỖI: ", error)
+                // });
+            }
+            // if (!$scope.BulkStatusRadio) {
+            //     alert("Vui lòng chọn trạng thái cần chuyển")
+            //     $(that).val("")
+            // }
+
+        }, 500);
+    });
+
+    // var n = new Noty({
+    //     layout: 'bottomRight',
+    //     theme: "relax",
+    //     type: 'warning',
+    //     text: 'ĐANG THAY ĐỔI TRẠNG THÁI HÀNG LOẠT...<br>HOÀN THÀNH KHI THÔNG BÁO NÀY BIẾN MẤT'
+    // }).show();
+
+    // var selectedExpTags = [this.value];
+    // var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
+    // console.log(names[0], BulkChangeStatus)
+    // var batch = firestore.batch();
+    // BulkChangeStatus.forEach(function(val){
+    //     var DocRef = firestore.collection("orderShopee").doc(val.id.toString())
+    //     batch.update(DocRef,{
+    //         "own_status": {
+    //             status: names[0],
+    //             create_at: new Date()
+    //         }
+    //     })
+    // })
+    // batch.commit().then(function(){
+    //     n.close()
+    //     $("#changeBulkStatus").modal("hide")
+    // })
+
+    // })
 
     $scope.options.multiSelect = true;
     var now = new Date
@@ -442,6 +562,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     $(".previewPro").html("")
                     $('canvas').remove()
                     $('.printBut').css("display", "none")
+                    $('#changeBulkStatus').css("display","block")
                     element.css("display", "block")
                     $scope.products = []
                     $scope.$apply()
@@ -454,6 +575,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     if ($scope.products.length > 0) {
                         clearInterval(timer)
                         $('.printBut').css("display", "block")
+                        $('#changeBulkStatus').css("display","none")
                         $('#modalProduct').modal()
 
                         html2canvas(element, {
@@ -610,7 +732,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 updateTime: ctime,
                 importId: myData.importMoneyId,
                 ownStatus: myData.own_status.status,
-                fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)) + " ngày",
+                fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)),
                 size: myData.order_items.length
             }
             sources.push(obj)

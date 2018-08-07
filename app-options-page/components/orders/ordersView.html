@@ -56,43 +56,50 @@
     </div>
 </div>
 <div class="modal fade noprint" id="changeBulkStatus" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
+    <div class="modal-dialog" style="width: 450px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">{{BulkChangeStatus.length}} ĐƠN</h4>
             </div>
             <div class="modal-body">
-                <input placeholder="Nhập id để đổi trạng thái" type="text" id="testScan">
-                <div class="form-group-status" id="bulkStatus">
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="NEW">
-                    <b>ĐƠN MỚI</b>
-
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="PACKED">
-                    <b>ĐÃ ĐÓNG GÓI</b>
-
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="SHIPPED">
-                    <b>ĐÃ GỬI ĐI</b>
-
-
-                    <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="DELIVERED">
-                    <b>KHÁCH ĐÃ NHẬN</b>
-
-                    <!-- 
-                                        <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
-                                </div> -->
+                <input placeholder="Nhập id để đổi trạng thái" type="text" id="testScan" autofocus>
+                <div id="listChangeSuccess">
+                    <span ng-show="BulkChangeStatus.length > 0">
+                        <input type="checkbox" ng-click="toggle($event)" id="checkall"/><span> Chọn hết</span> <br/>
+                    </span> 
+                    <li ng-repeat="i in BulkChangeStatus" id="{{i.id}}" class="success-change">
+                        <input type="checkbox" name="scanId" value="{{i.id}}">
+                        <span class="idSuccess">{{i.id}}</span>
+                        <span class="status">({{i.status}})</span>
+                        <span ng-show="i.new_status !== ''" class="new_status"> => ({{i.new_status}})</span>
+                        <span ng-click="removeScan($event)" style="float: right;
+                        margin-right: 10px;
+                        margin-top: 3px;
+                        color: #ca0f0f;
+                        cursor: pointer;" class="glyphicon glyphicon-remove"></span>
+                    </li>
                 </div>
+                <div class="form-group-status" id="bulkStatus">
+                    <div class="changeStatus">
+                        <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="NEW">
+                        <b>ĐƠN MỚI</b>
+    
+    
+                        <input type="radio"  ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="PACKED">
+                        <b>ĐÃ ĐÓNG GÓI</b>
+                        <button ng-click="createExport()" style="margin-left: 26px;margin-bottom: 15px;border: none;padding: 6px;background: #da3725;color: #fff;border-radius: 3px;">TẠO PHIẾU XUẤT</button>
+                    </div>
+                </div>
+                
             </div>
             <div class="modal-footer">
-                <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
+                
             </div>
         </div>
     </div>
 </div>
+
 <div class="print rowPrint">
     <ul ng-repeat="x in rowSelected" class="list-group" style="float: left;width: 50%; margin-bottom: 5px">
         <div style="display: inline-block; margin-right: 10px">

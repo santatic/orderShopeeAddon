@@ -111,7 +111,7 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         arr.forEach(function (doc) {
             const myData = doc;
             // console.log(myData);
-            ctime = moment(myData.create_at.seconds * 1000).format("MM-DD-YYYY")
+            ctime = moment(myData.create_at.seconds * 1000).format("MM-DD-YYYY HH:MM")
             // obj = new Object();
 
             // if (myData.status == "HỦY PHIẾU") {

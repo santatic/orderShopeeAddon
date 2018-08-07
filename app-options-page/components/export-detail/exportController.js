@@ -220,6 +220,202 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 window.print();
                 $('#qrcode').remove()
             }, 500)
+        },
+        title: "IN SẢN PHẨM",
+        action: function () {
+
+            var selected = $scope.gridApi.selection.getSelectedRows();
+            // console.log(selected);
+            var products = []
+
+            var condi = true
+
+            selected.forEach(function (val) {
+                var obj = dataForPro.find(function (obj) {
+                    return obj.id == val.id;
+                });
+
+                if (!val.exId && val.ownStatus == 1) { } else {
+                    condi = false
+                }
+
+                console.log(obj['order-items']);
+                obj['order-items'].forEach((item, index) => {
+                    // console.log(item.snapshotid + " = " + item.modelid);
+                    let product = obj['products'].find(o => o.id === item.snapshotid);
+                    // let regrex = /([A-Z])([0-9])/g
+                    // console.log(product.name);
+
+                    // let productImage = data['products'].find(o => o.id === item.images[0]);
+                    let model = obj['item-models'].find(o => o.id === item.modelid)
+                    var productsObj = new Object();
+                    productsObj = {
+                        name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^", ""),
+                        model: model.name,
+                        amount: item.amount,
+                        imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
+                        orders: [obj.shipping_traceno]
+                    }
+                    var found = products.some(function (el) {
+                        return el.name == productsObj.name && el.model == productsObj.model;
+                    });
+                    if (!found) {
+                        products.push(productsObj)
+                    } else {
+                        let index = products.findIndex(x => x.name == productsObj.name && x.model == productsObj.model)
+                        products[index].amount = products[index].amount + productsObj.amount
+                        products[index].orders.push(obj.shipping_traceno)
+                    };
+
+                });
+
+            })
+            // if (condi) {
+                console.log(products);
+                products.sort(function (a, b) { return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0) })
+                products.unshift({
+                    imageUrl: "TỔNG",
+                    name: selected.length + " ĐƠN, " + products.length + " MẶT HÀNG",
+                    model: "",
+                    amount: ""
+                })
+                console.log(products);
+                $scope.products = products
+                $("#modalProduct").on("hidden.bs.modal", function () {
+                    // put your default event here
+
+                    $(".previewPro").html("")
+                    $('canvas').remove()
+                    $('.printBut').css("display", "none")
+                    element.css("display", "block")
+                    $scope.products = []
+                    $scope.$apply()
+                });
+
+
+                var element = $("#html2image"); // global variable
+                let getCanvas
+                var timer = setInterval(function () {
+                    if ($scope.products.length > 0) {
+                        clearInterval(timer)
+                        $('.printBut').css("display", "block")
+                        $('#modalProduct').modal()
+
+                        html2canvas(element, {
+                            onrendered: function (canvas) {
+
+                                var context = canvas.getContext("2d");
+                                var img = new Image()
+                                var elements = document.getElementsByClassName('imgPro')
+                                for (var i = 0; i < elements.length; i++) {
+
+                                    var offsets = elements[i].getBoundingClientRect();
+                                    // console.log(offsets);
+                                    var imgTop = offsets.top;
+                                    var imgLeft = offsets.left;
+
+                                    //Find actual position with parent cotainer
+                                    var offsetsContainer = document.getElementById('html2image').getBoundingClientRect();
+                                    imageLeft = parseInt(imgLeft) - parseInt(offsetsContainer.left);
+                                    imageTop = parseInt(imgTop) - parseInt(offsetsContainer.top);
+                                    // console.log(offsetsContainer);
+                                    img.src = elements[i].src; // specifies the location of the image
+
+                                    context.drawImage(img, imageLeft, imageTop, 80, 80); // draws the image at the specified x and y location
+                                    // console.log(imageLeft, imageTop);
+                                }
+                                // document.body.appendChild(canvas);
+                                console.log(canvas);
+                                $("#previewPro").html(canvas);
+                                getCanvas = canvas;
+                                // canvas = null                        
+                                element.css("display", "none")
+                            }
+                        });
+                    }
+                }, 300)
+
+                // dropContainer.ondragover = dropContainer.ondragenter = function (evt) {
+                //     evt.preventDefault();
+                // };
+
+                // dropContainer.ondrop = function (evt) {
+                //     // pretty simple -- but not for IE :(
+                //     fileInput.files = evt.dataTransfer.files;
+                //     evt.preventDefault();
+                // };
+                // $("#upfile").click(function () {
+                //     $("#fileInput").trigger('click');
+                // });
+
+                $('#fileInput').on("change", function () {
+
+                    var $files = $(this).get(0).files;
+                    var n2 = new Noty({
+                        layout: 'topLeft',
+                        theme: "relax",
+                        type: 'warning',
+                        text: 'ĐANG UPLOAD...'
+                    }).on('afterShow', function () {
+                        var settings = {
+
+                            async: false,
+                            crossDomain: true,
+                            processData: false,
+                            contentType: false,
+                            type: 'POST',
+                            url: 'https://api.imgur.com/3/image',
+                            headers: {
+                                Authorization: 'Client-ID 1a75998a3de24bd',
+                                Accept: 'application/json'
+                            },
+                            mimeType: 'multipart/form-data'
+                        };
+
+                        var formData = new FormData();
+                        formData.append("image", $files[0]);
+                        settings.data = formData;
+
+                        $.ajax(settings).done(function (response) {
+                            n2.close()
+                            var obj = JSON.parse(response)
+                            var $temp = $("<input>");
+                            $("body").append($temp);
+                            $temp.val(obj.data.link).select();
+                            var successful = document.execCommand('copy');
+                            var msg = successful ? new Noty({
+                                layout: 'topLeft',
+                                timeout: 4000,
+                                theme: "relax",
+                                type: 'success',
+                                text: 'ĐÃ COPY LINK ẢNH'
+                            }).show() : new Noty({
+                                timeout: 3500,
+                                layout: 'topLeft',
+                                theme: "relax",
+                                type: 'error',
+                                text: 'Copy LỖI'
+                            }).show()
+                            $temp.remove();
+                            $(this).val("")
+                            $('.noty_layout').addClass('noprint')
+                        });
+                    }).show();
+                    console.log("Uploading file to Imgur..");
+                    // Replace ctrlq with your own API key
+
+                    // $("#btn-Download-Image").attr("download", selected.length + "orders-"+ $scope.products.length + "products.png").attr("href", newData);
+                });
+                $scope.printProduct = function () {
+                    $timeout(function () {
+                        window.print()
+                    }, 500)
+                }
+            // } else {
+            //     alert("ĐƠN BẠN CHỌN KHÔNG PHẢI ĐƠN MỚI HOẶC ĐÃ CÓ MÃ PHIẾU XUẤT")
+            // }
+
+
         }
 
     }]
@@ -263,25 +459,34 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             })
         }
     });
-    chrome.storage.local.get('data', function (keys) {
-        getData(keys.data)
+    var dataForPro = []
+    firestore.collection("orderShopee").where("exportId", "==", id.toString()).get()
+    .then(function(querySnapshot) {
+        getData(querySnapshot)
     })
-    chrome.storage.onChanged.addListener(function (changes) {
-        getData(changes.data.newValue);
-    })
-
+    // chrome.storage.local.get('data', function (keys) {
+    //     getData(keys.data)
+    // })
+    // chrome.storage.onChanged.addListener(function (changes) {
+    //     getData(changes.data.newValue);
+    // })
+    var sources = []
     function getData(arrayData) {
-        var sources = []
+        console.log(arrayData);
+        
         var arrTraceno = []
         var arrShipped = []
-        var dataOrders = arrayData.filter(function (event) {
-            return event.exportId == id;
-        })
-        if (dataOrders.length > 0) {
+        // var dataOrders = arrayData.filter(function (event) {
+        //     return event.exportId == id;
+        // })
+        if (arrayData) {
             var arrStt = []
-            dataOrders.forEach(function (doc) {
 
-                const myData = doc;
+            arrayData.forEach(function (doc) {
+
+                const myData = doc.data();
+                dataForPro.push(myData)
+                console.log(myData);
                 if (jQuery.inArray(myData.own_status.status, arrStt) == -1) {
                     arrStt.push(myData.own_status.status)
                 }
@@ -317,7 +522,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             })
 
             statusDef.filter.selectOptions = arrStatus
-            if (arrShipped.length == dataOrders.length) {
+            if (arrShipped.length == arrayData.length) {
                 $('span#shipped').css({
                     "padding": "5px",
                     "background": " #45da0a",
@@ -334,7 +539,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             $scope.carrier = sources[0].carrier
             $scope.arrTraceno = arrTraceno
             // console.log($scope.arrTraceno);
-            $scope.size = dataOrders.length
+            $scope.size = arrayData.length
             $scope.data = sources
             $scope.options.data = $scope.data;
             $scope.loading = false

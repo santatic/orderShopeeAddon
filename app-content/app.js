@@ -158,36 +158,54 @@ app.service('getList', function () {
                                 }
                                 _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((obj.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((obj.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + obj.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank" href="' + optionsUrl + "export/" + exportId + '">#' + exportId + '</a>' + status + '</b></span>')
                             } else {
-                                _this.find(".ct-buyer > div").append(' <span style="background: #ff3d3e;border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" class="'+id+'">&nbsp<b>CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span> <a style="background: rgba(46, 192, 20, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" href="javascript:void(0)" id="'+id+'" class="folow"><b>THEO DÕI</b></a>')
-                                $('a#'+id+'').click(function(){
-                                    console.log($(this).attr("id"));
-                                    _this.find(".ct-buyer > div").find('#'+id+'').css({
-                                        "display": "none"
-                                    })
-                                    _this.find(".ct-buyer > div").find('.'+id+'').text("ĐANG THEO DÕI...")
+                                _this.find(".ct-buyer > div").find('#'+id+'').remove()
+                                _this.find(".ct-buyer > div").find('.'+id+'').remove()
+                                if(_this.find('.ct-logistics div.label.green').length > 0){
                                     chrome.runtime.sendMessage({
-                                        mission: "detailOrder",
-                                        url: $(this).attr("id")
-                                    }, function (response) {
+                                        mission: "getSingle",
+                                        id: id
+                                    }, function (response){
+                                        _this.find(".ct-buyer > div").find('#'+id+'').remove()
+                                        _this.find(".ct-buyer > div").find('.'+id+'').remove()
+                                        var selectedExpTags = [response.status];
+                                        var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                                        var status = names[0]
+                                        _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
                                         
-                                        console.log(response);
-                                        if(response.check == "success"){
-                                            _this.find(".ct-buyer > div").find('#'+id+'').remove()
-                                            _this.find(".ct-buyer > div").find('.'+id+'').remove()
-                                            var selectedExpTags = [response.status];
-                                            var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                                            var status = names[0]
-                                            _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
-                                            
-                                        }else{
-                                            alert("đơn chưa có mã phiếu xuất")
-                                            _this.find(".ct-buyer > div").find('#'+id+'').css({
-                                                "display": "block"
-                                            })
-                                            _this.find(".ct-buyer > div").find('.'+id+'').text("CHƯA ĐƯỢC THEO DÕI")
-                                        }
                                     })
-                                })
+                                }else{
+                                    _this.find(".ct-buyer > div").append(' <span style="background: #ff3d3e;border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" class="'+id+'">&nbsp<b>CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span> <a style="background: rgba(46, 192, 20, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" href="javascript:void(0)" id="'+id+'" class="folow"><b>THEO DÕI</b></a>')
+                                    $('a#'+id+'').click(function(){
+                                        console.log($(this).attr("id"));
+                                        _this.find(".ct-buyer > div").find('#'+id+'').css({
+                                            "display": "none"
+                                        })
+                                        _this.find(".ct-buyer > div").find('.'+id+'').text("ĐANG THEO DÕI...")
+                                        chrome.runtime.sendMessage({
+                                            mission: "detailOrder",
+                                            url: $(this).attr("id")
+                                        }, function (response) {
+                                            
+                                            console.log(response);
+                                            if(response.check == "success"){
+                                                _this.find(".ct-buyer > div").find('#'+id+'').remove()
+                                                _this.find(".ct-buyer > div").find('.'+id+'').remove()
+                                                var selectedExpTags = [response.status];
+                                                var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                                                var status = names[0]
+                                                _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
+                                                
+                                            }else{
+                                                alert("đơn chưa có mã phiếu xuất")
+                                                _this.find(".ct-buyer > div").find('#'+id+'').css({
+                                                    "display": "block"
+                                                })
+                                                _this.find(".ct-buyer > div").find('.'+id+'').text("CHƯA ĐƯỢC THEO DÕI")
+                                            }
+                                        })
+                                    })
+                                }
+                                
                             }
                         }
 
