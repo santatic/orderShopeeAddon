@@ -201,7 +201,8 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
     });
 
-    $scope.options.gridMenuCustomItems = [{
+    $scope.options.gridMenuCustomItems = [
+        {
         title: "IN PHIẾU XUẤT",
         action: function () {
             $('#haveQR').append('<td id="qrcodeEx" ></td>')
@@ -220,7 +221,8 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 window.print();
                 $('#qrcode').remove()
             }, 500)
-        },
+        }},
+        {
         title: "IN SẢN PHẨM",
         action: function () {
 
@@ -416,9 +418,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             // }
 
 
-        }
+        }}
 
-    }]
+    ]
 
     $scope.options.multiSelect = true;
 
@@ -486,7 +488,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
                 const myData = doc.data();
                 dataForPro.push(myData)
-                console.log(myData);
+                // console.log(myData);
                 if (jQuery.inArray(myData.own_status.status, arrStt) == -1) {
                     arrStt.push(myData.own_status.status)
                 }
@@ -522,7 +524,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             })
 
             statusDef.filter.selectOptions = arrStatus
-            if (arrShipped.length == arrayData.length) {
+            if (arrShipped.length == sources.length) {
                 $('span#shipped').css({
                     "padding": "5px",
                     "background": " #45da0a",
@@ -538,8 +540,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             $scope.arrShipped = arrShipped
             $scope.carrier = sources[0].carrier
             $scope.arrTraceno = arrTraceno
+            console.log(arrayData.length);
             // console.log($scope.arrTraceno);
-            $scope.size = arrayData.length
+            $scope.size = sources.length
             $scope.data = sources
             $scope.options.data = $scope.data;
             $scope.loading = false
