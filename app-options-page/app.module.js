@@ -109,7 +109,7 @@ app.service('helper', function () {
       })
     }
 
-    var timer = setInterval(function () {
+    var timer = setInterval(function ()  {
       if (arrExportId.length == arrayOrders.length) {
         clearInterval(timer)
         console.log(arrExportId);
