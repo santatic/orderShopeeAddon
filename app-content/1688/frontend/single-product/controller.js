@@ -65,33 +65,35 @@ app.controller("1688Ctrl", ['$scope', 'moment',
         var id1688 = $('meta[name=b2c_auction]').attr("content");
         var Products = [];
         chrome.storage.local.get('products', function (obj) {
-            getData(obj.products);            
+            getData(obj.products);
         })
 
         chrome.storage.onChanged.addListener(function (changes) {
             getData(changes.products.newValue);
         })
 
-        function getData(Products){
+        function getData(Products) {
             console.log(Products);
             found = false;
             Products.forEach(function loop(pro) {
-                if(loop.stop){ return; }
+                if (loop.stop) { return; }
 
                 let index = pro.linked_classify.findIndex(x => x.id == id1688.toString());
-                $scope.dontfound = index >0? false : true
+                $scope.dontfound = index > 0 ? false : true
                 $scope.$apply()
 
-                if (index>0) {
-                    loop.stop = true; 
+                if (index > 0) {
+                    loop.stop = true;
                     console.log(pro.id, pro.linked_classify[index]);
                     $scope.id_products = pro.id
                     $scope.$apply()
                     // break;
-                } else {                    
+                } else {
                     console.log('không thấy');
                     $scope.add_products_link = chrome.extension.getURL("options.html#/products/");
-                    
+                    console.log($scope.add_products_link);
+                    $scope.$apply()
+
                 }
             })
         }
@@ -127,32 +129,32 @@ app.controller("1688Ctrl", ['$scope', 'moment',
         // titleProducts.getSuggests();
         // $scope.add_products = function () {
         //     $('#myModal').modal();
-            // var n = new Noty({
-            //     closeWith: [],
-            //     // timeout: 2000,
-            //     text: 'Product name? <input id="product_name" style="display: block" type="text"><div class="suggestProducts"></div>',
-            //     buttons: [
-            //         Noty.button('Tạo mới', 'btn btn-success', function () {
-            //             read_data();
-            //             console.log('a');
-            //             chrome.runtime.sendMessage({
-            //                 mission: "pushFirestore",
-            //                 name: $('#product_name').val(),
-            //                 SKU_name: new Date().getTime(),
-            //                 images: images,
-            //                 id1688: id1688,
-            //                 SKU_classify: SKU_classify
-            //             }, function (response) {
-            //                 n.close();
-            //             })
-            //         }, { id: 'button1', 'data-status': 'ok' }),
+        // var n = new Noty({
+        //     closeWith: [],
+        //     // timeout: 2000,
+        //     text: 'Product name? <input id="product_name" style="display: block" type="text"><div class="suggestProducts"></div>',
+        //     buttons: [
+        //         Noty.button('Tạo mới', 'btn btn-success', function () {
+        //             read_data();
+        //             console.log('a');
+        //             chrome.runtime.sendMessage({
+        //                 mission: "pushFirestore",
+        //                 name: $('#product_name').val(),
+        //                 SKU_name: new Date().getTime(),
+        //                 images: images,
+        //                 id1688: id1688,
+        //                 SKU_classify: SKU_classify
+        //             }, function (response) {
+        //                 n.close();
+        //             })
+        //         }, { id: 'button1', 'data-status': 'ok' }),
 
-            //         Noty.button('NO', 'btn btn-error', function () {
-            //             $('input#suggest').val("")
-            //             n.close();
-            //         })
-            //     ]
-            // }).show();
+        //         Noty.button('NO', 'btn btn-error', function () {
+        //             $('input#suggest').val("")
+        //             n.close();
+        //         })
+        //     ]
+        // }).show();
         // }
 
     }]
