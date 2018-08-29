@@ -13,7 +13,7 @@ function myMain(evt) {
 
             switch (true) {
 
-                case $(location).attr('href').indexOf('work.1688.com/home/page/index') !== -1:
+                case $(location).attr('href').indexOf('work.1688.com/home/buyer.htm?') !== -1:
                     $.get(chrome.extension.getURL('app-content/1688/backend/listOrders/ordersList.html'), function (data) {
                         $(data).prependTo('body');
                         angular.bootstrap($('.panel-1688-shopee'), ['myapp']);

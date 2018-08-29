@@ -1,0 +1,57 @@
+<div class="container">
+    <div id="grid1" ui-grid="options" ui-grid-selection ui-grid-pagination ui-grid-row-edit class="grid"></div>
+</div>
+<div class="modal fade" id="showInvoice" role="dialog">
+    <div class="modal-dialog" style="width:fit-content">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5>
+            </div>
+            <div class="modal-body">
+                <div class="itemInvoice">
+                    <select style="margin-bottom: 15px;" class="form-control" name="" id="selectStatus">
+                        <!-- <option></option> -->
+                        <!-- <option value="{{status}}">{{statusName}}</option> -->
+                        <option ng-repeat="i in arrayStatus" value="{{i.id}}">{{i.name}}</option>
+                    </select>
+                    <!-- <div class="row itemInvoicePreview" ng-repeat="item in itemInvoice"></div> -->
+                    <table style="box-shadow: none;" class="table table-bordered  itemInvoicePreview">
+                        <thead>
+                            <tr>
+                                <th scope="col">Ảnh</th>
+                                <th scope="col">Tên Sản phẩm</th>
+                                <th scope="col">Giá</th>
+                                <th scope="col">Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in models">
+                                <td title="{{item.productId}}" style="padding: 6px; width: 77px"><img height="76px" width="76px"
+                                        src="{{item.image}}" alt=""></td>
+                                <td>
+                                    <p class="proName">{{item.productName}}</p>
+                                    <p class="classify">
+                                        [ <span style="color: #f96923">{{item.name}}</span> ]
+                                    </p>
+                                </td>
+                                <td>
+                                    <span class="currency" title="Giá">{{item.price}}</span>
+                                </td>
+                                <td>
+                                    <span class="quantity" title="số lượng">{{item.quantity}}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- </div> -->
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" ng-click="saveDis()" class="btn btn-success" style="float: right;">UPDATE</button> -->
+            </div>
+        </div>
+    </div>
+</div>

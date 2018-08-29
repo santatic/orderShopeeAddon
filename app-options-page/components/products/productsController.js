@@ -116,19 +116,7 @@ function productsController($scope, $q, $timeout, moment, uiGridConstants) {
                                 
                             } else {
                                 return true;
-                            }
-                            // var jobskill_query = firestore.collection('products').doc(obj.id)
-                            // jobskill_query.update({
-                            //     "classify": rowEntity['Tên sản phẩm/Phân loại']
-                            // }).then(function () {
-                            //     new Noty({
-                            //         layout: 'bottomRight',
-                            //         theme: 'relax',
-                            //         timeout: 3000,
-                            //         type: 'success',
-                            //         text: 'ĐÃ CẬP NHẬT THÀNH CÔNG'
-                            //     }).show();
-                            // });
+                            }                            
                         });
                         return found ? false : true;
                     })

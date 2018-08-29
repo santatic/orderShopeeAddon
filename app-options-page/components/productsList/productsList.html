@@ -13,6 +13,7 @@
             <div class="modal-body">
                 <li class="addClassify">
                     <input type="text" id="addClassifyName" placeholder="Thêm tên phân loại">
+                    <!-- <input style="width: 30%;" type="number" id="addClassifyStock" placeholder="Thêm số lượng trong kho"> -->
                     <button style="padding: 1px 1px 0px 0;border-bottom: 1px #ddd solid;" ng-click="addSkuPreview()" class="skuPreviewUrl">
                         <img class="previewSkuImg" height="38" width="38" src="https://i.imgur.com/NWUJZb1.png">
                     </button>
@@ -27,6 +28,7 @@
                         <img class="previewSkuImg" style="border: #ccc solid 1px;" height="50" width="50" src="{{i.image? i.image: 'https://i.imgur.com/NWUJZb1.png'}}"
                             alt="">
                         <input type="text" id="classifyName" title="{{i.name}}" value="{{i.name}}">
+                        <!-- <input type="number" id="classifyStock" title="In Stock" value="{{i.stock}}"> -->
                         <button ng-click="removeClassify($event)" class="removeClassify">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>
@@ -118,16 +120,18 @@
                 <h4 class="modal-title">{{titleProductName}}</h4>
             </div>
             <div class="modal-body">
-                <div class="row" style="margin: 20px 5px">                   
+                <div class="row" style="margin: 20px 5px">
                     <div class="addDIS">
                         <input placeholder="Nhập tên nhà phân phối..." id="Disname" type="text">
                         <p>
                             <input placeholder="Nhập ID nhà phân phối..." id="Disid" type="number">
                         </p>
-                        <input type="checkbox" ng-click="toggle($event)" id="checkall"/><span> Chọn hết</span> <br/>
-                        <div class="checkboxClassify" ng-repeat="i in classifyToDis">                            
+                        <input type="checkbox" ng-click="toggle($event)" id="checkall" />
+                        <span> Chọn hết</span>
+                        <br/>
+                        <div class="checkboxClassify" ng-repeat="i in classifyToDis">
                             <input type="checkbox" name="classify" value="{{i.name}}">
-                            <span>{{i.name}}</span>
+                            <input type="text" name="skuName" title="Nhập skuName gốc" placeholder="{{i.name}}" id="skuName">
                         </div>
                     </div>
                 </div>
@@ -139,28 +143,148 @@
     </div>
 </div>
 <div class="modal fade" id="showDistributor" role="dialog">
-        <div class="modal-dialog" style="width:fit-content">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">{{titleProductName}}</h4>
+    <div class="modal-dialog" style="width:fit-content">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{titleProductName}}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="margin: 20px 5px">
+                    <ul class="listDis">
+                        <li ng-repeat="i in linkedToShow" id="{{i.id}}" class="disItem">
+                            <span class="disName">
+                                <input disabled type="text" name="disName" id="" value="{{i.name}}">
+                            </span>
+                            <button ng-click="removeDis($event)" class="removeDis">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </li>
+                    </ul>
                 </div>
-                <div class="modal-body">
-                    <div class="row" style="margin: 20px 5px">                   
-                        <ul class="listDis">
-                            <li ng-repeat="i in linkedToShow" id="{{i.id}}" class="disItem">
-                                <span class="disName"><input disabled type="text" name="disName" id="" value="{{i.name}}"></span>                                
-                                <button ng-click="removeDis($event)" class="removeDis">
-                                        <span class="glyphicon glyphicon-remove"></span>
-                                </button>
-                            </li>
-                        </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" ng-click="saveDis()" class="btn btn-success" style="float: right;">UPDATE</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addInvoiceSelected" role="dialog">
+    <div class="modal-dialog">
+        <!-- style="width:fit-content" -->
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" ng-show="!previewInv">
+
+                <input placeholder="Nhập mã vẫn đơn..." type="number" name="" ng-model="invoiceTraceno" id="invoiceTraceno">
+                <select class="form-control" name="" id="selectCurrence">
+                    <!-- <option></option> -->
+                    <option>CNY</option>
+                    <option>VNĐ</option>
+                    <option>USD</option>
+                </select>
+                <span ng-click="previewInvoice()" class="previewInvoice">PREVIEW</span>
+            </div>
+            <div class="modal-body" ng-show="!previewInv" ng-style="padding: copy? 'unset': '0 15px'">
+                <div class="row" ng-show="!copy">
+                    <div class="col-md-6">
+                        <li ng-click="getClassifyOfInvoice($event)" class="productInvoice" ng-repeat="item in selectedProducts" title="{{item.productName}}"
+                            id="{{item.skuProduct}}">
+                            <p class="name">{{item.productName}}</p>
+                            <!-- <span class="glyphicon glyphicon-plus"></span> -->
+                        </li>
+
+                    </div>
+                    <div class="col-md-6" style="padding-left: 4px;">
+                        <div ng-show="classifyOfInvoice.length>0">
+                            <div class="priceClassify">
+                                <select class="form-control" name="" id="selectDis" ng-model="disName">
+                                    <!-- <option></option> -->
+                                    <option ng-repeat="i in disNameArr" value="{{i.name}}">{{i.name}}</option>
+                                </select>
+                                <input step="0.01" ng-model="priceClassify" type="number" name="priceClassify" placeholder="Giá mỗi phân loại" id="">
+                            </div>
+                            <div class="checkall">
+                                <input type="checkbox" ng-click="toggle($event)" id="checkall" />
+                                <span> Chọn hết</span>
+                            </div>
+                            <div class="checkboxClassifyInvoice" id="{{idProduct}}">
+                                <li class="classifyInvoice" ng-repeat="i in classifyOfInvoice">
+                                    <input ng-checked="{{i.checked}}" tabindex="-1" type="checkbox" name="classifyOfInvoice" value="{{i.original_sku}}">
+                                    <img height="30px" src="{{i.image? i.image: 'https://i.imgur.com/NWUJZb1.png'}}" alt="">
+                                    <p style="max-width: 18ch;" title="{{i.name}}">{{i.name}}</p>
+                                    <input value="{{i.quantity}}" ng-style="{display: i.checked? 'block': 'none' }" type="number" name="amountClassify" placeholder=""
+                                        id="">
+                                </li>
+                            </div>
+                            <button name="{{idProduct}}" type="button" ng-click="saveInvoiceProduct($event)" class="btn btn-success saveClassify" style="float: right;">SAVE</button>
+                        </div>
+
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" ng-click="saveDis()" class="btn btn-success" style="float: right;">UPDATE</button>
+                <div class="row" ng-show="copy" style="margin: 0px;">
+                    <input type="text" placeholder="Dán list sản phẩm vừa copy..." id="target" contenteditable="true">
+                    <!-- </div> -->
+                    <div class="general" ng-show="sumPaidCopy > 0">
+                        <div class="totalBefore">
+                            <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{sumPaidCopy - discount}}</span>
+                        </div>
+                        <div class="discount">
+                            <input style="padding-left: 5px;
+                            border: #ddd solid 2px;
+                            border-radius: 2px;" placeholder="GIẢM GIÁ" type="number" name="" ng-model="discount" id="">
+                        </div>
+
+                    </div>
+                    <div id="previewCopy"></div>
                 </div>
+            </div>
+
+            <div class="modal-body" ng-show="previewInv">
+                <div class="infoInvoice">
+                    <p class="traceno"><b>Mã vận đơn: </b>{{invoice.shipping_traceId}}</p>
+                    <p class="status"><b>Trạng thái: </b>{{statusInvoice}}</p>
+                    <p><b>Giá: <input type="number" ng-model=sumPaid > </b>({{invoice.currency}})</p>
+                </div>
+                <div class="itemInvoice">
+                    <!-- <div class="row itemInvoicePreview" ng-repeat="item in itemInvoice"></div> -->
+                    <table style="box-shadow: none;" class="table table-bordered  itemInvoicePreview">
+                        <thead>
+                            <tr>
+                                <th scope="col">Ảnh</th>
+                                <th scope="col">Tên Sản phẩm</th>
+                                <th scope="col">Giá ({{invoice.currency}})</th>
+                                <th scope="col">Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in itemInvoice">
+                                <td style="padding: 0; width: 77px"><img height="76px" width="76px" src="{{item.image}}"
+                                        alt=""></td>
+                                <td>
+                                    <p class="proName">{{item.productName}}</p>
+                                    <p class="classify">
+                                        <-{{item.classifyName}}->
+                                    </p>
+                                </td>
+                                <td>
+                                    <span class="currency">{{item.priceClassify}}</span>
+                                </td>
+                                <td>
+                                    <span class="quantity">{{item.quantity}}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- </div> -->
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button ng-show="copy" ng-click="saveInvoiceCopy()" class="btn btn-success">SAVE</button>
+                <button ng-show="previewInv" ng-click="saveInvoice()" class="btn btn-success">ADD</button>
+                <button ng-show="previewInv" ng-click="previewInv = false" class="btn btn-danger">CANCEL</button>
             </div>
         </div>
     </div>

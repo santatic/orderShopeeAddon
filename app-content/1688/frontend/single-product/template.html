@@ -1,7 +1,56 @@
-<div class="panel panel-default panel-1688-shopee" ng-controller="1688Ctrl" id="addTaskModal">
-  <div class="panel-body">
-    <button class="btn btn-success" ng-click="download_images()">Tải Ảnh Về</button>
-    <a href="{{add_products_link}}" target="_blank" class="btn btn-success" ng-show="dontfound">Thêm Nhà Phân Phối</a>
-    <span style="background: #333;padding: 4px 10px 11px;color: #fff;font-size: 16px;" ng-show="!dontfound">{{id_products}}</span>
+<div style="right: 0; left: unset" class="panel panel-default panel-1688-shopee" ng-controller="1688downloadImg" id="addTaskModal">
+  <div class="panel-header">
+    <span class="pull-left" data-toggle="collapse" data-target=".panel-body.right">
+      >>> </span>
+  </div>
+  <div class="panel-body right collapse in">
+      <button class="btn btn-success" ng-click="download_images()">Tải Ảnh Về</button>
   </div>  
+</div>
+<div class="panel panel-default panel-1688-shopee" ng-controller="1688Ctrl" id="addTaskModal">
+  <div class="panel-header">
+    <span class="pull-right" data-toggle="collapse" data-target=".panel-body.left">
+      <<< </span>
+  </div>
+  <div class="panel-body left collapse in" style="display: inline-block;">    
+    <!-- <a ng-click="addDis()" class="btn btn-success" ng-show="dontfound">+ sản phẩm có sẵn</a> -->
+    <a ng-click="addDisNew()" class="btn btn-primary" ng-show="dontfound">+ sản phẩm mới</a>
+    <span style="padding: 4px 10px 11px;font-size: 16px;" ng-show="!dontfound">{{id_products}}</span>
+    <!-- <div ng-show="showAddName" class="addDis">
+      <angucomplete-alt id="ex1" placeholder="Tìm kiếm sản phẩm..." selected-object="selectedObj" local-data="productsName" search-fields="productName"
+        title-field="productName" minlength="1" inputclass="form-control form-control-small" match-class="highlight" /> {{getClassifyCount}} phân loại
+      <button ng-click="submitDisNew()">ADD</button>
+    </div> -->
+  </div>
+  <div class="modal fade" id="addDistributorToNew" role="dialog">
+      <div class="modal-dialog" style="width:fit-content">
+          <!-- Modal content-->
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"></h4>
+              </div>
+              <div class="modal-body">
+                  <div class="row" style="margin: 20px 5px">                   
+                      <div class="addDIS">
+                          
+                          <input placeholder="Nhập tên sản phẩm..." id="newName" type="text">
+                      </div>
+                      <div class="classifyList">
+                        <li ng-repeat="i in arrayClassifyNew">
+                          <img class="classify" height="41.5px" src="{{i.originalImageURL}}" alt="">
+                          <span id="originalSkuName" >{{i.original_name}}</span>
+                          <input type="text" name="editClassifyName" id="">
+                          <span ng-click="removeClassifyView($event)" style="cursor: pointer;" class="removeClassifyView">x</span>
+                        </li>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <img src="{{preImg}}" style="float: left" height="34px" class="classify" alt="">
+                  <button type="button" ng-click="submitDisNew()" class="btn btn-success" style="float: right;">ADD</button>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>

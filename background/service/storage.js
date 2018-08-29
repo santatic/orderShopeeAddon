@@ -4,6 +4,7 @@ app.service('storageFirestore', function ($q) {
     this.suggests = []
     this.exports = []
     this.products = [];
+    this.invoices = []
     
     this.findAll = function (callback) {
         chrome.storage.local.get('data', function (keys) {
@@ -24,6 +25,16 @@ app.service('storageFirestore', function ($q) {
         }, function () {
             console.log('Suggests is stored in Chrome storage');
             chrome.storage.local.get('suggests', function (keys) {
+                console.log(keys);
+            });
+        }); 
+    }
+    this.syncInvoices = function(){
+        chrome.storage.local.set({
+            invoices: this.invoices
+        }, function () {
+            console.log('Invoices is stored in Chrome storage');
+            chrome.storage.local.get('invoices', function (keys) {
                 console.log(keys);
             });
         }); 

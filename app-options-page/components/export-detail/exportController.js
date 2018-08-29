@@ -512,7 +512,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
                     obj = new Object();
                     obj = {
-                        id: id,
+                        id: idOrder,
                         trackno: myData.shipping_traceno,
                         nickname: myData.user.name + " - " + myData.buyer_address_name,
                         carrier: myData.actual_carrier,

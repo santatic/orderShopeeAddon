@@ -80,6 +80,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         cellFilter: 'mapGender'
     }
 
+    var now = moment((new Date()).getTime()).format('hh:mm_DD/MM/YYYY');
+
     $scope.options = {
         // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
@@ -109,6 +111,14 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             enableCellEdit: false,
             field: "paid",
             width: '100'
+        }, {
+            name: "Mã đơn hàng",
+            enableCellEdit: false,
+            field: "orderId",
+            cellTooltip: function (row) {
+                return row.entity.orderId;
+            },
+            // width: '100'
         }, {
             name: "Nhà Vận Chuyển",
             width: "150",
@@ -178,6 +188,11 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         ],
         enableFiltering: true,
         showGridFooter: true,
+        exporterCsvFilename: 'ExportFromOrders' + now + '.csv',
+        exporterMenuAllData: false,
+        exporterMenuVisibleData: false,
+        exporterMenuExcel: false,
+        exporterMenuPdf: false,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
 
@@ -441,8 +456,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                                 alert("Đơn này không tồn tại trong hệ thống")
                                 $(that).val("")
                             }
-                        }).catch(function(error){
-                            alert("LỖI: "+ error)
+                        }).catch(function (error) {
+                            alert("LỖI: " + error)
                         })
                     }
 
@@ -521,17 +536,25 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         model: model.name,
                         amount: item.amount,
                         imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
-                        orders: [obj.shipping_traceno]
+                        orders: []
+                    }
+                    var orderObj = {
+                        order: obj.shipping_traceno,
+                        one: ""
+                    }
+                    if (obj['order-items'].length == 1 && productsObj.name.indexOf("Combo") == -1) {
+                        orderObj.one = "only"
                     }
                     var found = products.some(function (el) {
                         return el.name == productsObj.name && el.model == productsObj.model;
                     });
                     if (!found) {
+                        productsObj.orders.push(orderObj)
                         products.push(productsObj)
                     } else {
                         let index = products.findIndex(x => x.name == productsObj.name && x.model == productsObj.model)
                         products[index].amount = products[index].amount + productsObj.amount
-                        products[index].orders.push(obj.shipping_traceno)
+                        products[index].orders.push(orderObj)
                     };
 
                 });
@@ -725,7 +748,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 importId: myData.importMoneyId,
                 ownStatus: myData.own_status.status,
                 fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)),
-                size: myData.order_items.length
+                size: myData.order_items.length,
+                orderId: myData.ordersn
             }
             sources.push(obj)
         })

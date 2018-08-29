@@ -32,7 +32,7 @@ firestore.settings(settings);
 //     console.error("Error adding document: ", error);
 // });
 
-var app = angular.module("app", ["ngRoute", 'ui.bootstrap', "chart.js", 'ui.grid.treeView', 'ui.grid.rowEdit', "ui.grid", 'ui.grid.grouping', 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
+var app = angular.module("app", ["ngRoute", 'ui.bootstrap', "chart.js", 'ui.grid.treeView', 'ui.grid.rowEdit', "ui.grid", 'ui.grid.grouping', 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', 'ui.grid.exporter', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
 
 app.config(function ($compileProvider) {
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);

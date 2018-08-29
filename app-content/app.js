@@ -7,7 +7,7 @@
 // firebase.initializeApp(config);
 
 
-var app = angular.module("myapp", ['angularMoment']); //"firebase"
+var app = angular.module("myapp", ['angularMoment', 'angucomplete-alt']); //"firebase"
 
 app.config(function ($compileProvider) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);

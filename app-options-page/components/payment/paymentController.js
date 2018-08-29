@@ -1,15 +1,23 @@
 app.controller("payment-controller", paymentController)
   .filter('mapGender', mapGender)
 
-function paymentController($scope, uiGridConstants) {
+function paymentController($scope, moment, uiGridConstants) {
   // $scope.refresh = false;
-
+  var now = moment((new Date()).getTime()).format('hh:mm_DD/MM/YYYY');
   $scope.gridOptions = {
+    enableRowSelection: true,
+    enableSelectAll: true,
     paginationPageSizes: [15, 30, 45],
     paginationPageSize: 15,
     enableSorting: true,
     showGridFooter: false,
     enableFiltering: true,
+    enableGridMenu: true,
+    exporterCsvFilename: 'ExportFromPaymentCheck_' + now + '.csv',
+    exporterMenuAllData: false,
+    exporterMenuVisibleData: false,
+    exporterMenuExcel: false,
+    exporterMenuPdf: false,
     columnDefs: [{
       name: "Trạng thái riêng",
       field: "statuss",
@@ -116,60 +124,60 @@ app.directive("fileread", [function () {
         reader.onload = function (evt) {
           $scope.$apply(function () {
             var arrayFilter = [{
-                id: 1,
-                english: "NEW",
-                vietnamese: "đơn mới"
-              },
-              {
-                id: 2,
-                english: "PREPARED",
-                vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-              },
-              {
-                id: 3,
-                english: "UNPREPARED",
-                vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-              },
-              {
-                id: 4,
-                english: "PACKED",
-                vietnamese: "đã đóng gói chờ gửi đi"
-              },
-              {
-                id: 5,
-                english: "SHIPPED",
-                vietnamese: "đã gửi đi"
-              },
-              {
-                id: 6,
-                english: "DELIVERED",
-                vietnamese: "khách đã nhận hàng"
-              },
-              {
-                id: 7,
-                english: "RETURNING",
-                vietnamese: "đang hoàn hàng chưa về đến kho"
-              },
-              {
-                id: 8,
-                english: "RETURNED",
-                vietnamese: "đã hoàn về kho"
-              },
-              {
-                id: 9,
-                english: "PAID",
-                vietnamese: "đã thanh toán"
-              },
-              {
-                id: 10,
-                english: "REFUNDED",
-                vietnamese: "đã hoàn tiền"
-              },
-              {
-                id: 11,
-                english: "CANCELED",
-                vietnamese: "đã hủy"
-              },
+              id: 1,
+              english: "NEW",
+              vietnamese: "đơn mới"
+            },
+            {
+              id: 2,
+              english: "PREPARED",
+              vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+            },
+            {
+              id: 3,
+              english: "UNPREPARED",
+              vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+            },
+            {
+              id: 4,
+              english: "PACKED",
+              vietnamese: "đã đóng gói chờ gửi đi"
+            },
+            {
+              id: 5,
+              english: "SHIPPED",
+              vietnamese: "đã gửi đi"
+            },
+            {
+              id: 6,
+              english: "DELIVERED",
+              vietnamese: "khách đã nhận hàng"
+            },
+            {
+              id: 7,
+              english: "RETURNING",
+              vietnamese: "đang hoàn hàng chưa về đến kho"
+            },
+            {
+              id: 8,
+              english: "RETURNED",
+              vietnamese: "đã hoàn về kho"
+            },
+            {
+              id: 9,
+              english: "PAID",
+              vietnamese: "đã thanh toán"
+            },
+            {
+              id: 10,
+              english: "REFUNDED",
+              vietnamese: "đã hoàn tiền"
+            },
+            {
+              id: 11,
+              english: "CANCELED",
+              vietnamese: "đã hủy"
+            },
             ]
             var data = evt.target.result;
 
@@ -198,22 +206,22 @@ app.directive("fileread", [function () {
               field: "orderId",
               cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.orderId}}">{{row.entity.orderId}}</a></div>'
             }, {
-              name: "Mã vận đơn",
-              field: "traceno",
-              cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.orderId}}">{{grid.getCellValue(row, col)}}</a></div>'
-            }, {
-              name: "Dự kiến thu",
-              field: "moneyEx"
-            }, {
-              name: "Phí ship",
-              field: "shippingFee"
-            }, {
-              name: "Trợ giá",
-              field: "vc"
-            }, {
-              name: "Đối soát",
-              field: "offset"
-            })
+                name: "Mã vận đơn",
+                field: "traceno",
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.orderId}}">{{grid.getCellValue(row, col)}}</a></div>'
+              }, {
+                name: "Dự kiến thu",
+                field: "moneyEx"
+              }, {
+                name: "Phí ship",
+                field: "shippingFee"
+              }, {
+                name: "Trợ giá",
+                field: "vc"
+              }, {
+                name: "Đối soát",
+                field: "offset"
+              })
 
             var sendOrderno = []
             var totalShopeeMoney = []

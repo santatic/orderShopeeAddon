@@ -39,6 +39,9 @@ app.config(function($routeProvider) {
     }).when("/products", {
         templateUrl : "app-options-page/components/productsList/productsList.html",
         controller : "productsList-controller",
+    }).when("/invoice", {
+        templateUrl : "app-options-page/components/invoice/invoiceView.html",
+        controller : "invoice-controller",
     });
 
 });

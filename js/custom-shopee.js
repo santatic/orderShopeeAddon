@@ -3,6 +3,8 @@ function zoom_in_thumbnail_32x32() {
     html: true,
     trigger: 'hover',
     //placement: 'bottom',
-    content: function(){return '<img src="'+$(this).attr('src').replace("32x32", "400x400") + '" />';}
-    });
+    content: function () {
+      return '<img src="' + $(this).attr('src').replace("32x32", "400x400") + '" />';
+    }
+  });
 }
