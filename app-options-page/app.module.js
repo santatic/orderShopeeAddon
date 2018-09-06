@@ -158,6 +158,7 @@ app.controller("header-controller", ['$scope', '$location', function ($scope, $l
   $scope.isActive = function (route) {
     return route === $location.path();
   }
+  // console.log($scope.isActive);
   // chrome.storage.local.get('data', function (keys) {    
   //   $rootScope.$apply(function () {
   //     $rootScope.dataOrders = keys.data
@@ -165,11 +166,30 @@ app.controller("header-controller", ['$scope', '$location', function ($scope, $l
   // })
   $scope.isDisabled = false;
 
+  $('#rightDiv').on('hidden.bs.collapse', function (e) {
+    $('#leftDiv').css({
+      "width":"100%"
+    })
+    $('nav.right').css({
+      "margin-left": "45px"
+    })
+  })
+  $('#rightDiv').on('shown.bs.collapse', function (e) {
+    $('#leftDiv').css({
+      "width":"83.333333%"
+    })
+    $('nav.right').css({
+      "margin-left": "0px"
+    })
+  })
+
   $scope.init = function () {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
+        console.log(user);
         $scope.$apply(function () {
           $scope.firebaseUser = user;
+          
           $scope.textButton = 'Đăng Xuất';
         });
       } else {
@@ -212,7 +232,9 @@ app.controller("header-controller", ['$scope', '$location', function ($scope, $l
   }
 
   $scope.startSignIn = function startSignIn() {
+    console.log("signing");
     $scope.isDisabled = true;
+    console.log($scope.firebaseUser);
     if (firebase.auth().currentUser) {
       firebase.auth().signOut().then(function () {
         $scope.$apply(function () {
@@ -225,6 +247,7 @@ app.controller("header-controller", ['$scope', '$location', function ($scope, $l
       });;
 
     } else {
+      console.log($scope.firebaseUser);
       $scope.startAuth(true);
     }
   }

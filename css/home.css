@@ -13,7 +13,7 @@
     border: #00000017 solid 1px;
     border-radius: 4px;
     padding: 13px;
-    background: #f7f7f7;
+    background: #fff;
     transition: all 0.3s ease;
 }
 .card:hover {

@@ -42,6 +42,9 @@ app.config(function($routeProvider) {
     }).when("/invoice", {
         templateUrl : "app-options-page/components/invoice/invoiceView.html",
         controller : "invoice-controller",
+    }).when("/stock", {
+        templateUrl : "app-options-page/components/stock/stockView.html",
+        controller : "stockController",
     });
 
 });

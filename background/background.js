@@ -714,13 +714,16 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           querySnapshot.forEach(function (doc) {
             const data = doc.data();
             var obj = new Object();
+            
             var voucher_price = parseInt(((data.voucher_price) * 100) / 100)
+            var money =  parseInt(((data.buyer_paid_amount) * 100) / 100)
+            money = data.voucher_absorbed_by_seller? money - voucher_price: money
             var selectedExpTags = [data.own_status.status];
             var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
             obj = {
               orderId: val,
               vc: voucher_price,
-              money: parseInt(((data.buyer_paid_amount) * 100) / 100),
+              money:  money,
               shipping_fee: parseInt(((data.shipping_fee) * 100) / 100),
               id: doc.id,
               status: names[0],

@@ -8,7 +8,7 @@ app.controller("orders-controller", ordersController)
 function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     $scope.loading = true;
     $('.navbar').css({
-        "margin-bottom": "0"
+        "margin-bottom": "15px"
     })
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
@@ -105,7 +105,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             name: "UserName",
             enableCellEdit: false,
             width: '150',
-            field: "nickname"
+            field: "nickname",
+            visible: false
         }, {
             name: "Dự kiến thu",
             enableCellEdit: false,
@@ -118,6 +119,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             cellTooltip: function (row) {
                 return row.entity.orderId;
             },
+            visible: false
             // width: '100'
         }, {
             name: "Nhà Vận Chuyển",
@@ -152,7 +154,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             name: "Phí Ship",
             enableCellEdit: false,
             width: '100',
-            field: "shippingFee"
+            field: "shippingFee",
+            // visible: false
         }, {
             name: "Phiếu Xuất",
             field: "exId",
@@ -178,12 +181,14 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             sort: {
                 direction: 'asc',
                 priority: 0
-            }
+            },
+            visible: false
         },
             statusDef, {
             name: "Trễ",
             field: "fromNow",
-            type: "number"
+            type: "number",
+            width: 60
         }
         ],
         enableFiltering: true,

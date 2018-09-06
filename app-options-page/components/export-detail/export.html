@@ -29,9 +29,9 @@
     <div class="col-md-3">
         <ul class="list-group" style="font-size: 20px;">
             <li class="list-group-item">
-                <span id="size">{{id}}</span>
+                <span id="size">Id: {{id}}</span>
             </li>
-            <li class="list-group-item">Số lượng đơn đã gửi:
+            <li class="list-group-item">Đơn đã gửi:
                <span id="shipped">{{arrShipped.length}}/<span id="size">{{size}}</span></span> </li>
             <li class="list-group-item">
                 {{carrier}}
@@ -52,7 +52,7 @@
             <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="ĐÃ GIAO"> ĐÃ GIAO
 
 
-            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="CANCEL"> HỦY PHIẾU
+            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="CANCEL"> HỦY
 
         </div>
     </div>

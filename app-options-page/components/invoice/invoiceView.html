@@ -1,4 +1,4 @@
-<div class="container">
+
     <div id="grid1" ui-grid="options" ui-grid-selection ui-grid-pagination ui-grid-row-edit class="grid"></div>
 </div>
 <div class="modal fade" id="showInvoice" role="dialog">
@@ -14,10 +14,16 @@
                     <select style="margin-bottom: 15px;" class="form-control" name="" id="selectStatus">
                         <!-- <option></option> -->
                         <!-- <option value="{{status}}">{{statusName}}</option> -->
-                        <option ng-repeat="i in arrayStatus" value="{{i.id}}">{{i.name}}</option>
+                        <option ng-repeat="i in arrayStatus" value="{{i.id}}" ng-class="{'full': i.id == 8}" >{{i.name}}</option>
                     </select>
                     <!-- <div class="row itemInvoicePreview" ng-repeat="item in itemInvoice"></div> -->
-                    <table style="box-shadow: none;" class="table table-bordered  itemInvoicePreview">
+                    <table style="box-shadow: none;width: 100%" class="table table-bordered  itemInvoicePreview">
+                        <colgroup>
+                            <col width="75">
+                            <col width="200">
+                            <col width="100">
+                            <col width="100">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th scope="col">Ảnh</th>
@@ -37,10 +43,12 @@
                                     </p>
                                 </td>
                                 <td>
-                                    <span class="currency" title="Giá">{{item.price}}</span>
+                                    <input type="number" name="priceItem" id="" value="{{item.price}}">
+                                    <!-- <span class="currency" title="Giá">{{item.price}}</span> -->
                                 </td>
                                 <td>
-                                    <span class="quantity" title="số lượng">{{item.quantity}}</span>
+                                    <input type="number" name="quantityItem" id="" value="{{item.quantity}}">
+                                    <!-- <span class="quantity" title="số lượng">{{item.quantity}}</span> -->
                                 </td>
                             </tr>
                         </tbody>
@@ -54,4 +62,3 @@
             </div>
         </div>
     </div>
-</div>

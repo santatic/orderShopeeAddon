@@ -243,10 +243,13 @@ app.service('Chat', function () {
         chrome.storage.onChanged.addListener(function (changes) {
             states = []
             // console.log(changes.suggests);
-            changes.suggests.newValue.forEach(function (val) {
-                states.push(val.suggest_chat)
-                // console.log(val.suggest_chat);
-            });
+            // if(typeof changes.suggests.newValue !== undefined){
+                changes.suggests.newValue.forEach(function (val) {
+                    states.push(val.suggest_chat)
+                    // console.log(val.suggest_chat);
+                });
+            // }
+            
         })
 
 

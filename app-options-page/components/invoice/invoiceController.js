@@ -1,17 +1,36 @@
 app.controller("invoice-controller", function ($scope, moment, uiGridConstants) {
-    var arrayStatus = [
-        {
+    var arrayStatus = [{
             id: 1,
-            name: "ĐƠN MỚI"
+            name: "Đơn Mới"
         },
         {
             id: 2,
-            name: "ĐANG GIAO"
+            name: "Đã Thanh Toán"
         },
         {
             id: 3,
-            name: "ĐÃ GIAO"
-        }
+            name: "Đã Gửi Đi"
+        },
+        {
+            id: 4,
+            name: "Đã Nhận TQ"
+        },
+        {
+            id: 5,
+            name: "Đã Nhận VN"
+        },
+        {
+            id: 6,
+            name: "Đã Về Kho"
+        },
+        {
+            id: 7,
+            name: "Thiếu"
+        },
+        {
+            id: 8,
+            name: "Đủ"
+        },
     ]
 
 
@@ -25,26 +44,25 @@ app.controller("invoice-controller", function ($scope, moment, uiGridConstants) 
         paginationPageSize: 15,
         enableSorting: true,
         showGridFooter: false,
-        columnDefs: [
-            {
-                name: "Id Đơn",
-                field: "id",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để xem chi tiết đơn" ng-click = "grid.appScope.detailInvoice(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span> &nbsp;&nbsp;{{row.entity.id}}</a></div>'
-            }, {
-                name: "Mã Vận Đơn",
-                field: "shipping_traceId",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><span style="color:blue">{{row.entity.shipping_traceId}}</span></div>'
-            }, {
-                name: "Tạo Ngày",
-                field: "create_at"
-            }, {
-                name: "Giá Đơn",
-                field: "sumPaid"
-            }, {
-                name: "Trạng Thái",
-                field: "statusName"
-            }
-        ],
+        columnDefs: [{
+            name: "Id Đơn",
+            field: "id",
+            cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để xem chi tiết đơn" ng-click = "grid.appScope.detailInvoice(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span> &nbsp;&nbsp;{{row.entity.id}}</a></div>'
+        }, {
+            name: "Mã Vận Đơn",
+            field: "shipping_traceId",
+            cellTemplate: '<div class="ui-grid-cell-contents" ><span style="color:blue">{{row.entity.shipping_traceId}}</span></div>'
+        }, {
+            name: "Tạo Ngày",
+            field: "create_at"
+        }, {
+            name: "Giá Đơn",
+            field: "sumPaid"
+        }, {
+            name: "Trạng Thái",
+            field: "statusName"
+        }],
+        showGridFooter: true,
         enableFiltering: true,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
@@ -78,7 +96,9 @@ app.controller("invoice-controller", function ($scope, moment, uiGridConstants) 
     var lastSel
     $scope.detailInvoice = function (row) {
         // console.log(row.id,invoicesData);
-        var obj = invoicesData.find(y => { return y.id === row.entity.id })
+        var obj = invoicesData.find(y => {
+            return y.id === row.entity.id
+        })
         $scope.traceNo = obj.shipping_traceId
         $scope.models = obj.models
         $scope.arrayStatus = arrayStatus
@@ -87,33 +107,39 @@ app.controller("invoice-controller", function ($scope, moment, uiGridConstants) 
         $('#showInvoice').modal()
         $('div.itemInvoice select').val(obj.status.status)
         lastSel = obj.status.status
-        
+
     }
     $('div.itemInvoice select').on('change', function () {
         console.log(this.value);
         var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI ĐƠN")
         if (confirmChange) {
-            firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
-                "status": {
-                    status: parseInt(this.value),
-                    time: new Date()
-                }
-            }).then(() => {
-                $('#showInvoice').modal("hide")
-                new Noty({
-                    layout: 'bottomRight',
-                    timeout: 1000,
-                    theme: "relax",
-                    type: 'success',
-                    text: 'ĐÃ CHUYỂN TRẠNG THÁI ĐƠN '
-                }).show()
-            })
-        }else{
+            if(this.value == 8){
+                alert("đủ")
+                
+            }else{
+                firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
+                    "status": {
+                        status: parseInt(this.value),
+                        time: new Date()
+                    }
+                }).then(() => {
+                    $('#showInvoice').modal("hide")
+                    new Noty({
+                        layout: 'bottomRight',
+                        timeout: 1000,
+                        theme: "relax",
+                        type: 'success',
+                        text: 'ĐÃ CHUYỂN TRẠNG THÁI ĐƠN '
+                    }).show()
+                })
+            }
+            
+        } else {
             $('div.itemInvoice select').val(lastSel)
         }
 
     });
-    
+
     function getInvoice(invoices) {
         // console.log(invoices);
         invoices.forEach(element => {

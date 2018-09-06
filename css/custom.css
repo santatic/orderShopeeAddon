@@ -53,6 +53,7 @@ td span#last:last-child{
 }
 
 body {
+  overflow-x: hidden;
   font-family: 'Quicksand', sans-serif;
   font-style: normal;
   font-weight: 500;
@@ -60,7 +61,7 @@ body {
   line-height: 2rem;
   letter-spacing: 0.01rem;
   color: #212121;
-  background-color: #fff;
+  background-color: #abc2ce29;
   /* background-image: url("/images/497125482.jpg");
     background-size: cover; */
   -webkit-font-smoothing: antialiased;
@@ -347,9 +348,16 @@ table:hover {
 table.has-multi-entry-order tr{
   background: #ea16161a
 }
-
+.ui-grid-row:nth-child(odd):hover .ui-grid-cell{background:#d9edf7;  -webkit-transition: .4s;
+  transition: .4s;}
+.ui-grid-row:nth-child(even):hover .ui-grid-cell{background:#d9edf7;  -webkit-transition: .4s;
+  transition: .4s;}
 table.has-multi-entry-order>tbody>tr>td{
   border: 2px solid #ffffff;
+}
+.ui-grid-row:nth-child .ui-grid-cell{
+  -webkit-transition: .4s;
+  transition: .4s;
 }
 
 .navbar {
@@ -671,4 +679,18 @@ img.imgPreview {
 /* Mark the steps that are finished and valid: */
 .step.finish {
   background-color: #4CAF50;
+}
+
+input[name="quantityItem"],input[name="priceItem"]{
+  padding: 0 5px;
+  width: 100%;
+  border: none;
+  background: #0000;
+}
+.full{
+  background: #4CAF50;
+  color: #fff
+}
+option{
+  cursor: pointer;
 }
