@@ -1,6 +1,5 @@
-
-    <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
-    <div id="grid1" ui-grid="options" ui-grid-selection ui-grid-pagination ui-grid-edit ui-grid-row-edit class="grid"></div>
+<img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
+<div id="grid1" ui-grid="options" ui-grid-selection ui-grid-pagination ui-grid-edit ui-grid-row-edit class="grid"></div>
 </div>
 <div class="modal fade" id="showClassify" role="dialog">
     <div class="modal-dialog" style="width:fit-content">
@@ -14,7 +13,8 @@
                 <li class="addClassify">
                     <input type="text" id="addClassifyName" placeholder="Thêm tên phân loại">
                     <!-- <input style="width: 30%;" type="number" id="addClassifyStock" placeholder="Thêm số lượng trong kho"> -->
-                    <button style="padding: 1px 1px 0px 0;border-bottom: 1px #ddd solid;" ng-click="addSkuPreview()" class="skuPreviewUrl">
+                    <button style="padding: 1px 1px 0px 0;border-bottom: 1px #ddd solid;" ng-click="addSkuPreview()"
+                        class="skuPreviewUrl">
                         <img class="previewSkuImg" height="38" width="38" src="https://i.imgur.com/NWUJZb1.png">
                     </button>
                     <button ng-click="addSku()">
@@ -60,8 +60,10 @@
 
             <div class="tab">
                 <p id="addSku">
-                    <input id="skuName" placeholder="Thêm Phân Loại..." style="display: -webkit-inline-box; width: 78%;" oninput="this.className = ''">
-                    <button type="button" style="background-image: url('')" ng-click="addSkuPreview()" class="skuPreviewUrl" id="Sku">
+                    <input id="skuName" placeholder="Thêm Phân Loại..." style="display: -webkit-inline-box; width: 78%;"
+                        oninput="this.className = ''">
+                    <button type="button" style="background-image: url('')" ng-click="addSkuPreview()" class="skuPreviewUrl"
+                        id="Sku">
                         <span class="glyphicon glyphicon-picture" style="color: #000"></span>
                     </button>
                     <button type="button" ng-click="addSku()" id="Sku">
@@ -128,7 +130,7 @@
                         </p>
                         <input type="checkbox" ng-click="toggle($event)" id="checkall" />
                         <span> Chọn hết</span>
-                        <br/>
+                        <br />
                         <div class="checkboxClassify" ng-repeat="i in classifyToDis">
                             <input type="checkbox" name="classify" value="{{i.name}}">
                             <input type="text" name="skuName" title="Nhập skuName gốc" placeholder="{{i.name}}" id="skuName">
@@ -175,22 +177,31 @@
         <!-- style="width:fit-content" -->
         <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header" ng-show="!previewInv">
+            <div class="modal-header" ng-show="!previewInv" style="background: #eeeeee30">
 
-                <input placeholder="Nhập mã vẫn đơn..." type="number" name="" ng-model="invoiceTraceno" id="invoiceTraceno">
+                <input placeholder="Nhập mã đơn hàng..." type="text" name="" ng-model="invoiceId" id="invoiceId">
+                <!-- <input placeholder="Nhập mã vẫn đơn..." type="button" name="" ng-model="invoiceId" id="invoiceId"> -->
+                
+                <input placeholder="Phí Ship" style="width: 25%;" type="number" name="" ng-model="shipping_fee" id="shipping_fee">
                 <select class="form-control" name="" id="selectCurrence">
                     <!-- <option></option> -->
                     <option>CNY</option>
                     <option>VNĐ</option>
                     <option>USD</option>
                 </select>
-                <span ng-click="previewInvoice()" class="previewInvoice">PREVIEW</span>
+                <button ng-click="addShippingNo()" id="addShippingNo"><span class="glyphicon glyphicon-plus"></span> Mã Vận Đơn</button>
+                <p ng-show="shippingNo.length > 0">
+                    <ul style="list-style-type: circle;
+                    padding-left: 17px;">
+                        <li style="margin-bottom: 5px;" ng-repeat="i in shippingNo">{{i.id}}<span class="timeOfShippingNo">{{i.time | date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span> </li>
+                    </ul>
+                </p>
             </div>
             <div class="modal-body" ng-show="!previewInv" ng-style="padding: copy? 'unset': '0 15px'">
                 <div class="row" ng-show="!copy">
                     <div class="col-md-6">
-                        <li ng-click="getClassifyOfInvoice($event)" class="productInvoice" ng-repeat="item in selectedProducts" title="{{item.productName}}"
-                            id="{{item.skuProduct}}">
+                        <li ng-click="getClassifyOfInvoice($event)" class="productInvoice" ng-repeat="item in selectedProducts"
+                            title="{{item.productName}}" id="{{item.skuProduct}}">
                             <p class="name">{{item.productName}}</p>
                             <!-- <span class="glyphicon glyphicon-plus"></span> -->
                         </li>
@@ -203,7 +214,8 @@
                                     <!-- <option></option> -->
                                     <option ng-repeat="i in disNameArr" value="{{i.name}}">{{i.name}}</option>
                                 </select>
-                                <input step="0.01" ng-model="priceClassify" type="number" name="priceClassify" placeholder="Giá mỗi phân loại" id="">
+                                <input step="0.01" ng-model="priceClassify" type="number" name="priceClassify"
+                                    placeholder="Giá mỗi phân loại" id="">
                             </div>
                             <div class="checkall">
                                 <input type="checkbox" ng-click="toggle($event)" id="checkall" />
@@ -211,14 +223,17 @@
                             </div>
                             <div class="checkboxClassifyInvoice" id="{{idProduct}}">
                                 <li class="classifyInvoice" ng-repeat="i in classifyOfInvoice">
-                                    <input ng-checked="{{i.checked}}" tabindex="-1" type="checkbox" name="classifyOfInvoice" value="{{i.original_sku}}">
-                                    <img height="30px" src="{{i.image? i.image: 'https://i.imgur.com/NWUJZb1.png'}}" alt="">
+                                    <input ng-checked="{{i.checked}}" tabindex="-1" type="checkbox" name="classifyOfInvoice"
+                                        value="{{i.original_sku}}">
+                                    <img height="30px" src="{{i.image? i.image: 'https://i.imgur.com/NWUJZb1.png'}}"
+                                        alt="">
                                     <p style="max-width: 18ch;" title="{{i.name}}">{{i.name}}</p>
-                                    <input value="{{i.quantity}}" ng-style="{display: i.checked? 'block': 'none' }" type="number" name="amountClassify" placeholder=""
-                                        id="">
+                                    <input value="{{i.quantity}}" ng-style="{display: i.checked? 'block': 'none' }"
+                                        type="number" name="amountClassify" placeholder="" id="">
                                 </li>
                             </div>
-                            <button name="{{idProduct}}" type="button" ng-click="saveInvoiceProduct($event)" class="btn btn-success saveClassify" style="float: right;">SAVE</button>
+                            <button name="{{idProduct}}" type="button" ng-click="saveInvoiceProduct($event)" class="btn btn-success saveClassify"
+                                style="float: right;">SAVE</button>
                         </div>
 
                     </div>
@@ -228,12 +243,13 @@
                     <!-- </div> -->
                     <div class="general" ng-show="sumPaidCopy > 0">
                         <div class="totalBefore">
-                            <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{sumPaidCopy - discount}}</span>
+                            <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{sumPaidCopy - discount + shipping_fee}}</span>
                         </div>
                         <div class="discount">
                             <input style="padding-left: 5px;
                             border: #ddd solid 2px;
-                            border-radius: 2px;" placeholder="GIẢM GIÁ" type="number" name="" ng-model="discount" id="">
+                            border-radius: 2px;"
+                                placeholder="GIẢM GIÁ" type="number" name="" ng-model="discount" id="">
                         </div>
 
                     </div>
@@ -243,9 +259,13 @@
 
             <div class="modal-body" ng-show="previewInv">
                 <div class="infoInvoice">
-                    <p class="traceno"><b>Mã vận đơn: </b>{{invoice.shipping_traceId}}</p>
+                    <!-- <p class="traceno"><b>Mã vận đơn: </b>{{invoice.shipping_traceId}}</p> -->
+                    <ul style="list-style-type: circle;
+                    padding-left: 17px;">
+                        <li style="margin-bottom: 5px;" ng-repeat="i in invoice.shipping_traceId">{{i.id}}<span class="timeOfShippingNo">{{i.time | date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span> </li>
+                    </ul>
                     <p class="status"><b>Trạng thái: </b>{{statusInvoice}}</p>
-                    <p><b>Giá: <input type="number" ng-model=sumPaid > </b>({{invoice.currency}})</p>
+                    <p><b>Giá: <input type="number" ng-model=sumPaid> </b>({{invoice.currency}})</p>
                 </div>
                 <div class="itemInvoice">
                     <!-- <div class="row itemInvoicePreview" ng-repeat="item in itemInvoice"></div> -->
@@ -265,7 +285,7 @@
                                 <td>
                                     <p class="proName">{{item.productName}}</p>
                                     <p class="classify">
-                                        <-{{item.classifyName}}->
+                                        <- {{item.classifyName}} ->
                                     </p>
                                 </td>
                                 <td>
@@ -282,9 +302,10 @@
 
             </div>
             <div class="modal-footer">
+
+                <span ng-show="!copy && !previewInv" ng-click="previewInvoice()" class="previewInvoice">PREVIEW</span>
                 <button ng-show="copy" ng-click="saveInvoiceCopy()" class="btn btn-success">SAVE</button>
                 <button ng-show="previewInv" ng-click="saveInvoice()" class="btn btn-success">ADD</button>
                 <button ng-show="previewInv" ng-click="previewInv = false" class="btn btn-danger">CANCEL</button>
             </div>
         </div>
-    

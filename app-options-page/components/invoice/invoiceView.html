@@ -7,11 +7,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5>
+                <button ng-click="addShippingNo()" id="addShippingNo"><span class="glyphicon glyphicon-plus"></span> Mã Vận Đơn</button>
+                <!-- <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5> -->
             </div>
             <div class="modal-body">
                 <div class="itemInvoice">
-                    <select style="margin-bottom: 15px;" class="form-control" name="" id="selectStatus">
+                        <ul style="list-style-type: circle;
+                        padding-left: 17px;">
+                            <li ng-mouseenter="options=true" ng-mouseleave="options=false" style="margin-bottom: 5px;" ng-repeat="i in traceNo" id="{{i.id}}">{{i.id}}<span class="timeOfShippingNo">{{i.time | date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span> <span ng-show="options" ng-click="editWeight($event)" class="glyphicon glyphicon-pencil"></span> </li>
+                        </ul>
+                    <select ng-show="status !== 8" style="margin-bottom: 15px;" class="form-control" name="" id="selectStatus">
                         <!-- <option></option> -->
                         <!-- <option value="{{status}}">{{statusName}}</option> -->
                         <option ng-repeat="i in arrayStatus" value="{{i.id}}" ng-class="{'full': i.id == 8}" >{{i.name}}</option>
@@ -33,7 +38,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in models">
+                            <tr ng-repeat="item in models" id="{{item.original_sku}}">
                                 <td title="{{item.productId}}" style="padding: 6px; width: 77px"><img height="76px" width="76px"
                                         src="{{item.image}}" alt=""></td>
                                 <td>

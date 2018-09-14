@@ -50,7 +50,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
 
         $scope.getClassifyCount = 0
 
-        $('div.obj-content').prepend('<input type="checkbox" id="checkall"/><span> Chọn hết</span> <br/>')
+        $('div.obj-content').prepend('<input type="checkbox" checked id="checkall"/><span> Chọn hết</span> <br/>')
 
         $('input#checkall').click(function ($event) {
             console.log($event.currentTarget.checked);
@@ -72,7 +72,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
 
         $('[data-sku-config]').each(function () {
             var skuName = JSON.parse($(this).attr('data-sku-config')).skuName
-            $(this).prepend('<input type="checkbox" class="checkclassify" name="classify" value="' + skuName + '">')
+            $(this).prepend('<input type="checkbox" checked class="checkclassify" name="classify" value="' + skuName + '">')
         })
 
         $("input.checkclassify").click(function () {
@@ -136,7 +136,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
                         skuName: $("input[name='classify']:checked").parents('div.obj-sku').find('div.obj-header span.obj-title').text() + ":" + $(this).find('span#originalSkuName').text()
                     })
                 })
-                if (check && $('input#newName').val() !== "") {
+                if ($('input#newName').val() !== "") {
                     console.log(classify);
                     var obj = {
                         classify: classify,

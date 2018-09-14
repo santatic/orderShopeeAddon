@@ -6,37 +6,37 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
     $scope.loading = true;
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
-        id: 1,
-        name: "Đơn Mới"
-    },
-    {
-        id: 2,
-        name: "Đã Thanh Toán"
-    },
-    {
-        id: 3,
-        name: "Đã Gửi Đi"
-    },
-    {
-        id: 4,
-        name: "Đã Nhận TQ"
-    },
-    {
-        id: 5,
-        name: "Đã Nhận VN"
-    },
-    {
-        id: 6,
-        name: "Đã Về Kho"
-    },
-    {
-        id: 7,
-        name: "Thiếu"
-    },
-    {
-        id: 8,
-        name: "Đủ"
-    },
+            id: 1,
+            name: "Đơn Mới"
+        },
+        {
+            id: 2,
+            name: "Đã Thanh Toán"
+        },
+        {
+            id: 3,
+            name: "Đã Gửi Đi"
+        },
+        {
+            id: 4,
+            name: "Đã Nhận TQ"
+        },
+        {
+            id: 5,
+            name: "Đã Nhận VN"
+        },
+        {
+            id: 6,
+            name: "Đã Về Kho"
+        },
+        {
+            id: 7,
+            name: "Thiếu"
+        },
+        {
+            id: 8,
+            name: "Đủ"
+        },
     ]
     $scope.options = {
         // enableHorizontalScrollbar = 0,
@@ -651,17 +651,48 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
             title: "TẠO ĐƠN NHẬP",
             action: function () {
 
+
+
                 var selected = $scope.gridApi.selection.getSelectedRows();
                 $("#addInvoiceSelected").modal()
                 $("#addInvoiceSelected").on("hidden.bs.modal", function () {
                     $('input#checkall').prop('checked', false);
                     $scope.classifyOfInvoice = []
                     $('input#invoiceTraceno').val("")
+                    $('input#invoiceId').val("")
+                    $('input#shipping_fee').val("")
                     $(".clicked").removeClass("clicked")
                     $("div#previewCopy").html("")
+                    $scope.shippingNo = []
                     $scope.sumPaidCopy = 0
                     // $('ul#listClassify').html("")
                 })
+                $scope.shippingNo = []
+
+                $scope.addShippingNo = function () {
+                    
+                    var shippingNo = prompt("Nhập Mã Vận Đơn");
+                    if (shippingNo != null) {
+                        var weightOfShippingNo = prompt("Nhập cân nặng (Kg)")
+                        if(weightOfShippingNo !== null){
+                            var found = $scope.shippingNo.some(function (el) {
+                                return el.id == shippingNo.toString();
+                            });
+                            if (found) {
+                                alert("Mã vận đơn này đã tồn tại")
+                            }else{
+                                var obj = {
+                                    id: shippingNo.toString(),
+                                    weight: weightOfShippingNo,
+                                    time: new Date()
+                                }
+                                $scope.shippingNo.push(JSON.parse(angular.toJson(obj)))
+                                console.log($scope.shippingNo);
+                            }
+                        }
+                        
+                    }
+                }
 
                 if (selected.length > 0) {
                     $scope.selectedProducts = selected
@@ -671,6 +702,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     var productsInvoice = selected
 
                     $scope.invoiceTraceno = ""
+                    $scope.invoiceId = ""
+                    $scope.shipping_fee = ""
                     var check
                     var products = []
                     var models = []
@@ -791,13 +824,15 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     }
                     $scope.previewInv = false
                     $scope.previewInvoice = function () {
-                        if ($scope.invoiceTraceno !== "" && check) {
+                        if ($scope.invoiceId !== "" && $scope.shipping_fee !== "" && check) {
                             if (check) {
 
                                 var invoiceId = (new Date()).getTime().toString()
                                 $scope.previewInv = true
                                 var invoice = new Object()
-                                invoice.shipping_traceId = $scope.invoiceTraceno.toString()
+                                invoice.shipping_traceId = JSON.parse(angular.toJson($scope.shippingNo))
+                                invoice.invoiceId = $scope.invoiceId.toString()
+                                invoice.shipping_fee = $scope.shipping_fee
                                 invoice.currency = $('select#selectCurrence').val().toString()
                                 invoice.id = invoiceId
                                 invoice.status = {
@@ -827,6 +862,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                 })
                                 $scope.saveInvoice = function () {
                                     invoice.sumPaid = $scope.sumPaid
+                                    invoice.vnd = ""
                                     console.log(invoice);
                                     firestore.collection("invoiceBuy").doc(invoiceId).set(invoice)
                                         .then(() => {
@@ -946,11 +982,14 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                 if ($('table.has-multi-entry-order tr:not(:has(b.dontHighlight))').length > 0) {
                                     alert("Trong đơn chứa sản phẩm hoặc phân loại chưa được theo dõi, vui lòng kiểm tra lại!")
                                 } else {
-                                    var invoiceTraceno = $('input#invoiceTraceno').val()
-                                    if (invoiceTraceno) {
+                                    var invoiceId = $('input#invoiceId').val()
+                                    var shipping_fee = $('input#shipping_fee').val()
+                                    if ( invoiceId && shipping_fee) {
                                         // alert($scope.sumPaidCopy)
                                         var invoiceCopy = new Object()
-                                        invoiceCopy.shipping_traceId = invoiceTraceno
+                                        invoiceCopy.shipping_traceId = JSON.parse(angular.toJson($scope.shippingNo))
+                                        invoiceCopy.invoiceId = invoiceId
+                                        invoiceCopy.shipping_fee = shipping_fee
                                         invoiceCopy.currency = $('select#selectCurrence').val().toString(),
                                             invoiceCopy.status = {
                                                 status: 1,
@@ -960,7 +999,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                         invoiceCopy.models = models
                                         invoiceCopy.products = products
                                         invoiceCopy.create_at = new Date()
-                                        invoiceCopy.sumPaid = $scope.sumPaidCopy - $scope.discount
+                                        invoiceCopy.sumPaid = $('span#sumPaidCopy').text()
+                                        invoiceCopy.vnd = ""
                                         firestore.collection("invoiceBuy").doc(invoiceCopy.id).set(invoiceCopy)
                                             .then(() => {
                                                 $("#addInvoiceSelected").modal('hide')
@@ -974,7 +1014,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                             })
                                         console.log(invoiceCopy);
                                     } else {
-                                        alert("Vui lòng nhập mã vận đơn!")
+                                        alert("Vui lòng nhập mã vận đơn và mã đơn!")
                                     }
 
                                 }

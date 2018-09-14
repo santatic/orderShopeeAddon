@@ -64,7 +64,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             vietnamese: "đã hủy"
         },
     ]
-
+    var now = moment((new Date()).getTime()).format('hh:mm_DD/MM/YYYY');
     $scope.options = {
         // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
@@ -75,51 +75,75 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         enableSorting: true,
         showGridFooter: false,
         columnDefs: [{
-                name: "OrderId",
+                name: "Id",
                 field: "id",
                 enableCellEdit: false,
                 width: '100',
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
             }, {
-                name: "TrackNo",
+                name: "Shipping No",
                 enableCellEdit: false,
-                width: '200',
                 field: "trackno",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
-            }, {
-                name: "NickName",
-                enableCellEdit: false,
-                width: '150',
-                field: "nickname"
-            }, {
-                name: "Buyer Paid",
-                enableCellEdit: false,
-                field: "paid",
-                width: '100'
             },
             {
-                name: "Shipping Fee",
+                name: "Order No",
+                enableCellEdit: false,
+                field: "ordersn"
+            }, {
+                name: "Nick Name",
+                enableCellEdit: false,
+                width: '150',
+                visible: false,
+                field: "nickname"
+            }, {
+                name: "A.Shopee Price",
+                enableCellEdit: false,
+                field: "shopeePrice",
+                // width: '100'
+            }, {
+                name: "B.Actual Price",
+                enableCellEdit: false,
+                field: "paid",
+                // width: '100'
+            }, {
+                name: "Voucher",
+                enableCellEdit: false,
+                field: "voucherPrice",
+                width: '60'
+            },
+            {
+                name: "Shiping Fee",
                 enableCellEdit: false,
                 width: '100',
                 field: "shippingFee"
             },
             {
-                name: "Status Shopee",
+                name: "A - B",
+                enableCellEdit: false,
+                field: "offset",
+                width:'100'
+            },
+            {
+                name: "Shopee's Status",
                 enableCellEdit: false,
                 field: "status",
+                visible: false,
                 cellTooltip: function (row) {
                     return row.entity.status;
                 }
             }, {
-                name: "Status Time",
+                name: "Shopee's Status Time",
                 enableCellEdit: false,
                 width: '100',
+                visible: false,
                 field: "updateTime"
             },
             {
-                name: "Own Status",
+                name: "My Status",
                 field: "ownStatus",
                 width: '160',
+                visible: false,
                 filter: {
                     type: uiGridConstants.filter.SELECT,
                     selectOptions: [{
@@ -172,6 +196,11 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             }
         ],
         enableFiltering: true,
+        exporterCsvFilename: 'ExportFromPaymentDetail_' + now + '.csv',
+        exporterMenuAllData: false,
+        exporterMenuVisibleData: false,
+        exporterMenuExcel: false,
+        exporterMenuPdf: false,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
 
@@ -187,7 +216,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     };
     // angular.element(document.getElementsByClassName('grid')[0]).css('height', '900px');
     $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
-    
+
 
     // $scope.options.gridMenuCustomItems = [{
     //     title: "IN PHIẾU XUẤT",
@@ -219,9 +248,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         const data = doc.data()
         // console.log(data);
         $scope.bank = data.myBank;
-        $scope.date = data.reciveMoneyAt;        
+        $scope.date = data.reciveMoneyAt;
         $scope.$apply()
-    })    
+    })
     var docRef = firestore.collection("orderShopee").where("importMoneyId", "==", id);
     docRef.get().then(
         function (querySnapshot) {
@@ -229,19 +258,27 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
                 const myData = doc.data();
                 // console.log(myData);
+                var voucher_price = parseInt(((myData.voucher_price) * 100) / 100)
+                var money = parseInt(((myData.buyer_paid_amount) * 100) / 100)
+                money = myData.voucher_absorbed_by_seller ? money - voucher_price : money
                 ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
                 obj = new Object();
+
                 obj = {
                     id: doc.id,
                     trackno: myData.shipping_traceno,
                     nickname: myData.user.name + " - " + myData.buyer_address_name,
                     carrier: myData.actual_carrier,
-                    paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
+                    paid: money.toLocaleString(),
                     shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
                     status: myData.logistic["logistics-logs"][0].description,
                     updateTime: ctime,
-                    ownStatus: myData.own_status.status
+                    voucherPrice: voucher_price,
+                    ownStatus: myData.own_status.status,
+                    shopeePrice: myData.actual_money_shopee_paid.toLocaleString(),
+                    ordersn: myData.ordersn
                 }
+                obj.offset = myData.actual_money_shopee_paid - money
                 sources.push(obj)
                 arrTraceno.push(obj.trackno)
             })

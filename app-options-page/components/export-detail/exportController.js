@@ -180,7 +180,11 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
                 })
 
-        } else {
+        } else if(valueSelected == "DONE"){
+
+            
+
+        }else{
             firestore.collection("exportCode").doc(id).update({
                 "status": valueSelected
             }).then(function () {
@@ -450,7 +454,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     // })
     chrome.storage.local.get('data', function (keys) {
         var ordersInEx
-        firestore.collection("exportCode").doc(id).get().then(function (doc) {
+        firestore.collection("exportCode").doc(id.toString()).get().then(function (doc) {
             const data = doc.data()
             $scope.id = doc.id
             $scope.shipperName = data.shipper;
@@ -460,18 +464,27 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 $scope.status = "PHIẾU NÀY ĐÃ BỊ HỦY"
             } else {
                 $scope.status = data.status
+                switch (data.status){
+                    case "MỚI":
+                        $scope.status = "NEW"
+                        break
+                    case "ĐÃ GIAO":
+                        $scope.status = "SHIPPED"
+                        break
+                }
             }
             $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
             $scope.$apply()
             getData(ordersInEx, keys.data)
-        }).catch(function (error) {
-            new Noty({
-                layout: 'bottomRight',
-                theme: "relax",
-                type: 'error',
-                text: error
-            }).show();
         })
+        // .catch(function (error) {
+        //     new Noty({
+        //         layout: 'bottomRight',
+        //         theme: "relax",
+        //         type: 'error',
+        //         text: error
+        //     }).show();
+        // })
 
     })
     // chrome.storage.onChanged.addListener(function (changes) {
@@ -484,6 +497,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
         var arrTraceno = []
         var arrShipped = []
+        var arrDone = []
         // var dataOrders = arrayData.filter(function (event) {
         //     return event.exportId == id;
         // })
@@ -497,7 +511,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     let index = arrayData.findIndex(x => x.id == idOrder)
                     data(arrayData[index])
                 } else {
-                    console.log(idOrder, "ko thaays");
+                    // console.log(idOrder, "ko thaays");
                     firestore.collection("orderShopee").doc(idOrder.toString()).get().then(function (docOrder) {
                         data(docOrder.data())
                     })
@@ -505,7 +519,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
                 function data(myData) {
                     dataForPro.push(myData)
-                    console.log(myData);
+                    // console.log(myData);
                     if (jQuery.inArray(myData.own_status.status, arrStt) == -1) {
                         arrStt.push(myData.own_status.status)
                     }
@@ -523,12 +537,17 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     if (myData.own_status.status == 5) {
                         arrShipped.push(idOrder)
                     }
+                    if (myData.own_status.status == 8||myData.own_status.status == 9||myData.own_status.status == 11) {
+                        arrDone.push(idOrder)
+                    }
+
                     sources.push(obj)
                     $scope.options.data.push(obj)
                     $scope.gridApi.core.refresh();
                     $scope.size = $scope.options.data.length
                     $scope.$apply()
                     arrTraceno.push((obj.trackno))
+                    
                 }
             })
             var arrStatus = []
@@ -556,10 +575,14 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     "color": "#fff"
                 })
             }
+
             $scope.arrShipped = arrShipped
+            $scope.arrDone = arrDone            
             $scope.carrier = sources[0].carrier
             $scope.arrTraceno = arrTraceno
+            
             console.log(arrayData.length);
+            
             // console.log($scope.arrTraceno);
             // $scope.options.data = $scope.data;
             $scope.loading = false            
@@ -609,6 +632,28 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             $scope.loading = false
         }
     }
+    var timer = setInterval(function () {
+        if($scope.arrDone.length == $scope.size && $scope.status !== "DONE"&& $scope.status !== "CANCEL"){
+            clearInterval(timer)
+            console.log("ok");
+            var n = new Noty({
+                layout: 'bottomRight',
+                theme: "relax",
+                type: 'success',
+                text: 'ĐANG CHUYỂN TRẠNG THÁI PHIẾU VỀ HOÀN THÀNH...'
+            }).on("afterShow", function () {
+                firestore.collection("exportCode").doc(id).update({
+                    "status": "DONE"
+                }).then(()=>{
+                    n.close()
+                    $scope.status = "DONE"
+                    $scope.$apply()
+                })
+            }).show()
+        }else{
+            setTimeout(function( ) { clearInterval( timer ); }, 10000);
+        }
+    })
 
 
 }

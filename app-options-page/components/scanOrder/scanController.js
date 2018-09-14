@@ -24,7 +24,7 @@ app.controller("scan-controller", function ($scope, $routeParams) {
         break
     }
 
-    var win = window.open(url, "_self");
+    var win = window.open(url, "_blank");
     win.focus()
   });
   Instascan.Camera.getCameras().then(function (cameras) {

@@ -6,6 +6,22 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
     $scope.loading = true;
     var saleUrl = chrome.extension.getURL("options.html#/");
 
+    var arrStatus = [
+        {
+            original: "NEW",
+            new: "MỚI"
+        },{
+            original: "SHIPPED",
+            new: "ĐÃ GIAO"
+        },{
+            original: "DONE",
+            new: "HOÀN THÀNH"
+        },{
+            original: "CANCEL",
+            new: "ĐÃ HỦY"
+        }
+    ]
+
     $scope.options = {
         // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
@@ -130,9 +146,19 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                 shipper: myData.shipper,
                 time: ctime,
                 size: myData.orders.length,
-                status: myData.status,
                 carrier: myData.carrier
             }
+            var found = arrStatus.some(function (el) {
+                return el.original == myData.status;
+            });
+            if(found){
+                let selectedExpTags = [myData.status];
+                let names = selectedExpTags.map(x => arrStatus.find(y => y.original == x).new)
+                obj.status = names[0]
+            }else{
+                obj.status =  myData.status
+            }
+            
             if (myData.shopeePaid && myData.buyerPaid) {
                 obj.shopeePaid = myData.shopeePaid.toLocaleString()
                 obj.buyerPaid = myData.buyerPaid.toLocaleString()

@@ -11,6 +11,10 @@
   float: right
 }
 
+span.glyphicon {
+  cursor: pointer;
+}
+
 ::-webkit-scrollbar {
   width: 4px;
   background-color: #F5F5F5;
@@ -51,6 +55,28 @@ td span#last:last-child{
   display: flex;
   justify-content: center;
 }
+button#addShippingNo {
+  padding: 5px 14px;
+  border: none;
+  background: #3320cc9c;
+  color: #fff;
+  border-radius: 4px;
+}
+span.timeOfShippingNo {
+  float: right;
+  background: #0000000a;
+  /* color: #fff; */
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+span.weightOfShippingNo {
+  background: #ff7d5f;
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+
 
 body {
   overflow-x: hidden;
@@ -385,7 +411,7 @@ table.has-multi-entry-order>tbody>tr>td{
 span.previewInvoice {
   height: 100%;
   background: #33333324;
-  padding: 6px 50px;
+  padding: 6px 20px;
   border-radius: 4px;
   font-weight: bold;
   cursor: pointer;
@@ -455,8 +481,8 @@ li.productInvoice p.name, li.classifyInvoice p {
     margin: 0 0 -3px;;
     display: inline-block;
 }
-input#invoiceTraceno {
-  width: 50%;
+input#invoiceTraceno,input#invoiceId,input#shipping_fee {
+  width: 30%;
   padding: 4px;
   border: #5cb85c5c solid 1px;
   border-radius: 3px;

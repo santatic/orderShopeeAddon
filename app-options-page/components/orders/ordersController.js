@@ -106,7 +106,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             enableCellEdit: false,
             width: '150',
             field: "nickname",
-            visible: false
+            visible: false,
         }, {
             name: "Dự kiến thu",
             enableCellEdit: false,
