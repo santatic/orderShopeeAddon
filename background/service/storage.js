@@ -5,6 +5,7 @@ app.service('storageFirestore', function ($q) {
     this.exports = []
     this.products = [];
     this.invoices = []
+    this.stocks = []
     
     this.findAll = function (callback) {
         chrome.storage.local.get('data', function (keys) {
@@ -18,6 +19,16 @@ app.service('storageFirestore', function ($q) {
             //     callback(_this.data);
             // }
         });
+    }
+    this.syncStock = function(){
+        chrome.storage.local.set({
+            stocks: this.stocks
+        }, function () {
+            console.log('Stock is stored in Chrome storage');
+            chrome.storage.local.get('stocks', function (keys) {
+                console.log(keys);
+            });
+        }); 
     }
     this.syncSuggests = function(){
         chrome.storage.local.set({
@@ -43,7 +54,7 @@ app.service('storageFirestore', function ($q) {
         chrome.storage.local.set({
             export: this.exports
         }, function () {
-            console.log('Suggests is stored in Chrome storage');
+            console.log('Exports is stored in Chrome storage');
             chrome.storage.local.get('export', function (keys) {
                 console.log(keys);
             });
@@ -60,15 +71,26 @@ app.service('storageFirestore', function ($q) {
         }); 
     }
 
-    this.syncOrders = function () {
+    this.check = false
+
+    this.syncOrders = function () { 
         chrome.storage.local.set({
             data: this.data
         }, function () {
             console.log('Data is stored in Chrome storage');
             chrome.storage.local.get('data', function (keys) {
                 console.log(keys);
+                if (!this.check) {
+                    chrome.notifications.clear('reminder', function(wasCleared){
+                        console.log("closed",wasCleared);
+                        this.check = true
+                    })
+                    
+                  }
             });
-        });       
+        });  
+
     }
+
 
 });

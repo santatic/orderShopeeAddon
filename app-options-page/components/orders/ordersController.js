@@ -12,60 +12,60 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     })
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
-        id: 1,
-        english: "NEW",
-        vietnamese: "đơn mới"
-    },
-    {
-        id: 2,
-        english: "PREPARED",
-        vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-    },
-    {
-        id: 3,
-        english: "UNPREPARED",
-        vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-    },
-    {
-        id: 4,
-        english: "PACKED",
-        vietnamese: "đã đóng gói"
-    },
-    {
-        id: 5,
-        english: "SHIPPED",
-        vietnamese: "đã gửi đi"
-    },
-    {
-        id: 6,
-        english: "DELIVERED",
-        vietnamese: "khách đã nhận"
-    },
-    {
-        id: 7,
-        english: "RETURNING",
-        vietnamese: "đang hoàn hàng"
-    },
-    {
-        id: 8,
-        english: "RETURNED",
-        vietnamese: "đã hoàn về kho"
-    },
-    {
-        id: 9,
-        english: "PAID",
-        vietnamese: "đã thanh toán"
-    },
-    {
-        id: 10,
-        english: "REFUNDED",
-        vietnamese: "đã hoàn tiền"
-    },
-    {
-        id: 11,
-        english: "CANCELED",
-        vietnamese: "đã hủy"
-    },
+            id: 1,
+            english: "NEW",
+            vietnamese: "đơn mới"
+        },
+        {
+            id: 2,
+            english: "PREPARED",
+            vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+        },
+        {
+            id: 3,
+            english: "UNPREPARED",
+            vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+        },
+        {
+            id: 4,
+            english: "PACKED",
+            vietnamese: "đã đóng gói"
+        },
+        {
+            id: 5,
+            english: "SHIPPED",
+            vietnamese: "đã gửi đi"
+        },
+        {
+            id: 6,
+            english: "DELIVERED",
+            vietnamese: "khách đã nhận"
+        },
+        {
+            id: 7,
+            english: "RETURNING",
+            vietnamese: "đang hoàn hàng"
+        },
+        {
+            id: 8,
+            english: "RETURNED",
+            vietnamese: "đã hoàn về kho"
+        },
+        {
+            id: 9,
+            english: "PAID",
+            vietnamese: "đã thanh toán"
+        },
+        {
+            id: 10,
+            english: "REFUNDED",
+            vietnamese: "đã hoàn tiền"
+        },
+        {
+            id: 11,
+            english: "CANCELED",
+            vietnamese: "đã hủy"
+        },
     ]
 
     var statusDef = {
@@ -91,105 +91,104 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         paginationPageSize: 15,
         enableSorting: true,
         columnDefs: [{
-            name: "ID",
-            field: "id",
-            enableCellEdit: false,
-            width: '100',
-            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
-        }, {
-            name: "Số Vận Đơn",
-            enableCellEdit: false,
-            field: "trackno",
-            cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để chỉnh sửa nhanh trạng thái" ng-click = "grid.appScope.doSomething(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp; <a target="_blank" title="{{row.entity.trackno}}" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
-        }, {
-            name: "UserName",
-            enableCellEdit: false,
-            width: '150',
-            field: "nickname",
-            visible: false,
-        }, {
-            name: "Dự kiến thu",
-            enableCellEdit: false,
-            field: "paid",
-            width: '100'
-        }, {
-            name: "Mã đơn hàng",
-            enableCellEdit: false,
-            field: "orderId",
-            cellTooltip: function (row) {
-                return row.entity.orderId;
+                name: "ID",
+                field: "id",
+                enableCellEdit: false,
+                width: '100',
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
+            }, {
+                name: "Số Vận Đơn",
+                enableCellEdit: false,
+                field: "trackno",
+                cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để chỉnh sửa nhanh trạng thái" ng-click = "grid.appScope.doSomething(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp; <a target="_blank" title="{{row.entity.trackno}}" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
+            }, {
+                name: "UserName",
+                enableCellEdit: false,
+                width: '150',
+                field: "nickname",
+            }, {
+                name: "Dự kiến thu",
+                enableCellEdit: false,
+                field: "paid",
+                width: '100'
+            }, {
+                name: "Mã đơn hàng",
+                enableCellEdit: false,
+                field: "orderId",
+                cellTooltip: function (row) {
+                    return row.entity.orderId;
+                },
+                visible: false
+                // width: '100'
+            }, {
+                name: "Nhà Vận Chuyển",
+                width: "150",
+                field: "carrier",
+                filter: {
+                    type: uiGridConstants.filter.SELECT,
+                    selectOptions: [{
+                            value: 1,
+                            label: "Giao Hàng Tiết Kiệm"
+                        },
+                        {
+                            value: 2,
+                            label: "Viettel Post"
+                        },
+                        {
+                            value: 3,
+                            label: "Giao Hàng Nhanh"
+                        },
+                        {
+                            value: 4,
+                            label: "VNPost Tiết Kiệm"
+                        }, {
+                            value: 5,
+                            label: "VNPost Nhanh"
+                        }
+                    ]
+                },
+                cellFilter: 'mapCarrier'
             },
-            visible: false
-            // width: '100'
-        }, {
-            name: "Nhà Vận Chuyển",
-            width: "150",
-            field: "carrier",
-            filter: {
-                type: uiGridConstants.filter.SELECT,
-                selectOptions: [{
-                    value: 1,
-                    label: "Giao Hàng Tiết Kiệm"
-                },
-                {
-                    value: 2,
-                    label: "Viettel Post"
-                },
-                {
-                    value: 3,
-                    label: "Giao Hàng Nhanh"
-                },
-                {
-                    value: 4,
-                    label: "VNPost Tiết Kiệm"
-                }, {
-                    value: 5,
-                    label: "VNPost Nhanh"
+            {
+                name: "Phí Ship",
+                enableCellEdit: false,
+                width: '100',
+                field: "shippingFee",
+                // visible: false
+            }, {
+                name: "Phiếu Xuất",
+                field: "exId",
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
+            },
+            // {
+            //     name: "Phiếu Thu",
+            //     field: "importId",
+            //     cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.importId}}">{{row.entity.importId}}</a></div>'
+            // },
+            {
+                name: "Logistics Shopee",
+                enableCellEdit: false,
+                field: "status",
+                cellTooltip: function (row) {
+                    return row.entity.status;
                 }
-                ]
+            }, {
+                name: "Thời gian của Logistics",
+                enableCellEdit: false,
+                width: '100',
+                field: "updateTime",
+                sort: {
+                    direction: 'asc',
+                    priority: 0
+                },
+                visible: false
             },
-            cellFilter: 'mapCarrier'
-        },
-        {
-            name: "Phí Ship",
-            enableCellEdit: false,
-            width: '100',
-            field: "shippingFee",
-            // visible: false
-        }, {
-            name: "Phiếu Xuất",
-            field: "exId",
-            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
-        },
-        // {
-        //     name: "Phiếu Thu",
-        //     field: "importId",
-        //     cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.importId}}">{{row.entity.importId}}</a></div>'
-        // },
-        {
-            name: "Logistics Shopee",
-            enableCellEdit: false,
-            field: "status",
-            cellTooltip: function (row) {
-                return row.entity.status;
-            }
-        }, {
-            name: "Thời gian của Logistics",
-            enableCellEdit: false,
-            width: '100',
-            field: "updateTime",
-            sort: {
-                direction: 'asc',
-                priority: 0
-            },
-            visible: false
-        },
             statusDef, {
-            name: "Trễ",
-            field: "fromNow",
-            type: "number",
-            width: 60
-        }
+                name: "Trễ",
+                field: "fromNow",
+                type: "number",
+                width: 60
+            }
         ],
         enableFiltering: true,
         showGridFooter: true,
@@ -499,10 +498,17 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     $scope.options.multiSelect = true;
     var now = new Date
     var dataForPro = []
-    chrome.storage.local.get('data', function (keys) {
-        getData(keys.data)
-        dataForPro = keys.data
+
+    chrome.runtime.sendMessage({
+        mission: "ready"
+    }, function (response) {
+        chrome.storage.local.get('data', function (keys) {
+            getData(keys.data)
+            dataForPro = keys.data
+        })
     })
+
+
     chrome.storage.onChanged.addListener(function (changes) {
         getData(changes.data.newValue);
         dataForPro = changes.data.newValue
@@ -522,7 +528,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     return obj.id == val.id;
                 });
 
-                if (!val.exId && val.ownStatus == 1) { } else {
+                if (!val.exId && val.ownStatus == 1) {} else {
                     condi = false
                 }
 
@@ -567,7 +573,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             })
             if (condi) {
                 console.log(products);
-                products.sort(function (a, b) { return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0) })
+                products.sort(function (a, b) {
+                    return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)
+                })
                 products.unshift({
                     imageUrl: "TỔNG",
                     name: selected.length + " ĐƠN, " + products.length + " MẶT HÀNG",
@@ -716,15 +724,31 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         }
     })
 
-
+    $scope.createEx = function (name) {  
+        let names = $scope.arr4.filter(y => y.name == name)
+        console.log(name, names[0].orders);
+        helper.validateExportOrder(names[0].orders)
+    }
 
     function getData(data) {
         var sources = []
         var arrStt = []
+        var arrNPP = []
+        var arr4 = []
         data.forEach(function (doc) {
             const myData = doc
             if (jQuery.inArray(myData.own_status.status, arrStt) == -1) {
                 arrStt.push(myData.own_status.status)
+            }
+
+            if (!myData.exportId && myData.own_status.status == 4) {
+                if (jQuery.inArray(myData.actual_carrier, arrNPP) == -1) {
+                    arrNPP.push(myData.actual_carrier)
+                }
+                arr4.push({
+                    carrier: myData.actual_carrier,
+                    id: myData.id
+                })
             }
 
             if (myData.logistic["logistics-logs"].length > 0) {
@@ -758,6 +782,22 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             }
             sources.push(obj)
         })
+
+        $scope.arr4 = []
+
+        arrNPP.forEach(function (val) {
+            let selectedExpTags = [val];
+            let names = arr4.filter(y => y.carrier == val)
+            console.log(val, names);
+            $scope.arr4.push({
+                name: val,
+                orders: names
+            })
+            $scope.$apply()
+        })
+
+
+
         var arrStatus = []
         arrStt.forEach(function (val) {
             let selectedExpTags = [val];
@@ -843,3 +883,4 @@ function mapGender() {
         }
     }
 };
+

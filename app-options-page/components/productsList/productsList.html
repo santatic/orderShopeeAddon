@@ -190,10 +190,13 @@
                     <option>USD</option>
                 </select>
                 <button ng-click="addShippingNo()" id="addShippingNo"><span class="glyphicon glyphicon-plus"></span> Mã Vận Đơn</button>
+                <p style="    margin-right: 2px;">
+                    <textarea ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="1" id="noteInvoice"></textarea>
+                </p>
                 <p ng-show="shippingNo.length > 0">
                     <ul style="list-style-type: circle;
                     padding-left: 17px;">
-                        <li style="margin-bottom: 5px;" ng-repeat="i in shippingNo">{{i.id}}<span class="timeOfShippingNo">{{i.time | date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span> </li>
+                        <li style="margin-bottom: 5px;" ng-repeat="i in shippingNo">{{i.id}}<span class="timeOfShippingNo">{{i.time | date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span><span title="phí ship" class="ShippingFeeOfShippingNo">{{i.shipping_fee}} (CNY)</span>  </li>
                     </ul>
                 </p>
             </div>
@@ -265,7 +268,15 @@
                         <li style="margin-bottom: 5px;" ng-repeat="i in invoice.shipping_traceId">{{i.id}}<span class="timeOfShippingNo">{{i.time | date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span> </li>
                     </ul>
                     <p class="status"><b>Trạng thái: </b>{{statusInvoice}}</p>
-                    <p><b>Giá: <input type="number" ng-model=sumPaid> </b>({{invoice.currency}})</p>
+                    <div class="totalBefore">
+                        <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{sumPaid - discountPre + shipping_fee}}</span>
+                    </div>
+                    <div class="discount">
+                        <input style="padding-left: 5px;
+                        border: #ddd solid 2px;
+                        border-radius: 2px;"
+                            placeholder="GIẢM GIÁ" type="number" name="" ng-model="discountPre" id="discountPreview">
+                    </div>
                 </div>
                 <div class="itemInvoice">
                     <!-- <div class="row itemInvoicePreview" ng-repeat="item in itemInvoice"></div> -->

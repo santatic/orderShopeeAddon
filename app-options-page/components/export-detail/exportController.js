@@ -205,6 +205,25 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
     });
 
+    $scope.printEx = function () {  
+        $('#haveQR').append('<td id="qrcodeEx" ></td>')
+                $scope.id = id;
+                var qrcode = new QRCode("qrcodeEx", {
+                    width: 100,
+                    height: 100,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                function makeCode() {
+                    qrcode.makeCode(id);
+                }
+                makeCode();
+                $timeout(function () {
+                    window.print();
+                    $('#qrcode').remove()
+                }, 500)
+    }
+
     $scope.options.gridMenuCustomItems = [
         {
             title: "IN PHIẾU XUẤT",
@@ -456,6 +475,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         var ordersInEx
         firestore.collection("exportCode").doc(id.toString()).get().then(function (doc) {
             const data = doc.data()
+            $scope.originLength = data.orders.length
             $scope.id = doc.id
             $scope.shipperName = data.shipper;
             ordersInEx = data.orders
@@ -473,7 +493,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                         break
                 }
             }
-            $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
+            $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY HH:mm");
             $scope.$apply()
             getData(ordersInEx, keys.data)
         })
@@ -514,6 +534,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     // console.log(idOrder, "ko thaays");
                     firestore.collection("orderShopee").doc(idOrder.toString()).get().then(function (docOrder) {
                         data(docOrder.data())
+                    }).then(function(){
+                        $scope.run = true
+                        console.log("from Server");
                     })
                 }
 
@@ -532,7 +555,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                         carrier: myData.actual_carrier,
                         paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                         shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
-                        ownStatus: myData.own_status.status
+                        ownStatus: myData.own_status.status == 11? "11": myData.own_status.status
                     }
                     if (myData.own_status.status == 5) {
                         arrShipped.push(idOrder)
@@ -544,24 +567,16 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     sources.push(obj)
                     $scope.options.data.push(obj)
                     $scope.gridApi.core.refresh();
-                    $scope.size = $scope.options.data.length
+                    $scope.size = $scope.originLength
                     $scope.$apply()
                     arrTraceno.push((obj.trackno))
                     
                 }
             })
             var arrStatus = []
-            arrStt.forEach(function (val) {
-                let selectedExpTags = [val];
-                let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                let obj = {
-                    value: val,
-                    label: names[0]
-                }
-                arrStatus.push(obj)
-            })
+            
 
-            statusDef.filter.selectOptions = arrStatus
+            
             if (arrShipped.length == sources.length) {
                 $('span#shipped').css({
                     "padding": "5px",
@@ -581,53 +596,31 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             $scope.carrier = sources[0].carrier
             $scope.arrTraceno = arrTraceno
             
-            console.log(arrayData.length);
+            // console.log(arrayData.length);
             
             // console.log($scope.arrTraceno);
             // $scope.options.data = $scope.data;
-            $scope.loading = false            
-            sources.forEach(function (row, index) {
-
-                switch (row.ownStatus) {
-                    case "NEW":
-                        row.ownStatus = 1
-                        break
-                    case "PREPARED":
-                        row.ownStatus = 2
-                        break
-                    case "UNPREPARED":
-                        row.ownStatus = 3
-                        break
-                    case "PACKED":
-                        row.ownStatus = 4
-                        break
-                    case "SHIPPED":
-                        row.ownStatus = 5
-                        break
-                    case "DELIVERED":
-                        row.ownStatus = 6
-                        break
-                    case "RETURNING":
-                        row.ownStatus = 7
-                        break
-                    case "RETURNED":
-                        row.ownStatus = 8
-                        break
-                    case "PAID":
-                        row.ownStatus = 9
-                        break
-                    case "REFUNDED":
-                        row.ownStatus = "HT"
-                        break
-                    case "CANCELED":
-                        row.ownStatus = "0"
-                        break
+            $scope.loading = false  
+            // console.log($scope.options.data);  
+            var timer = setInterval(function () {  
+                if($scope.options.data.length == $scope.originLength && $scope.run){
+                    clearInterval(timer)
+                    arrStt.forEach(function (val) {
+                        let selectedExpTags = [val];
+                        let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                        let obj = {
+                            value: val==11? "11":val,
+                            label: names[0]
+                        }
+                        arrStatus.push(obj)
+                    })
+                    statusDef.filter.selectOptions = arrStatus
+                    console.log(statusDef.filter.selectOptions);
+                    console.log($scope.options.data);
+                    
                 }
-                // console.log(row.ownStatus);
-                // var selectedExpTags = [parseInt(value.ownStatus)];
-                // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                // value.own_Status = names[0];
-            })
+            })        
+            
         } else {
             $scope.loading = false
         }
@@ -671,7 +664,7 @@ function mapGender() {
         8: "Đã hoàn về kho",
         9: "Đã thanh toán",
         "HT": "Đã hoàn tiền",
-        "0": "Đã hủy"
+        "11": "Đã hủy"
     };
 
     return function (input) {

@@ -2,7 +2,8 @@
 <div class="printBut" style="display: none;position: fixed;bottom: 0px;left: 0px;z-index: 2147483647;">
     <div class="panel-body noprint">
         <button ng-click="printProduct()" style="font-size: 26px;
-             border-radius: 25px" class="btn btn-primary noprint" id="print">
+             border-radius: 25px" class="btn btn-primary noprint"
+            id="print">
             <span class="glyphicon glyphicon-print"></span>
         </button>
         <form id="imgur">
@@ -15,8 +16,8 @@
 </div>
 <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
 
-<div id="grid1"  ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-cellnav ui-grid-pagination
-    class="grid noprint">
+<div id="grid1" ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-cellnav
+    ui-grid-pagination class="grid noprint">
 </div>
 <div class="modal fade noprint" id="myModal" role="dialog">
     <div class="modal-dialog">
@@ -29,19 +30,23 @@
             <div class="modal-body">
                 <div class="form-group-status singleStatus" id="singleStatus">
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="NEW">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
+                        value="NEW">
                     <b>ĐƠN MỚI</b>
 
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="PACKED">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
+                        value="PACKED">
                     <b>ĐÃ ĐÓNG GÓI</b>
 
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="SHIPPED">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
+                        value="SHIPPED">
                     <b>ĐÃ GỬI ĐI</b>
 
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio" value="DELIVERED">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
+                        value="DELIVERED">
                     <b>KHÁCH ĐÃ NHẬN</b>
 
                     <!-- 
@@ -68,7 +73,7 @@
                     <span ng-show="BulkChangeStatus.length > 0">
                         <input type="checkbox" ng-click="toggle($event)" id="checkall" />
                         <span> Chọn hết</span>
-                        <br/>
+                        <br />
                     </span>
                     <li ng-repeat="i in BulkChangeStatus" id="{{i.id}}" class="success-change">
                         <input type="checkbox" name="scanId" value="{{i.id}}">
@@ -79,7 +84,8 @@
                         margin-right: 10px;
                         margin-top: 3px;
                         color: #ca0f0f;
-                        cursor: pointer;" class="glyphicon glyphicon-remove"></span>
+                        cursor: pointer;"
+                            class="glyphicon glyphicon-remove"></span>
                     </li>
                 </div>
                 <div class="form-group-status" id="bulkStatus">
@@ -90,7 +96,8 @@
 
                         <input type="radio" ng-model="BulkStatusRadio" style="margin: 4px 5px 22px 15px;" value="PACKED">
                         <b>ĐÃ ĐÓNG GÓI</b>
-                        <button ng-click="createExport()" style="margin-left: 26px;margin-bottom: 15px;border: none;padding: 6px;background: #da3725;color: #fff;border-radius: 3px;">TẠO PHIẾU XUẤT</button>
+                        <button ng-click="createExport()" style="margin-left: 26px;margin-bottom: 15px;border: none;padding: 6px;background: #da3725;color: #fff;border-radius: 3px;">TẠO
+                            PHIẾU XUẤT</button>
                     </div>
                 </div>
 
@@ -145,11 +152,11 @@
             <td>{{ item.name }}
                 <br>
                 <b ng-show="item.orders.length > 0">[
-                    <span  ng-repeat="order in item.orders" class="{{order.one}}">
+                    <span ng-repeat="order in item.orders" class="{{order.one}}">
                         {{order.order}}
                         <span ng-show="item.orders.length >1 " style="color:#000">, </span>
-                    </span> 
-                ]</b>
+                    </span>
+                    ]</b>
             </td>
             <td>{{ item.model }}</td>
             <td>{{ item.amount }}</td>
@@ -166,5 +173,20 @@
         </tr>
     </tbody>
 </table>
+<div ng-show="arr4.length > 0" style="display: inline;position: fixed;bottom: 0px;left: 0px;z-index: 999; background: #fff">
+    <div class="panel-header noprint" style="padding:5px 0 0 20px;">
+        ĐÃ ĐÓNG GÓI
+        <span class="pull-right" data-toggle="collapse" data-target=".panel-body.arr4">
+            <<< </span>
+    </div>
+    <div class="panel-body arr4 collapse in"  style="padding: 15px;
+    padding-left: 0px;">
+        <ul style="    padding-left: 20px;" class="noprint">
+            <li style="margin-bottom: 8px;" ng-repeat="item in arr4">{{item.name}}: {{item.orders.length}} đơn <span
+                    style="cursor:pointer" ng-click="createEx(item.name)" class="glyphicon glyphicon-new-window"></span>
+            </li>
+        </ul>
+    </div>
+</div>
 
 <!-- </div> -->

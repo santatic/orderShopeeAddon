@@ -124,60 +124,60 @@ app.directive("fileread", [function () {
         reader.onload = function (evt) {
           $scope.$apply(function () {
             var arrayFilter = [{
-              id: 1,
-              english: "NEW",
-              vietnamese: "đơn mới"
-            },
-            {
-              id: 2,
-              english: "PREPARED",
-              vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-            },
-            {
-              id: 3,
-              english: "UNPREPARED",
-              vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-            },
-            {
-              id: 4,
-              english: "PACKED",
-              vietnamese: "đã đóng gói chờ gửi đi"
-            },
-            {
-              id: 5,
-              english: "SHIPPED",
-              vietnamese: "đã gửi đi"
-            },
-            {
-              id: 6,
-              english: "DELIVERED",
-              vietnamese: "khách đã nhận hàng"
-            },
-            {
-              id: 7,
-              english: "RETURNING",
-              vietnamese: "đang hoàn hàng chưa về đến kho"
-            },
-            {
-              id: 8,
-              english: "RETURNED",
-              vietnamese: "đã hoàn về kho"
-            },
-            {
-              id: 9,
-              english: "PAID",
-              vietnamese: "đã thanh toán"
-            },
-            {
-              id: 10,
-              english: "REFUNDED",
-              vietnamese: "đã hoàn tiền"
-            },
-            {
-              id: 11,
-              english: "CANCELED",
-              vietnamese: "đã hủy"
-            },
+                id: 1,
+                english: "NEW",
+                vietnamese: "đơn mới"
+              },
+              {
+                id: 2,
+                english: "PREPARED",
+                vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+              },
+              {
+                id: 3,
+                english: "UNPREPARED",
+                vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+              },
+              {
+                id: 4,
+                english: "PACKED",
+                vietnamese: "đã đóng gói chờ gửi đi"
+              },
+              {
+                id: 5,
+                english: "SHIPPED",
+                vietnamese: "đã gửi đi"
+              },
+              {
+                id: 6,
+                english: "DELIVERED",
+                vietnamese: "khách đã nhận hàng"
+              },
+              {
+                id: 7,
+                english: "RETURNING",
+                vietnamese: "đang hoàn hàng chưa về đến kho"
+              },
+              {
+                id: 8,
+                english: "RETURNED",
+                vietnamese: "đã hoàn về kho"
+              },
+              {
+                id: 9,
+                english: "PAID",
+                vietnamese: "đã thanh toán"
+              },
+              {
+                id: 10,
+                english: "REFUNDED",
+                vietnamese: "đã hoàn tiền"
+              },
+              {
+                id: 11,
+                english: "CANCELED",
+                vietnamese: "đã hủy"
+              },
             ]
             var data = evt.target.result;
 
@@ -201,27 +201,31 @@ app.directive("fileread", [function () {
                 field: h
               });
             });
+            $scope.opts.columnDefs[5].visible = false
             $scope.opts.columnDefs.push({
               name: "Mã Id",
               field: "orderId",
               cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.orderId}}">{{row.entity.orderId}}</a></div>'
             }, {
-                name: "Mã vận đơn",
-                field: "traceno",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.orderId}}">{{grid.getCellValue(row, col)}}</a></div>'
-              }, {
-                name: "Dự kiến thu",
-                field: "moneyEx"
-              }, {
-                name: "Phí ship",
-                field: "shippingFee"
-              }, {
-                name: "Trợ giá",
-                field: "vc"
-              }, {
-                name: "Đối soát",
-                field: "offset"
-              })
+              name: "Mã vận đơn",
+              field: "traceno",
+              cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.orderId}}">{{grid.getCellValue(row, col)}}</a></div>'
+            }, {
+              name: "Dự kiến thu",
+              field: "moneyEx"
+            }, {
+              name: "Phí ship",
+              field: "shippingFee"
+            }, {
+              name: "Trợ giá",
+              field: "vc"
+            }, {
+              name: "Đối soát",
+              field: "offset"
+            }, {
+              name: "Hoàn tiền",
+              field: "refund"
+            })
 
             var sendOrderno = []
             var totalShopeeMoney = []
@@ -244,6 +248,7 @@ app.directive("fileread", [function () {
 
               (response.moneyEx).forEach(function (val, i) {
                 data[i].moneyEx = val.money;
+                data[i].refund = 0
                 var shopeeMoney = data[i][Object.keys(data[i])[2]];
                 totalShopeeMoney.push(shopeeMoney);
                 if (val.money == "chua co trong Firestore") {
@@ -262,8 +267,30 @@ app.directive("fileread", [function () {
                     data[i].offset = shopeeMoney;
                   } else {
                     $("button.update").attr("disabled", false);
-                    data[i].offset = parseInt(shopeeMoney) - val.money;
+                    if ((parseInt(shopeeMoney) - val.money) < 0) {
+                      var promise2 = new Promise(function (resolve, reject) {
+                        resolve(httpGet("https://banhang.shopee.vn/api/v2/orders/" + val.id, []))
+                      })
+                      promise2.then(function (data2) {
+                        // console.log(val.id, data);
+                        var refund = 0
+                        data2["order-items"].forEach(function (item) {
+                          if (item.status == 4) {
+                            refund = refund + ((item.item_price) * 100 / 100)
+
+                            // console.log(data[i].moneyEx);                         
+                          }
+                        })
+                        data[i].moneyEx = val.money - refund
+                        data[i].offset = parseInt(shopeeMoney) - parseInt(data[i].moneyEx)
+                        data[i].refund = refund
+                        console.log(val.id, data[i].moneyEx, refund)
+                      })
+                    } else {
+                      data[i].offset = parseInt(shopeeMoney) - parseInt(data[i].moneyEx)
+                    }
                   }
+
                   data[i].orderId = val.id;
                   data[i].traceno = val.traceno
 
@@ -411,28 +438,59 @@ app.directive("fileread", [function () {
 
 
               })
+
               $('.updatePay').on('click', function () {
-                $('#loading').text('loading....')
+
                 if ($('#bank').text() == "Chọn Ngân Hàng") {
                   alert("Vui lòng chọn Ngân Hàng")
                 } else {
-                  chrome.runtime.sendMessage({
-                    mission: "updatePayment",
-                    id: arrayId,
-                    date: $('#datepicker').val(),
-                    bank: $('#bank').text(),
-                    sumShopeePaid: sumShopee,
-                    sumBuyerPaid: sumOwn
-                  }, function (response) {
-                    $('#loading').text("")
-                    new Noty({
-                      layout: 'bottomRight',
-                      timeout: 2500,
-                      theme: "relax",
-                      type: 'success',
-                      text: 'Đã cập nhật trạng thái các đơn về "đã thanh toán" và tạo Phiếu thu'
-                    }).show();
-                  })
+                  $('#loading').text('loading....')
+                  var arrEx = []
+                    var dataExToSend = []
+                    chrome.storage.local.get('data', function (obj) {
+                      chrome.storage.local.get('export', function (obj1) {
+                        arrayId.forEach(function (orderId) {
+                          var selectedExpTags = [orderId.id];
+                          var names = selectedExpTags.map(x => obj.data.find(y => y.id == x).exportId)
+                          if (names[0] && jQuery.inArray(names[0], arrEx) == -1) {
+                            arrEx.push(names[0])
+                            var selectedExpTags1 = [names[0]];
+                            var names1 = selectedExpTags1.map(x => obj1.export.find(y => y.id == x).orders)
+                            dataExToSend.push({
+                              exId: names[0],
+                              orders: names1[0]
+                            })
+                          }
+                        })
+                        console.log(dataExToSend);
+                        chrome.runtime.sendMessage({
+                          mission: "updateEx",
+                          data: dataExToSend
+                        }, function (response) {  
+                          console.log(response.exIdRes);
+                        })
+                      })
+                    })
+                  // chrome.runtime.sendMessage({
+                  //   mission: "updatePayment",
+                  //   id: arrayId,
+                  //   date: $('#datepicker').val(),
+                  //   bank: $('#bank').text(),
+                  //   sumShopeePaid: sumShopee,
+                  //   sumBuyerPaid: sumOwn
+                  // }, function (response) {
+                  //   $('#loading').text("")
+                  //   new Noty({
+                  //     layout: 'bottomRight',
+                  //     timeout: 2500,
+                  //     theme: "relax",
+                  //     type: 'success',
+                  //     text: 'Đã cập nhật trạng thái các đơn về "đã thanh toán" và tạo Phiếu thu'
+                  //   }).show();
+
+                    
+
+                  // })
                 }
               })
               // $scope.gridApi.core.refresh()

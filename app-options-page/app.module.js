@@ -95,6 +95,7 @@ app.service('helper', function () {
           carrier = data.actual_carrier
           arrExportId.push(val.id)
         } else {
+          n.close()
           console.log("no" + data.actual_carrier);
           arrElse.push(val.id)
           new Noty({

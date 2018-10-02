@@ -665,32 +665,42 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     $("div#previewCopy").html("")
                     $scope.shippingNo = []
                     $scope.sumPaidCopy = 0
+                    $scope.discount = 0
+                    $scope.note = ""
+                    $scope.discountPre = 0
+                    $scope.shipping_fee = 0
+                    $scope.sumPaid = 0
                     // $('ul#listClassify').html("")
                 })
                 $scope.shippingNo = []
 
                 $scope.addShippingNo = function () {
-                    
+
                     var shippingNo = prompt("Nhập Mã Vận Đơn");
                     if (shippingNo != null) {
                         var weightOfShippingNo = prompt("Nhập cân nặng (Kg)")
-                        if(weightOfShippingNo !== null){
-                            var found = $scope.shippingNo.some(function (el) {
-                                return el.id == shippingNo.toString();
-                            });
-                            if (found) {
-                                alert("Mã vận đơn này đã tồn tại")
-                            }else{
-                                var obj = {
-                                    id: shippingNo.toString(),
-                                    weight: weightOfShippingNo,
-                                    time: new Date()
+                        if (weightOfShippingNo !== null) {
+                            var shippingFeeOfShippingNo = prompt("Nhập Phí Vận Chuyển (CNY)")
+                            if (shippingFeeOfShippingNo !== null) {
+                                var found = $scope.shippingNo.some(function (el) {
+                                    return el.id == shippingNo.toString();
+                                });
+                                if (found) {
+                                    alert("Mã vận đơn này đã tồn tại")
+                                } else {
+                                    var obj = {
+                                        id: shippingNo.toString(),
+                                        weight: weightOfShippingNo,
+                                        time: new Date(),
+                                        shipping_fee: shippingFeeOfShippingNo.toString()
+                                    }
+                                    $scope.shippingNo.push(JSON.parse(angular.toJson(obj)))
+                                    console.log($scope.shippingNo);
                                 }
-                                $scope.shippingNo.push(JSON.parse(angular.toJson(obj)))
-                                console.log($scope.shippingNo);
                             }
+                            
                         }
-                        
+
                     }
                 }
 
@@ -762,6 +772,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                     obj.classify[indexClassify].quantity = quantity
                                     let objModel = new Object()
                                     objModel = obj.classify[indexClassify]
+                                    objModel.actual_quantity = quantity
                                     objModel.productId = $scope.idProduct
                                     objModel.price = $scope.priceClassify
                                     objModel.distributer = LinkedClassify.id
@@ -824,7 +835,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     }
                     $scope.previewInv = false
                     $scope.previewInvoice = function () {
-                        if ($scope.invoiceId !== "" && $scope.shipping_fee !== "" && check) {
+                        if ($scope.invoiceId !== "" && $scope.shipping_fee !== "") {
                             if (check) {
 
                                 var invoiceId = (new Date()).getTime().toString()
@@ -832,7 +843,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                 var invoice = new Object()
                                 invoice.shipping_traceId = JSON.parse(angular.toJson($scope.shippingNo))
                                 invoice.invoiceId = $scope.invoiceId.toString()
-                                invoice.shipping_fee = $scope.shipping_fee
+                                invoice.shipping_fee = $scope.shipping_fee? $scope.shipping_fee: "0"
                                 invoice.currency = $('select#selectCurrence').val().toString()
                                 invoice.id = invoiceId
                                 invoice.status = {
@@ -861,8 +872,10 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                     })
                                 })
                                 $scope.saveInvoice = function () {
+                                    invoice.voucher_price = $scope.discountPre ? $scope.discountPre : "0"
                                     invoice.sumPaid = $scope.sumPaid
-                                    invoice.vnd = ""
+                                    invoice.currency_rate = 0
+                                    invoice.note = $scope.note? $scope.note: ""
                                     console.log(invoice);
                                     firestore.collection("invoiceBuy").doc(invoiceId).set(invoice)
                                         .then(() => {
@@ -927,31 +940,44 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                             var products = []
                             $('table.has-multi-entry-order tr').each(function () {
                                 $this = $(this)
+                                
                                 var disId = $(this).find('td.s1 a').attr("href")
                                 disId = disId.split('offer/').pop().split('.html').shift();
-                                var classify = $(this).find('span.spec-item.spec-item-last.sku-item').text()
+                                var classify = $(this).find('div.trade-spec').text()                                
+                                classify = classify? classify: disId
+                                
                                 $scope.sumPaidCopy = $scope.sumPaidCopy + ($(this).find('td.s3 span').text() * parseInt($(this).find('td.s4').text()))
                                 $scope.$apply()
                                 if (arrData.length > 0) {
                                     $scope.highlight = false
-                                    console.log(disId, classify);
+                                    // console.log(disId, classify);
                                     arrData.every(obj => {
-                                        console.log("loop1", obj);
+                                        // console.log("loop1", obj);
                                         var found = obj.linked_classify.forEach(function (el, index) {
-                                            console.log("loop2", el);
-                                            if (el.id == disId.toString() && el.skuName == classify.toString()) {
-
-                                                let linked_classify = obj['linked_classify'].find(o => o.skuName == classify);
-                                                console.log(index, obj.classify)
+                                            // console.log("loop2", el);
+                                            console.log(el.id,disId.toString(), el.skuName.replace(/\s/g,'') , classify.replace(/\s/g,'').toString());
+                                            if (el.id == disId.toString() && el.skuName.replace(/\s/g,'') == classify.replace(/\s/g,'').toString()) {
+                                                
+                                                let linked_classify = obj['linked_classify'].find(o => o.skuName.replace(/\s/g,'') == classify.replace(/\s/g,''));
+                                                // console.log(index, linked_classify)
                                                 $this.find('a.productName').text(obj.productName)
                                                 var selectedExpTags = [linked_classify.original_sku];
                                                 var names = selectedExpTags.map(x => obj.classify.find(y => y.original_sku == x).name)
                                                 console.log(names[0]);
-                                                $this.find('div.trade-spec').html("<b class='dontHighlight'>[ " + names[0] + " ]</b> ")
+                                                var tradespecdiv = $this.find('div.trade-spec')
+                                                console.log(tradespecdiv.length);
+                                                if(tradespecdiv.length > 0){
+                                                    tradespecdiv.html("<b class='dontHighlight'>[ " + names[0] + " ]</b> ")
+                                                }else{
+                                                    $this.find('td.s2 .c').prepend('<div class="trade-spec" style="padding-top: 0px; color: rgb(136, 136, 136);"><b class="dontHighlight">[ ' + names[0] + ']</b> </div>')
+                                                    console.log("type1");
+                                                }
+                                                
                                                 let objModel = obj['classify'].find(o => o.original_sku == linked_classify.original_sku);
                                                 objModel.distributer = disId.toString()
                                                 objModel.price = $this.find('td.s3 div').text()
                                                 objModel.quantity = $this.find('td.s4 div').text().toString()
+                                                objModel.actual_quantity = $this.find('td.s4 div').text().toString()
                                                 objModel.productId = obj.id
                                                 models.push(objModel)
                                                 var found = products.some(function (el) {
@@ -984,12 +1010,12 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                 } else {
                                     var invoiceId = $('input#invoiceId').val()
                                     var shipping_fee = $('input#shipping_fee').val()
-                                    if ( invoiceId && shipping_fee) {
+                                    if (invoiceId ) {
                                         // alert($scope.sumPaidCopy)
                                         var invoiceCopy = new Object()
                                         invoiceCopy.shipping_traceId = JSON.parse(angular.toJson($scope.shippingNo))
                                         invoiceCopy.invoiceId = invoiceId
-                                        invoiceCopy.shipping_fee = shipping_fee
+                                        invoiceCopy.shipping_fee = shipping_fee == "" ? "0":shipping_fee 
                                         invoiceCopy.currency = $('select#selectCurrence').val().toString(),
                                             invoiceCopy.status = {
                                                 status: 1,
@@ -999,8 +1025,10 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                         invoiceCopy.models = models
                                         invoiceCopy.products = products
                                         invoiceCopy.create_at = new Date()
-                                        invoiceCopy.sumPaid = $('span#sumPaidCopy').text()
+                                        invoiceCopy.sumPaid = $scope.sumPaidCopy
                                         invoiceCopy.vnd = ""
+                                        invoiceCopy.note = $scope.note? $scope.note : ""
+                                        invoiceCopy.voucher_price = $scope.discount? $scope.discount : "0"
                                         firestore.collection("invoiceBuy").doc(invoiceCopy.id).set(invoiceCopy)
                                             .then(() => {
                                                 $("#addInvoiceSelected").modal('hide')
@@ -1014,11 +1042,24 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                             })
                                         console.log(invoiceCopy);
                                     } else {
-                                        alert("Vui lòng nhập mã vận đơn và mã đơn!")
+                                        alert("Vui lòng nhập mã đơn!")
                                     }
 
                                 }
                             }
+                        }
+                        if($("input#invoiceId").is(":focus")){
+                            setTimeout(function (){                                  
+                                
+                                var found = arrInvoice.some(function (el) {
+                                    return el.invoiceId == $scope.invoiceId
+                                });
+                                if(found){
+                                    alert("MÃ ĐƠN NÀY ĐÃ TỒN TẠI");
+                                    $scope.invoiceId = ""
+                                }
+                            },500)
+                            
                         }
 
                     });
@@ -1034,6 +1075,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
 
     $scope.options.multiSelect = true;
     var arrData
+    var arrInvoice
     chrome.storage.local.get('products', function (keys) {
         getProducts(keys.products)
         arrData = keys.products
@@ -1044,6 +1086,13 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
         arrData = changes.products.newValue
     })
 
+    chrome.storage.local.get('invoices', function (keys) {
+        arrInvoice = keys.invoices
+    })
+    
+    chrome.storage.onChanged.addListener(function (changes) {
+        arrInvoice = changes.invoices.newValue
+    })
 
     function getProducts(arr) {
         var sources = []

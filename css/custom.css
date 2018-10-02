@@ -6,7 +6,8 @@
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: #F5F5F5;
 }
-#qrcodeEx img{
+
+#qrcodeEx img {
   width: unset !important;
   float: right
 }
@@ -27,21 +28,27 @@ span.glyphicon {
 input[type=radio] {
   cursor: pointer;
 }
-td span#last:last-child{
+
+td span#last:last-child {
   display: none
 }
+
 .rowPrint {
   content: "";
   display: table;
   clear: both;
 }
+
 .rowPrint ul:nth-child(2n+1) {
   border-right: #c6c5c5 dashed 2px
 }
-.rowPrint ul:nth-child(2n){
+
+.rowPrint ul:nth-child(2n) {
   padding-left: 15px !important
 }
-.rowPrint ul:nth-child(1),.rowPrint ul:nth-child(2){
+
+.rowPrint ul:nth-child(1),
+.rowPrint ul:nth-child(2) {
   margin-top: 15px
 }
 
@@ -55,6 +62,7 @@ td span#last:last-child{
   display: flex;
   justify-content: center;
 }
+
 button#addShippingNo {
   padding: 5px 14px;
   border: none;
@@ -62,6 +70,7 @@ button#addShippingNo {
   color: #fff;
   border-radius: 4px;
 }
+
 span.timeOfShippingNo {
   float: right;
   background: #0000000a;
@@ -69,6 +78,7 @@ span.timeOfShippingNo {
   padding: 1px 5px;
   border-radius: 4px;
 }
+
 span.weightOfShippingNo {
   background: #ff7d5f;
   color: #fff;
@@ -121,9 +131,11 @@ ul.list-group {
   a[href]:after {
     content: none !important;
   }
+
   .noprint {
     display: none
   }
+
   .print {
     display: block;
   }
@@ -263,23 +275,29 @@ input:checked+.slider:before {
   box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);
   transition: all 0.3s ease;
 }
+
 td.s1 {
   width: 94px;
 }
+
 td.s2 {
   width: 100%;
 }
-div.c{
+
+div.c {
   margin-top: 8px
 }
-.general div{
+
+.general div {
   margin-bottom: 10px
 }
+
 table {
   background-color: #f7f7f7;
   transition: all 0.3s ease;
   /* box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34); */
 }
+
 input#target {
   width: 100%;
   margin: 10px 0;
@@ -371,17 +389,27 @@ table:hover {
   transform: rotate(45deg);
 }
 
-table.has-multi-entry-order tr{
+table.has-multi-entry-order tr {
   background: #ea16161a
 }
-.ui-grid-row:nth-child(odd):hover .ui-grid-cell{background:#d9edf7;  -webkit-transition: .4s;
-  transition: .4s;}
-.ui-grid-row:nth-child(even):hover .ui-grid-cell{background:#d9edf7;  -webkit-transition: .4s;
-  transition: .4s;}
-table.has-multi-entry-order>tbody>tr>td{
+
+.ui-grid-row:nth-child(odd):hover .ui-grid-cell {
+  background: #d9edf7;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.ui-grid-row:nth-child(even):hover .ui-grid-cell {
+  background: #d9edf7;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+table.has-multi-entry-order>tbody>tr>td {
   border: 2px solid #ffffff;
 }
-.ui-grid-row:nth-child .ui-grid-cell{
+
+.ui-grid-row:nth-child .ui-grid-cell {
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -390,24 +418,30 @@ table.has-multi-entry-order>tbody>tr>td{
   border: none
 }
 
-.imgageRight, .imgClassify, .nameRight {
+.imgageRight,
+.imgClassify,
+.nameRight {
   float: left;
   margin: 5px 5px 5px 70px;
 }
 
-.imgageLeft, .nameLeft {
+.imgageLeft,
+.nameLeft {
   float: left;
   margin: 5px 5px 5px 30px;
 }
+
 #addInvoice .col-md-6 {
   padding: 15px;
   border-left: #e5e5e5 solid 1px;
   border-right: #e5e5e5 solid 1px;
   border-bottom: none;
 }
+
 .priceClassify {
   margin-bottom: 10px;
 }
+
 span.previewInvoice {
   height: 100%;
   background: #33333324;
@@ -416,6 +450,7 @@ span.previewInvoice {
   font-weight: bold;
   cursor: pointer;
 }
+
 li.classifyInvoice input[type="number"] {
   float: right;
   width: 20%;
@@ -423,13 +458,15 @@ li.classifyInvoice input[type="number"] {
   height: 30px;
   border: #f7f7f7 solid 2px;
 }
-.priceClassify select{
+
+.priceClassify select {
   width: 38%;
   display: inline-block;
   padding: 0 10px;
   height: 27px;
 }
-.priceClassify input{
+
+.priceClassify input {
   width: 60%;
   /* display: inline-block; */
   padding: 3px 8px;
@@ -437,18 +474,21 @@ li.classifyInvoice input[type="number"] {
   border-radius: 3px;
   height: 27px;
 }
-#selectCurrence{
-    width: 20%;
-    display: inline-block;
-    height: 30px;
-    padding: 0 25px;
-    border: #085a9e4f solid 1px;
+
+#selectCurrence {
+  width: 20%;
+  display: inline-block;
+  height: 30px;
+  padding: 0 25px;
+  border: #085a9e4f solid 1px;
 }
+
 li.clicked {
   background: #1c6ae2cc !important;
   color: #fff !important;
-  
+
 }
+
 li.classifyInvoice {
   list-style-type: none;
   margin: 7px 0;
@@ -456,6 +496,7 @@ li.classifyInvoice {
   border: #eee solid 1px;
   border-radius: 4px;
 }
+
 li.productInvoice {
   list-style-type: none;
   background: #f3f3f3;
@@ -465,7 +506,8 @@ li.productInvoice {
   border-radius: 3px;
   cursor: pointer;
 }
-button.saveClassify{
+
+button.saveClassify {
   float: right;
   border: none;
   border-radius: 4px;
@@ -473,49 +515,66 @@ button.saveClassify{
   background: #ff5c0c;
   font-weight: bold;
 }
-li.productInvoice p.name, li.classifyInvoice p {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 30ch;
-    margin: 0 0 -3px;;
-    display: inline-block;
+
+li.productInvoice p.name,
+li.classifyInvoice p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 30ch;
+  margin: 0 0 -3px;
+  ;
+  display: inline-block;
 }
-input#invoiceTraceno,input#invoiceId,input#shipping_fee {
+
+input#invoiceTraceno,
+input#invoiceId,
+input#shipping_fee {
   width: 30%;
   padding: 4px;
   border: #5cb85c5c solid 1px;
   border-radius: 3px;
 }
-.imgageLeft, .imgageRight {
+
+.imgageLeft,
+.imgageRight {
   width: 45px;
   border: solid 1px #ccc;
 }
+
 span.ui-grid-header-cell-label {
   text-transform: uppercase;
 }
-.popover.awesome-popover-class{
+
+.popover.awesome-popover-class {
   max-width: 200px;
   margin-left: 100px;
-    display: block;/* Max Width of the popover (depending on the container!) */
+  display: block;
+  /* Max Width of the popover (depending on the container!) */
 }
+
 .popover.preview-classify {
   display: block !important;
   margin-left: -10px;
 }
+
 .popover.preview-dis {
   display: block !important;
   margin-left: -55px;
 }
-.popover{
+
+.popover {
   max-width: 400px;
 }
-span.only{
+
+span.only {
   color: blue !important
 }
-table.products span{
-  color:rgb(255, 87, 34)
+
+table.products span {
+  color: rgb(255, 87, 34)
 }
+
 input#testScan {
   padding: 5px;
   width: 100%;
@@ -523,12 +582,14 @@ input#testScan {
   margin-bottom: 10px;
   border-radius: 3px;
 }
+
 li.success-change.ng-scope {
   margin-bottom: 10px;
   padding: 6px 1px;
   background: #ddd;
 }
-span.itemLinked{
+
+span.itemLinked {
   color: #fff;
   padding: 5px 10px;
   border-radius: 25px;
@@ -537,20 +598,25 @@ span.itemLinked{
   font-family: quicksand;
   display: inline-block
 }
-input#Disname, input#Disid {
+
+input#Disname,
+input#Disid {
   width: 100%;
   margin-bottom: 8px;
   padding: 6px;
   border: #ddd solid 2px;
   border-radius: 4px;
 }
+
 .listDis {
   list-style-type: none;
   padding: 0 22px;
 }
-.listDis li{
+
+.listDis li {
   margin-bottom: 10px;
 }
+
 button.removeDis {
   padding: 10px 14px 11px 15px;
   border: #f3f3f3 solid 1px;
@@ -560,6 +626,7 @@ button.removeDis {
   border-radius: 4px;
   background: #eeec;
 }
+
 .listDis input[type="text"] {
   padding: 10px;
   font-size: 17px;
@@ -567,18 +634,21 @@ button.removeDis {
   border-radius: 3px;
   background: #f3f3f3;
 }
+
 button.addDis {
   padding: 9px 15px;
-    border: none;
-    border-radius: 25px;
-    color: #fff;
-    background: #d008089e;
+  border: none;
+  border-radius: 25px;
+  color: #fff;
+  background: #d008089e;
 }
+
 li.addClassify {
   list-style-type: none;
   margin-bottom: 25px;
   padding: 0px 20px;
 }
+
 input#addClassifyName {
   padding: 9px;
   width: 70%;
@@ -586,6 +656,7 @@ input#addClassifyName {
   border-radius: 3px;
   text-transform: uppercase
 }
+
 li.addClassify button {
   padding: 9px 12px;
   background: #eee;
@@ -596,22 +667,27 @@ li.classifyItem {
   list-style-type: none;
   margin: 13px 0;
 }
+
 li.classifyItem input[type="number"] {
   width: 15%;
   font-size: 15px;
 }
-li.classifyItem input[type="text"],li.classifyItem input[type="number"] {
+
+li.classifyItem input[type="text"],
+li.classifyItem input[type="number"] {
   padding: 13px 0 15px 18px;
-    border: #4cae4c5e solid 1px;
-    background: #f5f5f58f;
-    border-radius: 4px;
-    margin-left: 11px;
-    text-transform: uppercase;
+  border: #4cae4c5e solid 1px;
+  background: #f5f5f58f;
+  border-radius: 4px;
+  margin-left: 11px;
+  text-transform: uppercase;
 }
-ul#listClassify{
+
+ul#listClassify {
   padding-left: 20px;
   padding-right: 20px;
 }
+
 button.removeClassify {
   padding: 10px 17px 16px 17px;
   border: #ccc solid 1px;
@@ -626,8 +702,16 @@ button.removeClassify {
   background-color: #ffffff;
   margin: 100px auto;
   padding: 40px;
-  min-width: 300px;  
+  min-width: 300px;
   border-radius: 4px;
+}
+.result div {
+  margin: 10px;
+}
+
+.result > ul > div> span {
+  background: #ddd;
+  padding: 3px 5px;
 }
 
 #regForm button {
@@ -636,29 +720,41 @@ button.removeClassify {
   padding: 5px 9px;
   margin-right: 5px;
 }
+
+#findMVDarea {
+  width: 100%;
+  padding: 5px;
+  border: #337ab7 solid 1px;
+  border-radius: 2px;
+}
+
 button#Sku {
   padding: 12px 15px;
   font-size: 17px;
 }
-.list-sku, .list-sku .list-group-item{
+
+.list-sku,
+.list-sku .list-group-item {
   padding-left: 0px;
   padding-right: 0px
 }
+
 .list-sku li.list-group-item {
   padding-bottom: 0px;
 }
 
-.list-sku{
+.list-sku {
   margin-bottom: 20px
 }
 
-#imageUrl{
-    display: block;
-    width: 100%;
-    padding-left: 5px;
-    border: 1px solid #3333333d;
-    border-radius: 4px;
+#imageUrl {
+  display: block;
+  width: 100%;
+  padding-left: 5px;
+  border: 1px solid #3333333d;
+  border-radius: 4px;
 }
+
 img.imgPreview {
   border: 1px solid #d4d4d4;
   margin: 4px;
@@ -691,7 +787,7 @@ img.imgPreview {
   width: 15px;
   margin: 0 2px;
   background-color: #bbbbbb;
-  border: none; 
+  border: none;
   border-radius: 50%;
   display: inline-block;
   opacity: 0.5;
@@ -702,21 +798,57 @@ img.imgPreview {
   opacity: 1;
 }
 
+textarea#noteInvoice {
+  margin: 15px 1px 15px 0px;
+  border: 1px solid rgb(247, 178, 178);
+  height: 35px;
+  width: 566px;
+}
+
 /* Mark the steps that are finished and valid: */
 .step.finish {
   background-color: #4CAF50;
 }
 
-input[name="quantityItem"],input[name="priceItem"]{
+button#invoiceUpdate {
+  padding: 5px 14px;
+  border: none;
+  background: #0dc11c;
+  color: #fff;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+
+.invoiceHeader input {
+  padding: 2px 5px;
+  width: 10%;
+  border-radius: 3px;
+  border: #8276e0 solid 1px;
+}
+
+span.ShippingFeeOfShippingNo.ng-binding {
+  background: #299cd6;
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+input[name="quantityItem"],
+input[name="priceItem"],
+input[name="sumItem"] {
   padding: 0 5px;
   width: 100%;
   border: none;
   background: #0000;
 }
-.full{
+
+.full {
   background: #4CAF50;
   color: #fff
 }
-option{
+
+option {
   cursor: pointer;
 }

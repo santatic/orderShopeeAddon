@@ -70,10 +70,19 @@ app.controller("1688Ctrl", ['$scope', 'moment',
 
         })
 
-        $('[data-sku-config]').each(function () {
-            var skuName = JSON.parse($(this).attr('data-sku-config')).skuName
-            $(this).prepend('<input type="checkbox" checked class="checkclassify" name="classify" value="' + skuName + '">')
-        })
+        $checkType3 = false
+
+        if($('[data-sku-config]').length > 0){
+            $('[data-sku-config]').each(function () {
+                var skuName = JSON.parse($(this).attr('data-sku-config')).skuName
+                $(this).prepend('<input type="checkbox" style="display:none" checked class="checkclassify" name="classify" value="' + skuName + '">')
+            })
+        }else{
+            $('.obj-amount div.d-content').prepend('<input type="checkbox" checked class="checkclassify" style="display:none" name="classify" value="' + id1688 + '">')
+            $checkType3 = true
+        }
+
+        
 
         $("input.checkclassify").click(function () {
             console.log("click");
@@ -101,15 +110,35 @@ app.controller("1688Ctrl", ['$scope', 'moment',
         $scope.addDisNew = function () {
 
             var arrayClassifyNew = []
-            $("input[name='classify']:checked").each(function () {
-                var img = $(this).parent().find("img").attr('src')
-                img = img ? img : "https://i.imgur.com/NWUJZb1.png"
-                arrayClassifyNew.push({
-                    original_name: $(this).val(),
-                    originalImageURL: img
+            var $checkType2 = $('div.d-content > div.obj-leading')
+            
+            if($checkType2.length > 0){
+                console.log("loại 2");
+                var leadingHeader = $checkType2.find('.obj-header').text()
+                var leadingSku = $('div.d-content > div.obj-sku').find('.obj-header').text()
+                $checkType2.find('ul.list-leading li').each(function () {  
+                    var img = $(this).find('img').attr('src')
+                    img = img ? img : "https://i.imgur.com/NWUJZb1.png"
+                    var original_nameLeading = JSON.parse($(this).find('div.unit-detail-spec-operator').attr('data-unit-config')).name
+                    $("input[name='classify']:checked").each(function () {
+                        arrayClassifyNew.push({
+                            original_name: (leadingHeader + ":" + original_nameLeading).replace(/\s/g,'') + "; " + (leadingSku + ":"+ $(this).val()).replace(/\s/g,''),
+                            originalImageURL: img
+                        })
+                    })
                 })
-
-            })
+            }else{
+                $("input[name='classify']:checked").each(function () {
+                    var img = $(this).parent().find("img").attr('src')
+                    img = img ? img : "https://i.imgur.com/NWUJZb1.png"
+                    arrayClassifyNew.push({
+                        original_name: $(this).val(),
+                        originalImageURL: img
+                    })
+    
+                })
+            }
+            
             $scope.preImg = $('a.box-img img').attr('src')
             $scope.arrayClassifyNew = arrayClassifyNew;
             $('#addDistributorToNew').modal()
@@ -129,12 +158,15 @@ app.controller("1688Ctrl", ['$scope', 'moment',
                         name: $(this).find('input').val().toUpperCase(),
                         original_sku: (date.getTime() + i + 1).toString(),
                     })
-                    linked_classify.push({
+                    var obj = {
                         id: id1688.toString(),
                         name: (location.hostname).toString(),
                         original_sku: (date.getTime() + i + 1).toString(),
-                        skuName: $("input[name='classify']:checked").parents('div.obj-sku').find('div.obj-header span.obj-title').text() + ":" + $(this).find('span#originalSkuName').text()
-                    })
+                        skuName: $checkType2.length > 0 ? $(this).find('span#originalSkuName').text():$("input[name='classify']:checked").parents('div.obj-sku').find('div.obj-header span.obj-title').text() + ":" + $(this).find('span#originalSkuName').text()
+                    }
+                    obj.skuName =  $checkType3 ? id1688.toString() : obj.skuName
+                    linked_classify.push(obj)
+                     
                 })
                 if ($('input#newName').val() !== "") {
                     console.log(classify);
