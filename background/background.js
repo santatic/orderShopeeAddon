@@ -230,7 +230,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         }, function (reminder) {
           console.log("created notification");
         })
-        firestore.collection("orderShopee").where("own_status.status", "<=", 6)
+          firestore.collection("orderShopee").where("own_status.status", "<=", 6)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
@@ -513,13 +513,51 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           updateEx(request, sendResponse)
           return true
           break
+        case "updateExFromHome":
+          updateExFromHome(request, sendResponse)
+          return true
+          break
       }
     });
 
+  function updateExFromHome(response, sendResponse) {
+    var count = 0
+    var batch = firestore.batch()
+    chrome.storage.local.get('export', function (keys) {
+      response.exs.forEach(function (ex, index1) {
+        var selectedExpTags = [ex];
+        var names = selectedExpTags.map(x => keys.export.find(y => y.id == x).orders)
+        var okey = []
+        names[0].forEach(function (order, index2) {
+          firestore.collection("orderShopee").doc(order.toString()).get()
+            .then(function (doc) {
+              const data = doc.data()
+              var status = data.own_status.status
+              if (status == 5 || status == 11) {
+                okey.push(order)
+              }
+              if (okey.length == names[0].length) {
+                console.log(ex, names[0]);
+                var docRef = firestore.collection("exportCode").doc(ex)
+                batch.update(docRef, {
+                  "status": "SHIPPED"
+                })    
+                count = count + 1            
+              }
+              if((index1 + 1) == response.exs.length && (index2 + 1)== names[0].length){
+                batch.commit().then(() => {
+                  sendResponse()
+                  alert("ĐÃ CHUYỂN " + count + " PHIẾU XUẤT VỀ ĐÃ GIAO")                  
+                })
+              }
+            })
+        })
+      });
+    })
+  }
+
   function updateEx(response, sendResponse) {
     var dataRes = []
-    var count
-    var check = true
     response.data.forEach(function (item, index1) {
       var okey = []
 
@@ -527,10 +565,6 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         // console.log(item.exId,orId);
         firestore.collection("orderShopee").doc(orId.toString()).get()
           .then(function (doc) {
-            if (check) {
-              count = 0;
-              check = false
-            }
             const data = doc.data()
             var status = data.own_status.status
             if (status == 9 || status == 11 || status == 8) {
@@ -640,6 +674,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   function updateLogFromContent(response, sendResponse) {
     console.log(response.updateLogShopee);
     var check = []
+    var arrExId = []
     var batch = firestore.batch()
 
     $.each(response.updateLogShopee, function (i, val) {
@@ -702,6 +737,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       if (check.length == (response.idsDaGiao.length + response.updateLogShopee.length)) {
         clearInterval(timer)
         batch.commit().then(function () {
+
           sendResponse()
         });
       }
@@ -735,7 +771,8 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         obj = {
           id: doc.id,
           logistics: data.logistic['logistics-logs'].length > 0 ? data.logistic['logistics-logs'][0].description : "",
-          logistics_status: data.logistics_status
+          logistics_status: data.logistics_status,
+          exId: data.exportId ? data.exportId : ""
         }
         logistics.push(obj)
       })

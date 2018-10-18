@@ -2,92 +2,47 @@
     ui-grid-row-edit class="grid"></div>
 </div>
 <div class="modal fade" id="showInvoice" role="dialog">
-    <div class="modal-dialog" style="width:fit-content;max-width: 800px;">
+    <div class="modal-dialog" style="width:1200px">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header invoiceHeader">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <button ng-click="addShippingNo()" id="addShippingNo"><span class="glyphicon glyphicon-plus"></span> Mã
+                <button ng-click="addShippingNo()" id="addShippingNo"><span class="glyphicon glyphicon-plus"></span>
                     Vận Đơn</button>
-                <span>Tiền hàng: </span>
-                <input type="number" name="" id="" ng-model="sumPaid" ng-value="sumPaid" disabled> + ship:
+                <span>Hàng: </span>
+                <input type="number" name="" id="" ng-model="sumPaid" ng-value="sumPaid" disabled> + Ship
                 <input type="number" name="" id="" ng-model="shipping_fee" ng-value="shipping_fee"> -
                 <input type="number" name="" id="" ng-model="voucher" ng-value="voucher"> =
-                {{(sumPaid + shipping_fee - voucher)|number}} &yen; = {{(currency_rate*(sumPaid + shipping_fee -
-                voucher))|number}} &#8363;
+                {{(sumPaid + shipping_fee - voucher)|number:2}}&yen; * {{currency_rate}} = {{(currency_rate*(sumPaid + shipping_fee -
+                voucher))|number:0}}&#8363;
+
                 <button type="button" ng-click="updateDetail()" class="btn btn-success" id="invoiceUpdate" style="float: right;">UPDATE</button>
-                <!-- <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5> -->
+                <select ng-show="status !== 8" class="form-control" name="" id="selectStatus">
+                    <!-- <option></option> -->
+                    <!-- <option value="{{status}}">{{statusName}}</option> -->
+                    <option ng-repeat="i in arrayStatus" value="{{i.id}}" ng-class="{'full': i.id == 8}">{{i.name}}</option>
+                </select><!-- <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5> -->
             </div>
             <div class="modal-body">
-                <div class="itemInvoice">
-                    <ul style="list-style-type: circle;
-                        padding-left: 17px;">
-                        <li ng-mouseenter="options=true" ng-mouseleave="options=false" style="margin-bottom: 5px;"
-                            ng-repeat="i in traceNo" id="{{i.id}}">{{i.id}}<span class="timeOfShippingNo">{{i.time |
-                                date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span>
-                            <span title="phí ship" class="ShippingFeeOfShippingNo">{{i.shipping_fee}} (&yen;)</span>
-                            <span ng-show="options" ng-click="editWeight($event)" class="glyphicon glyphicon-pencil"></span>
-                        </li>
-                    </ul>
-                    <select ng-show="status !== 8" style="margin-bottom: 15px;" class="form-control" name="" id="selectStatus">
-                        <!-- <option></option> -->
-                        <!-- <option value="{{status}}">{{statusName}}</option> -->
-                        <option ng-repeat="i in arrayStatus" value="{{i.id}}" ng-class="{'full': i.id == 8}">{{i.name}}</option>
-                    </select>
+                <div class="row">
+                    <div class="col-md-5" style="padding-right: 0">
+                        <div id="grid3" ui-grid="optionsShipping" ui-grid-resize ui-grid-resize-columns
+                            ui-grid-selection ui-grid-edit ui-grid-row-edit class="grid3"></div>
+                        <div class="note">
+                            <textarea name="" id="note" class="form-control" rows="3" style="margin-bottom: 5px;" ng-model="note"></textarea>
+                            <button class="btn btn-success" ng-click="saveNote()">SAVE</button>
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-7">
+                        <div id="grid2" ui-grid="optionsDetail" ui-grid-resize ui-grid-resize-columns ui-grid-selection
+                            ui-grid-edit ui-grid-pagination ui-grid-row-edit class="grid2"></div>
+                    </div>
                 </div>
-                <div id="grid2" ui-grid="optionsDetail" ui-grid-resize-columns ui-grid-selection ui-grid-edit
-                    ui-grid-pagination ui-grid-row-edit class="grid2"></div>
-                <!-- <div class="row itemInvoicePreview" ng-repeat="item in itemInvoice"></div> -->
-                <!-- <table style="box-shadow: none;width: 100%" class="table table-bordered  itemInvoicePreview">
-                        <colgroup>
-                            <col width="75">
-                            <col width="200">
-                            <col width="100">
-                            <col width="100">
-                            <col width="100">
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th scope="col">Ảnh</th>
-                                <th scope="col">Tên Sản phẩm</th>                                
-                                <th scope="col">Số lượng</th>
-                                <th scope="col">Giá</th>
-                                <th scope="col">Tổng</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="item in models" id="{{item.original_sku}}">
-                                <td title="{{item.productId}}" style="padding: 6px; width: 77px"><img height="auto" width="100%"
-                                        src="{{item.image?item.image : 'https://i.imgur.com/NWUJZb1.png' }}" alt=""></td>
-                                <td>
-                                    <p class="proName">{{item.productName}}</p>
-                                    <p class="classify">
-                                        [ <span style="color: #f96923">{{item.name}}</span> ]
-                                    </p>
-                                </td>
-                                
-                                <td>
-                                    <input type="number" name="quantityItem" id="" ng-model="item.quantity" ng-value="item.quantity">
-                                    <!-- <span class="quantity" title="số lượng">{{item.quantity}}</span> -->
-                <!-- </td>
-                <td>
-                    <input type="number" name="priceItem" id="" ng-model="item.price" ng-value="item.price">
-                    <!-- <span class="currency" title="Giá">{{item.price}}</span> -->
-                <!-- </td>
-                <td>
-                    <span id="">{{(item.price * item.quantity) | number}}</span>
-                    <!-- <span class="quantity" title="số lượng">{{item.quantity}}</span> -->
-                <!-- </td>
-                </tr>
-                </tbody>
-                </table>  -->
-                <!-- </div> -->
             </div>
-
         </div>
         <div class="modal-footer">
-
+            abc
         </div>
     </div>
 </div>
@@ -100,17 +55,18 @@
             <div class="modal-body">
                 <textarea type="text" value="Nhập mã vận đơn để tìm kiếm" rows="2" id="findMVDarea"></textarea>
                 <div class="result">
-                    <ul  style="list-style-type: circle;margin-top:10px; margin-bottom: 0px; padding:5px;background: #f5f5f5;" ng-repeat="item in arrayData">
+                    <ul style="list-style-type: circle;margin-top:10px; margin-bottom: 0px; padding:5px;background: #f5f5f5;"
+                        ng-repeat="item in arrayData">
                         <div>
                             Id: <span>{{item.id}}</span>
                             Mã Đơn: <span>{{item.orderId}}</span>
                             Note: <span>{{item.note}}</span>
                         </div>
-                        <li style="margin-bottom: 5px;margin-left: 50px;"
-                            ng-repeat="i in item.shipping_trace" id="{{i.id}}">{{i.id}}<span class="timeOfShippingNo">{{i.time |
+                        <li style="margin-bottom: 5px;margin-left: 50px;" ng-repeat="i in item.shipping_trace" id="{{i.id}}">{{i.id}}<span
+                                class="timeOfShippingNo">{{i.time |
                                 date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span>
                             <span title="phí ship" class="ShippingFeeOfShippingNo">{{i.shipping_fee}} (&yen;)</span>
-                            
+
                         </li>
                     </ul>
                 </div>

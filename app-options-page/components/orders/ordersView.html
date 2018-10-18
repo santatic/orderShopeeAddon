@@ -71,12 +71,12 @@
                 <input placeholder="Nhập id để đổi trạng thái" type="text" id="testScan" autofocus>
                 <div id="listChangeSuccess">
                     <span ng-show="BulkChangeStatus.length > 0">
-                        <input type="checkbox" ng-click="toggle($event)" id="checkall" />
+                        <input type="checkbox" checked ng-click="toggle($event)" id="checkall" />
                         <span> Chọn hết</span>
                         <br />
                     </span>
                     <li ng-repeat="i in BulkChangeStatus" id="{{i.id}}" class="success-change">
-                        <input type="checkbox" name="scanId" value="{{i.id}}">
+                        <input type="checkbox" name="scanId" checked value="{{i.id}}">
                         <span class="idSuccess">{{i.id}}</span>
                         <span class="status">({{i.status}})</span>
                         <span ng-show="i.new_status !== ''" class="new_status"> => ({{i.new_status}})</span>
@@ -123,7 +123,7 @@
             <br>
             <li style="padding-bottom: 8px; list-style-type : none">
                 {{x.nickname}}
-                <br>{{x.name}}
+                <br>{{x.name}} <span style="font-size: 10px">[{{x.lengthClassify}}]</span>
             </li>
         </div>
 

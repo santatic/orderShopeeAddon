@@ -694,7 +694,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                         time: new Date(),
                                         shipping_fee: shippingFeeOfShippingNo.toString()
                                     }
-                                    $scope.shippingNo.push(JSON.parse(angular.toJson(obj)))
+                                    $scope.shippingNo.push(obj)
                                     console.log($scope.shippingNo);
                                 }
                             }
@@ -841,7 +841,14 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                 var invoiceId = (new Date()).getTime().toString()
                                 $scope.previewInv = true
                                 var invoice = new Object()
-                                invoice.shipping_traceId = JSON.parse(angular.toJson($scope.shippingNo))
+                                invoice.shipping_traceId = $scope.shippingNo.map(function (obj) {
+                                    //we take only key-value pairs we need using JS bracket notation
+                                    return {
+                                        "id": obj["id"],
+                                        "weight": obj["weight"],
+                                        "time": obj["time"],
+                                        "shipping_fee": obj["shipping_fee"]
+                                    };})
                                 invoice.invoiceId = $scope.invoiceId.toString()
                                 invoice.shipping_fee = $scope.shipping_fee? $scope.shipping_fee: "0"
                                 invoice.currency = $('select#selectCurrence').val().toString()
@@ -1013,7 +1020,14 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                     if (invoiceId ) {
                                         // alert($scope.sumPaidCopy)
                                         var invoiceCopy = new Object()
-                                        invoiceCopy.shipping_traceId = JSON.parse(angular.toJson($scope.shippingNo))
+                                        invoiceCopy.shipping_traceId = $scope.shippingNo.map(function (obj) {
+                                            //we take only key-value pairs we need using JS bracket notation
+                                            return {
+                                                "id": obj["id"],
+                                                "weight": obj["weight"],
+                                                "time": obj["time"],
+                                                "shipping_fee": obj["shipping_fee"]
+                                            };})
                                         invoiceCopy.invoiceId = invoiceId
                                         invoiceCopy.shipping_fee = shipping_fee == "" ? "0":shipping_fee 
                                         invoiceCopy.currency = $('select#selectCurrence').val().toString(),

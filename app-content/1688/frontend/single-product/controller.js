@@ -50,7 +50,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
 
         $scope.getClassifyCount = 0
 
-        $('div.obj-content').prepend('<input type="checkbox" checked id="checkall"/><span> Chọn hết</span> <br/>')
+        $('div.obj-content').prepend('<input type="checkbox" style="display:none" checked id="checkall"/><span> Chọn hết</span> <br/>')
 
         $('input#checkall').click(function ($event) {
             console.log($event.currentTarget.checked);
@@ -122,7 +122,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
                     var original_nameLeading = JSON.parse($(this).find('div.unit-detail-spec-operator').attr('data-unit-config')).name
                     $("input[name='classify']:checked").each(function () {
                         arrayClassifyNew.push({
-                            original_name: (leadingHeader + ":" + original_nameLeading).replace(/\s/g,'') + "; " + (leadingSku + ":"+ $(this).val()).replace(/\s/g,''),
+                            original_name: (leadingHeader + ":" + original_nameLeading).replace(/\s/g,'') + "; " + (leadingSku.replace("（张）",'').replace(/\s/g,'') + ":"+ $(this).val()).replace(/\s/g,''),
                             originalImageURL: img
                         })
                     })

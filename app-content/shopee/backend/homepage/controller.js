@@ -1,15 +1,15 @@
 app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
     function ($scope, Chat, getList) {
 
-        var timer = setInterval(function(){
+        var timer = setInterval(function () {
             var url = $(location).attr('href')
-            if(url.indexOf("banhang.shopee.vn/portal/sale") !== -1){
+            if (url.indexOf("banhang.shopee.vn/portal/sale") !== -1) {
                 clearInterval(timer)
                 getList.getList()
             }
-        },1000)
+        }, 1000)
 
-        
+
 
         // chrome.runtime.sendMessage({
         //     mission: "getSuggest"
@@ -17,7 +17,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
         //     console.log(response.suggests);
         Chat.getSuggests()
 
-        function httpGet(theUrl, headers, i) {            
+        function httpGet(theUrl, headers, i) {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("GET", theUrl, false); // false for synchronous request
             for (var i = 0; i < headers.length; i++) {
@@ -89,8 +89,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
         }, function (response) {
             console.log(response.data);
             var data = response.data;
-            data.forEach(function (val) {
-            })
+            data.forEach(function (val) {})
             // var selectedExpTags = [parseInt(value.ownStatus)];
             // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
             // value.own_Status = names[0];
@@ -100,6 +99,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
         $scope.update = function (status) {
             var idsDaGiao = []
             var updateLogShopee = []
+            var arrEx = []
             $scope.count = false
             var selectedExpTags = [status];
             var promise = new Promise(function (resovle, reject) {
@@ -112,22 +112,25 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                     n.close()
                     var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
                     $.each(names[0], function (i, val) {
-                        console.log(i,val);                         
+                        if (val.exId !== "" && jQuery.inArray(val.exId, arrEx) == -1) {
+                            arrEx.push(val.exId)
+                        }
+                        console.log(i, val);
                         // console.log(val.logistics);
                         var sub = "Đã giao hàng"
                         if (val.logistics.indexOf(sub) !== -1) {
                             idsDaGiao.push(val.id)
                         } else {
-                            var data = httpGet("https://banhang.shopee.vn/api/v2/orders/" + val.id, [], i+1)
-                            var logistics = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [], i+1)                                                 
-                            
+                            var data = httpGet("https://banhang.shopee.vn/api/v2/orders/" + val.id, [], i + 1)
+                            var logistics = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [], i + 1)
+
                             if (val.logistics_status !== data.order.logistics_status) {
                                 var obj = new Object()
 
                                 obj = {
                                     id: val.id,
                                     log: data.order.logistics_status,
-                                    logistics: logistics
+                                    logistics: logistics,
                                 }
                                 console.log(obj);
                                 updateLogShopee.push(obj)
@@ -146,8 +149,18 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                     idsDaGiao: idsDaGiao,
                     updateLogShopee: updateLogShopee
                 }, function (response) {
-                    location.reload()
-                    console.log("done");
+                    if (status == "NEW" || status == "PACKED") {
+                        chrome.runtime.sendMessage({
+                            mission: "updateExFromHome",
+                            exs: arrEx
+                        }, function (response) {
+                            location.reload()
+                            console.log("done")
+                        })
+                    } else {
+                        location.reload()
+                        console.log("done")
+                    };
                 })
             })
 

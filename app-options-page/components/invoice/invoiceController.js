@@ -36,8 +36,6 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
         }
     ]
 
-
-
     $scope.options = {
         // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
@@ -97,48 +95,93 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                 priority: 0
             },
         }, ],
-        showGridFooter: true,
+
         enableFiltering: true,
+        showGridFooter: true,
         gridFooterTemplate: "<div style='margin-left: 12px;'><span id='count'></span> ĐƠN - <span id='vndPrice'></span> ₫ - <span id='price'></span> &yen;</div>",
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
 
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                var selected = $scope.gridApi.selection.getSelectedRows();
-                console.log(selected);
-                $('span#count').text("0")
-                $('span#vndPrice').text("")
-                $('span#price').text("")
-                if (selected.length !== 0) {
-                    $('span#count').text(selected.length)
-
-
-
-                    function amountVND(item) {
-                        return (Number(item.sumPaid) + Number(item.shipping_fee) - Number(item.voucher_price)) * Number(item.currency_rate);
-                    }
-
-                    function amountCNY(item) {
-                        return Number(item.sumPaid) + Number(item.shipping_fee) - Number(item.voucher_price);
-                    }
-
-                    function sum(prev, next) {
-                        return parseInt(prev) + parseInt(next);
-                    }
-
-                    $('span#vndPrice').text(selected.map(amountVND).reduce(sum).toLocaleString());
-                    $('span#price').text(selected.map(amountCNY).reduce(sum));
-                }
-
+                $scope.selectionInv()
             });
 
             gridApi.selection.on.rowSelectionChangedBatch($scope, function (rows) {
-                console.log(rows);
+                $scope.selectionInv()
             });
             gridApi.edit.on.afterCellEdit($scope, $scope.saveRow);
             // gridApi.rowEdit.on.saveRow($scope, $scope.saveRow);
         }
     };
+    $scope.optionsShipping = {
+        // enableHorizontalScrollbar = 0,
+        enableRowSelection: true,
+        enableSelectAll: true,
+        enableGridMenu: true,
+        // paginationPageSizes: [15, 30, 45],
+        // paginationPageSize: 8,
+        enableSorting: true,
+        showGridFooter: false,
+        columnDefs: [{
+                name: "Mã Vận Đơn",
+                field: "id",
+                width: "180"
+            }, {
+                name: "Cân Nặng",
+                field: "weight"
+            }, {
+                name: "Phí Ship",
+                field: "shipping_fee"
+            }, {
+                name: "Ngày Tạo",
+                field: "create_at"
+            }
+
+        ],
+        // showGridFooter: true,
+        // enableFiltering: true,
+        // gridFooterTemplate: "<div style='margin-left: 12px;'><span id='countClas'></span> Phân Loại - Số lượng: <span id='quantity'></span> </div>",
+        onRegisterApi: function (gridApi) {
+
+            $scope.gridApiShipping = gridApi;
+
+            gridApi.edit.on.afterCellEdit($scope, $scope.saveRowShipping);
+            // gridApi.rowEdit.on.saveRow($scope, $scope.saveRow);
+
+        }
+    };
+
+    $scope.saveRowShipping = function (rowEntity, colDef, newValue, oldValue) {
+
+        let index = $scope.traceNo.findIndex(x => x.id == rowEntity.id)
+
+        if (oldValue !== newValue) {
+            if (colDef.field == "weight") {
+                $scope.traceNo[index].weight = newValue.toString()
+            }
+            if (colDef.field == "shipping_fee") {
+                $scope.traceNo[index].shipping_fee = newValue.toString()
+            }
+            $scope.traceNo.forEach((ele) => {
+                delete ele.create_at
+            })
+            console.log(JSON.parse(angular.toJson($scope.traceNo)));
+            firestore.collection('invoiceBuy').doc($scope.invoiceId).update({
+                "shipping_traceId": JSON.parse(angular.toJson($scope.traceNo))
+            }).then(() => {
+                new Noty({
+                    layout: 'bottomRight',
+                    theme: 'relax',
+                    timeout: 2000,
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT DỮ LIỆU'
+                }).show();
+            })
+        }
+
+
+    }
+
     $scope.optionsDetail = {
         // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
@@ -147,9 +190,9 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
         paginationPageSizes: [15, 30, 45],
         paginationPageSize: 8,
         enableSorting: true,
+        showColumnFooter: true,
         // showGridFooter: false,
-        columnDefs: [
-            {
+        columnDefs: [{
                 name: "Id",
                 field: "original_sku",
                 visible: false
@@ -159,12 +202,12 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                 field: "image",
                 enableFiltering: false,
                 width: "50",
+                footerCellTemplate: '<div class="ui-grid-cell-contents">Tổng</div>',
                 // field: "size",
                 cellTemplate: "<img class='previewImg' src='{{row.entity.image}}' width=30 height=30 />"
-            },{
+            }, {
                 name: "Tên Sản Phẩm",
                 field: "productName",
-                width: "300",
                 enableCellEdit: false
             },
             {
@@ -175,93 +218,173 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
             {
                 name: "Số Lượng",
                 field: "quantity",
+                aggregationType: uiGridConstants.aggregationTypes.sum,
+                aggregationHideLabel: true,
                 width: "60",
-            },{
+            }, {
                 name: "Thực Nhập",
                 field: "actual_quantity",
                 width: "60",
-            },{
+                aggregationType: uiGridConstants.aggregationTypes.sum,
+                aggregationHideLabel: true,
+            }, {
                 name: "Giá",
                 field: "price",
                 width: "60",
-            },{
+                aggregationType: uiGridConstants.aggregationTypes.sum,
+                aggregationHideLabel: true,
+            }, {
                 name: "Tổng",
                 field: "sum",
                 width: "60",
+                aggregationType: uiGridConstants.aggregationTypes.sum,
+                aggregationHideLabel: true,
                 enableCellEdit: false
-            },{
+            }, {
                 name: "Chênh lệch",
                 field: "offset",
                 width: "60",
+                aggregationType: uiGridConstants.aggregationTypes.sum,
+                aggregationHideLabel: true,
             }
         ],
-        showGridFooter: true,
+        showGridFooter: false,
         // enableFiltering: true,
-        // gridFooterTemplate: "<div style='margin-left: 12px;'><span id='count'></span> ĐƠN - <span id='vndPrice'></span> ₫ - <span id='price'></span> &yen;</div>",
+        gridFooterTemplate: "<div style='margin-left: 12px;'><span id='countClas'></span> Phân Loại - Số lượng: <span id='quantity'></span> </div>",
         onRegisterApi: function (gridApi) {
             $scope.gridApiDetail = gridApi;
 
-            gridApi.selection.on.rowSelectionChangedBatch($scope, function (rows) {
-                console.log(rows);
-            });
             gridApi.edit.on.afterCellEdit($scope, $scope.saveRowDetail);
             // gridApi.rowEdit.on.saveRow($scope, $scope.saveRow);
-        }
-    };
-    $scope.saveRowDetail = function (rowEntity, colDef, newValue, oldValue){
-        
-        let index = $scope.models.findIndex(x => x.original_sku == rowEntity.original_sku)
-        
-        if (colDef.field == "quantity") {
-            $scope.models[index].quantity = Number(newValue)
-        }
-        if (colDef.field == "price") {
-            $scope.models[index].price = Number(newValue)
-        }
-        if (colDef.field == "name") {
-            $scope.models[index].name = (newValue).toString()
-        }  
-        if (colDef.field == "actual_quantity") {
-            $scope.models[index].actual_quantity = (newValue).toString()
-        }      
-
-        let sum = 0
-        $scope.models.forEach(function(element,i){    
-            $scope.models[i].sum = $scope.models[i].quantity * $scope.models[i].price        
-            sum = sum + $scope.models[i].sum            
-            delete $scope.models[i].sum
-        })
-
-        firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
-            "models": $scope.models,
-            "sumPaid": sum
-        }).then(function () {  
-            $scope.sumPaid = sum
-
-            $scope.models.forEach(function(element,i){ 
-                $scope.models[i].sum = Number($scope.models[i].quantity) * Number($scope.models[i].price)
-                $scope.models[i].offset = (Number($scope.models[i].actual_quantity) - Number($scope.models[i].quantity))*Number($scope.models[i].price)           
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                $scope.selectionClassify()
+            })
+            gridApi.selection.on.rowSelectionChangedBatch($scope, function (rows) {
+                $scope.selectionClassify()
             })
 
-            $scope.$apply()
+        }
+    };
 
-            console.log(sum);           
+    $scope.selectionInv = function () {
+        var selected = $scope.gridApi.selection.getSelectedRows();
+        console.log(selected);
+        $('span#count').text("0")
+        $('span#vndPrice').text("")
+        $('span#price').text("")
 
-            $scope.optionsDetail.data = obj.models
+        if (selected.length !== 0) {
+            $('span#count').text(selected.length)
 
-            $scope.gridApiDetail.core.refresh()
+            function amountVND(item) {
+                return (Number(item.sumPaid) + Number(item.shipping_fee) - Number(item.voucher_price)) * Number(item.currency_rate);
+            }
 
-            new Noty({
-                layout: 'bottomRight',
-                theme: 'relax',
-                timeout: 2000,
-                type: 'success',
-                text: 'ĐÃ CẬP NHẬT DỮ LIỆU'
-            }).show();
+            function amountCNY(item) {
+                return Number(item.sumPaid) + Number(item.shipping_fee) - Number(item.voucher_price);
+            }
+
+            function sum(prev, next) {
+                return parseInt(prev) + parseInt(next);
+            }
+
+            $('span#vndPrice').text(selected.map(amountVND).reduce(sum).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+            $('span#price').text(selected.map(amountCNY).reduce(sum).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+        }
+
+    }
+
+    $scope.selectionClassify = function () {
+        var promise = new Promise((resolve, reject)=>{
+            $scope.optionsDetail.showGridFooter = true
+            $scope.gridApiDetail.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS)
+            resolve()
         })
 
-        console.log($scope.models);
-        
+        promise.then(()=>{
+            var selected = $scope.gridApiDetail.selection.getSelectedRows();
+            if (selected.length !== 0) {            
+    
+                $("#countClas").text("0")
+                $("#quantity").text("0")
+    
+                function amountQuan(item) {
+                    return Number(item.quantity);
+                }
+    
+                function sum(prev, next) {
+                    return parseInt(prev) + parseInt(next);
+                }
+                $("#countClas").text(selected.length)
+                $("#quantity").text(selected.map(amountQuan).reduce(sum))
+            }else{
+                $scope.optionsDetail.showGridFooter = false
+                $scope.gridApiDetail.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS)
+            }
+        })     
+       
+    }
+
+    $scope.roundToTwo = function(num) {    
+        return +(Math.round(num + "e+2")  + "e-2");
+    }
+
+    $scope.saveRowDetail = function (rowEntity, colDef, newValue, oldValue) {
+
+        let index = $scope.models.findIndex(x => x.original_sku == rowEntity.original_sku)
+
+        if (oldValue !== newValue) {
+            if (colDef.field == "quantity") {
+                $scope.models[index].quantity = Number(newValue)
+            }
+            if (colDef.field == "price") {
+                $scope.models[index].price = Number(newValue)
+            }
+            if (colDef.field == "name") {
+                $scope.models[index].name = (newValue).toString()
+            }
+            if (colDef.field == "actual_quantity") {
+                $scope.models[index].actual_quantity = (newValue).toString()
+            }
+
+            let sum = 0
+            $scope.models.forEach(function (element, i) {
+                $scope.models[i].sum = $scope.models[i].quantity * $scope.models[i].price
+                sum = sum + $scope.models[i].sum
+                delete $scope.models[i].sum
+            })
+
+            firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
+                "models": $scope.models,
+                "sumPaid": sum
+            }).then(function () {
+                $scope.sumPaid = sum
+
+                $scope.models.forEach(function (element, i) {
+                    $scope.models[i].sum = Number($scope.models[i].quantity) * Number($scope.models[i].price)
+                    $scope.models[i].offset = (Number($scope.models[i].actual_quantity) - Number($scope.models[i].quantity)) * Number($scope.models[i].price)
+                })
+
+                $scope.$apply()
+
+                console.log(sum);
+
+                $scope.optionsDetail.data = obj.models
+
+                $scope.gridApiDetail.core.refresh()
+
+                new Noty({
+                    layout: 'bottomRight',
+                    theme: 'relax',
+                    timeout: 2000,
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT DỮ LIỆU'
+                }).show();
+            })
+
+            console.log($scope.models);
+        }
+
     }
     $scope.saveRow = function (rowEntity, colDef, newValue, oldValue) {
         // create a fake promise - normally you'd use the promise returned by $http or $resource
@@ -315,6 +438,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
     };
     $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
     $scope.optionsDetail.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
+    $scope.optionsShipping.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
     var invoicesData = []
     chrome.storage.local.get('invoices', function (obj) {
 
@@ -339,16 +463,26 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
             return y.id === row.entity.id
         })
 
+        $scope.note = obj.note ? obj.note : ""
+
         $scope.sumPaid = Number(obj.sumPaid)
         $scope.shipping_fee = Number(obj.shipping_fee)
         $scope.voucher = Number(obj.voucher_price)
+        obj.shipping_traceId.forEach(function (element) {
+            element.shipping_fee = element.shipping_fee ? element.shipping_fee : "";
+            element.create_at = element.time.seconds ? moment(element.time.seconds * 1000).format("MM/DD/YYYY HH:mm") : element.time
+        })
+
         $scope.traceNo = obj.shipping_traceId
+
+        $scope.optionsShipping.data = $scope.traceNo
+
         obj.models.forEach(function (element, i) {
             obj.models[i].quantity = Number(obj.models[i].quantity)
             obj.models[i].price = Number(obj.models[i].price)
-            obj.models[i].sum =  obj.models[i].quantity * obj.models[i].price
-            obj.models[i].image = obj.models[i].image? obj.models[i].image : "https://i.imgur.com/NWUJZb1.png",
-            obj.models[i].offset = (Number(obj.models[i].actual_quantity) - obj.models[i].quantity)*obj.models[i].price           
+            obj.models[i].sum = obj.models[i].quantity * obj.models[i].price
+            obj.models[i].image = obj.models[i].image ? obj.models[i].image : "https://i.imgur.com/NWUJZb1.png",
+                obj.models[i].offset = (Number(obj.models[i].actual_quantity) - obj.models[i].quantity) * obj.models[i].price
         })
 
         $scope.optionsDetail.data = obj.models
@@ -361,46 +495,26 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
         console.log(obj);
         $('#showInvoice').modal()
         $("#showInvoice").on("hidden.bs.modal", function () {
-            
+
             // $('ul#listClassify').html("")
         })
         $('div.itemInvoice select').val(obj.status.status)
         lastSel = obj.status.status
         $scope.status = obj.status.status
 
-        $scope.editWeight = function (event) {
-
-            var $this = $(event.currentTarget);
-            var id = $this.parent().attr("id");
-
-            let index = $scope.traceNo.findIndex(x => x.id == id)
-            console.log(obj);
-            var shippingNo = prompt("Mã Vận Đơn", $scope.traceNo[index].id);
-            if (shippingNo != null) {
-                var weightOfShippingNo = prompt("Cân nặng (Kg)", $scope.traceNo[index].weight)
-                if (weightOfShippingNo !== null) {
-                    var FeeOfShippingNo = prompt("Phí Ship (&yen;)", $scope.traceNo[index].shipping_fee)
-                    if (FeeOfShippingNo !== null) {
-                        $scope.traceNo[index].id = shippingNo
-                        $scope.traceNo[index].weight = weightOfShippingNo
-                        $scope.traceNo[index].shipping_fee = FeeOfShippingNo
-                        firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
-                            "shipping_traceId": JSON.parse(angular.toJson($scope.traceNo))
-                        }).then(() => {
-                            new Noty({
-                                layout: 'bottomRight',
-                                timeout: 1000,
-                                theme: "relax",
-                                type: 'success',
-                                text: 'ĐÃ THAY ĐỔI THÔNG TIN VẬN ĐƠN '
-                            }).show()
-                        })
-                    }
-
-                }
-
-            }
-
+        $scope.saveNote = function () {
+            console.log($scope.note);
+            firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
+                "note": $scope.note
+            }).then(() => {
+                new Noty({
+                    layout: 'bottomRight',
+                    theme: 'relax',
+                    timeout: 2000,
+                    type: 'success',
+                    text: 'ĐÃ CẬP NHẬT DỮ LIỆU'
+                }).show();
+            })
         }
 
         $scope.addShippingNo = function () {
@@ -409,30 +523,47 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
             if (shippingNo != null) {
                 var weightOfShippingNo = prompt("Nhập cân nặng (Kg)")
                 if (weightOfShippingNo !== null) {
-                    var found = $scope.traceNo.some(function (el) {
-                        return el.id == shippingNo.toString();
-                    });
-                    if (found) {
-                        alert("Mã vận đơn này đã tồn tại")
-                    } else {
-                        var obj = {
-                            id: shippingNo.toString(),
-                            weight: weightOfShippingNo,
-                            time: new Date()
+                    var feeOfShippingNo = prompt("Nhập phí ship (¥)")
+                    if (feeOfShippingNo !== null) {
+                        var found = $scope.traceNo.some(function (el) {
+                            return el.id == shippingNo.toString();
+                        });
+                        if (found) {
+                            alert("Mã vận đơn này đã tồn tại")
+                        } else {
+                            var obj = {
+                                id: shippingNo.toString(),
+                                weight: weightOfShippingNo,
+                                time: new Date(),
+                                shipping_fee: feeOfShippingNo,
+                                create_at: moment().format("MM/DD/YYYY HH:mm")
+                            }
+                            $scope.traceNo.push(obj)
+                            firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
+                                "shipping_traceId": $scope.traceNo.map(function (obj) {
+                                    //we take only key-value pairs we need using JS bracket notation
+                                    return {
+                                        "id": obj["id"],
+                                        "weight": obj["weight"],
+                                        "time": obj["time"],
+                                        "shipping_fee": obj["shipping_fee"]
+                                    };
+                                })
+                            }).then(() => {
+                                // $scope.traceNo.forEach(function(element){                                
+                                //     element.time = moment(element.time.seconds * 1000).format("MM/DD/YYYY HH:mm")
+                                // })
+                                new Noty({
+                                    layout: 'bottomRight',
+                                    timeout: 1000,
+                                    theme: "relax",
+                                    type: 'success',
+                                    text: 'ĐÃ THÊM MÃ VẬN ĐƠN '
+                                }).show()
+                            })
                         }
-                        $scope.traceNo.push(obj)
-                        firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
-                            "shipping_traceId": JSON.parse(angular.toJson($scope.traceNo))
-                        }).then(() => {
-                            new Noty({
-                                layout: 'bottomRight',
-                                timeout: 1000,
-                                theme: "relax",
-                                type: 'success',
-                                text: 'ĐÃ THÊM MÃ VẬN ĐƠN '
-                            }).show()
-                        })
                     }
+
                 }
 
             }
@@ -483,10 +614,10 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                     //placement: 'bottom',
                     content: function () {
                         let img = $(this).attr('src')
-                        return img == "https://i.imgur.com/NWUJZb1.png" ? '<span>Sản phẩm này không có hình ảnh</span>' : '<img width="300px" src="' + img + '" />';
+                        return img == "https://i.imgur.com/NWUJZb1.png" ? '<span>Phân loại này không có hình ảnh</span>' : '<img width="300px" src="' + img + '" />';
 
                     },
-                    
+
 
                 });
 
@@ -514,26 +645,12 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
 
     }
 
-
-
     $('div.itemInvoice select').on('change', function () {
         console.log(this.value);
         var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI ĐƠN")
         if (confirmChange) {
             if (this.value == 8) {
-                $('table.itemInvoicePreview tbody tr').each(function () {
-                    var orsku = $(this).attr("id")
-                    var newPrice = $(this).find("input[name='priceItem']").val()
-                    var newQuantity = $(this).find("input[name='quantityItem']").val()
 
-                    let index = $scope.models.findIndex(x => x.original_sku == orsku)
-
-                    if (newPrice !== $scope.models[index].price || newQuantity !== $scope.models[index].quantity) {
-                        $scope.models[index].price = newPrice;
-                        $scope.models[index].quantity = newQuantity
-                    }
-
-                })
                 firestore.collection("invoiceBuy").doc($scope.invoiceId).update({
                     "status": {
                         status: parseInt(this.value),
@@ -543,6 +660,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                 }).then(() => {
                     $scope.models.forEach(function (val) {
                         delete val.price
+                        delete val.quantity
                     })
                     var id = (new Date()).getTime().toString()
                     firestore.collection("stock").doc(id).set({
@@ -605,7 +723,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                 var selectedExpTags = [valModel.productId];
                 var names = selectedExpTags.map(x => element.products.find(y => y.id === x).name)
                 element.models[i].productName = names[0];
-                element.models[i].actual_quantity = element.models[i].actual_quantity? element.models[i].actual_quantity: element.models[i].quantity
+                element.models[i].actual_quantity = element.models[i].actual_quantity ? element.models[i].actual_quantity : element.models[i].quantity
             })
         });
         console.log(invoices);
@@ -662,28 +780,28 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
 
     }, {
         title: "TÌM MÃ VẬN ĐƠN",
-        action: function(){
+        action: function () {
             $('#findMVD').modal()
             $('textarea#findMVDarea').focus()
-            $('textarea#findMVDarea').bind("paste", function(e){
+            $('textarea#findMVDarea').bind("paste", function (e) {
                 var pastedData = e.originalEvent.clipboardData.getData('text');
                 console.log(pastedData);
-                var splitted = pastedData.split("\n");  
+                var splitted = pastedData.split("\n");
                 console.log(splitted);
                 var arrayData = []
-                for( var i in splitted) { 
-                    console.log(splitted[i]); 
+                for (var i in splitted) {
+                    console.log(splitted[i]);
                     $scope.options.data.every(function (element, index) {
                         // Do your thing, then:
                         var found = element.shipping_traceId.some(function (el) {
-                            return el.id == splitted[i].toString().replace(/\s/g,'');
+                            return el.id == splitted[i].toString().replace(/\s/g, '');
                         });
                         if (found) {
                             console.log($scope.options.data[index]);
                             var found1 = arrayData.some(function (el) {
                                 return el.id == $scope.options.data[index].id;
-                            });                          
-                            if(!found1){
+                            });
+                            if (!found1) {
                                 var obj = {
                                     id: $scope.options.data[index].id,
                                     orderId: $scope.options.data[index].invoiceId,
@@ -696,16 +814,16 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                         } else return true
                     })
                 }
-                if(arrayData.length > 0){                    
+                if (arrayData.length > 0) {
                     $scope.arrayData = arrayData
                     $scope.$apply()
-                }else{
+                } else {
                     alert("Không tìm thấy gì cả!!")
                     $scope.arrayData = []
                     $scope.$apply()
-                    
+
                 }
-            } );
+            });
         }
     }]
 })

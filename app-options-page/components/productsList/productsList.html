@@ -246,7 +246,7 @@
                     <!-- </div> -->
                     <div class="general" ng-show="sumPaidCopy > 0">
                         <div class="totalBefore">
-                            <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{sumPaidCopy - discount + shipping_fee}}</span>
+                            <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{(sumPaidCopy - discount + shipping_fee)|number:3}}</span>
                         </div>
                         <div class="discount">
                             <input style="padding-left: 5px;
@@ -269,7 +269,7 @@
                     </ul>
                     <p class="status"><b>Trạng thái: </b>{{statusInvoice}}</p>
                     <div class="totalBefore">
-                        <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{sumPaid - discountPre + shipping_fee}}</span>
+                        <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{(sumPaid - discountPre + shipping_fee)|number:3}}</span>
                     </div>
                     <div class="discount">
                         <input style="padding-left: 5px;

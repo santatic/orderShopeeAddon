@@ -778,7 +778,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 ownStatus: myData.own_status.status,
                 fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)),
                 size: myData.order_items.length,
-                orderId: myData.ordersn
+                orderId: myData.ordersn,
+                lengthClassify: myData["order-items"].length
             }
             sources.push(obj)
         })

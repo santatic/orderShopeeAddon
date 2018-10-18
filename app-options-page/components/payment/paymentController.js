@@ -445,7 +445,16 @@ app.directive("fileread", [function () {
                   alert("Vui lòng chọn Ngân Hàng")
                 } else {
                   $('#loading').text('loading....')
-                  var arrEx = []
+
+                  chrome.runtime.sendMessage({
+                    mission: "updatePayment",
+                    id: arrayId,
+                    date: $('#datepicker').val(),
+                    bank: $('#bank').text(),
+                    sumShopeePaid: sumShopee,
+                    sumBuyerPaid: sumOwn
+                  }, function (response) {
+                    var arrEx = []
                     var dataExToSend = []
                     chrome.storage.local.get('data', function (obj) {
                       chrome.storage.local.get('export', function (obj1) {
@@ -466,31 +475,21 @@ app.directive("fileread", [function () {
                         chrome.runtime.sendMessage({
                           mission: "updateEx",
                           data: dataExToSend
-                        }, function (response) {  
-                          console.log(response.exIdRes);
+                        }, function (response) {
+                          // console.log(response.exIdRes);
+                          $('#loading').text("")
+                          new Noty({
+                            layout: 'bottomRight',
+                            timeout: 2500,
+                            theme: "relax",
+                            type: 'success',
+                            text: 'Đã cập nhật trạng thái các đơn về "đã thanh toán" và tạo Phiếu thu'
+                          }).show();
+
                         })
                       })
                     })
-                  // chrome.runtime.sendMessage({
-                  //   mission: "updatePayment",
-                  //   id: arrayId,
-                  //   date: $('#datepicker').val(),
-                  //   bank: $('#bank').text(),
-                  //   sumShopeePaid: sumShopee,
-                  //   sumBuyerPaid: sumOwn
-                  // }, function (response) {
-                  //   $('#loading').text("")
-                  //   new Noty({
-                  //     layout: 'bottomRight',
-                  //     timeout: 2500,
-                  //     theme: "relax",
-                  //     type: 'success',
-                  //     text: 'Đã cập nhật trạng thái các đơn về "đã thanh toán" và tạo Phiếu thu'
-                  //   }).show();
-
-                    
-
-                  // })
+                  })
                 }
               })
               // $scope.gridApi.core.refresh()
