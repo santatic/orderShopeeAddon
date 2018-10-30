@@ -109,6 +109,30 @@
     </div>
 </div>
 
+<div class="modal fade" id="chiadon" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button class="btn btn-success" ng-click="chiadon()" >CHIA ĐƠN</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group-status" id="selectUser" style="padding-top: 0">
+                    <div class="selectUser">
+                        <div ng-repeat="i in users">
+                            <input type="checkbox" id="{{i.uid}}" style="cursor:pointer">
+                            <b>{{i.name}}</b><br>{{i.email}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+
+        </div>
+    </div>
+</div>
+
 <div class="print rowPrint">
     <ul ng-repeat="x in rowSelected" class="list-group" style="float: left;width: 50%; margin-bottom: 5px">
         <div style="display: inline-block; margin-right: 10px">

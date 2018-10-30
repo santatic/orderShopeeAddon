@@ -1,7 +1,7 @@
 {
     "name": "Lập Nghiệp Shop Online",
     "description": "Công cụ hỗ trợ các shop bán hàng thông minh hơn",
-    "version": "3.6.0",
+    "version": "3.6.1",
     "options_page": "options.html",
 
     "browser_action": {

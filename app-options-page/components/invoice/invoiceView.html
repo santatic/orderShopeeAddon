@@ -15,18 +15,18 @@
                 <input type="number" name="" id="" ng-model="voucher" ng-value="voucher"> =
                 {{(sumPaid + shipping_fee - voucher)|number:2}}&yen; * {{currency_rate}} = {{(currency_rate*(sumPaid + shipping_fee -
                 voucher))|number:0}}&#8363;
-
-                <button type="button" ng-click="updateDetail()" class="btn btn-success" id="invoiceUpdate" style="float: right;">UPDATE</button>
                 <select ng-show="status !== 8" class="form-control" name="" id="selectStatus">
                     <!-- <option></option> -->
                     <!-- <option value="{{status}}">{{statusName}}</option> -->
                     <option ng-repeat="i in arrayStatus" value="{{i.id}}" ng-class="{'full': i.id == 8}">{{i.name}}</option>
-                </select><!-- <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5> -->
+                </select>
+                <button type="button" ng-click="updateDetail()" class="btn btn-success" id="invoiceUpdate" style="float: right;">UPDATE</button>
+                <!-- <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5> -->
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-5" style="padding-right: 0">
-                        <div id="grid3" ui-grid="optionsShipping" ui-grid-resize ui-grid-resize-columns
+                        <div ng-show="traceNo.length>0" id="grid3" ui-grid="optionsShipping" ui-grid-resize ui-grid-resize-columns
                             ui-grid-selection ui-grid-edit ui-grid-row-edit class="grid3"></div>
                         <div class="note">
                             <textarea name="" id="note" class="form-control" rows="3" style="margin-bottom: 5px;" ng-model="note"></textarea>
@@ -36,13 +36,10 @@
                     </div>
                     <div class="col-md-7">
                         <div id="grid2" ui-grid="optionsDetail" ui-grid-resize ui-grid-resize-columns ui-grid-selection
-                            ui-grid-edit ui-grid-pagination ui-grid-row-edit class="grid2"></div>
+                            ui-grid-edit  ui-grid-row-edit class="grid2" style="height:470px"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            abc
         </div>
     </div>
 </div>

@@ -185,6 +185,10 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 }).show();
 
                 $scope.statusRadio = response.status
+                $scope.exId = response.exportId
+                $scope.note = response.note                
+                $scope.exDate = response.exDate
+                $scope.exLink = chrome.extension.getURL("options.html#/export/" + response.exportId);
                 
                 $scope.$apply()
                 chrome.runtime.sendMessage({

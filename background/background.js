@@ -531,7 +531,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         names[0].forEach(function (order, index2) {
           firestore.collection("orderShopee").doc(order.toString()).get()
             .then(function (doc) {
-              const data = doc.data()
+              const data = doc.datfa()
               var status = data.own_status.status
               if (status == 5 || status == 11) {
                 okey.push(order)
@@ -1092,14 +1092,33 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       // var id = response.url.toString()
       var selectedExpTags = [data.own_status.status];
       var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
-      var date = formatDate(data.create_at).toString()
-      sendResponse({
-        check: "update",
-        note: data.note,
-        user: data.user.name,
-        money: data.buyer_paid_amount,
-        status: names[0]
-      })
+      
+      if(data.exportId){
+        firestore.collection("exportCode").doc(data.exportId).get()
+        .then(function(doc){
+          sendResponse({
+            check: "update",
+            note: data.note,
+            user: data.user.name,
+            money: data.buyer_paid_amount,
+            status: names[0],
+            exportId: data.exportId,
+            exDate: doc.data().create_at.seconds*1000
+          })
+        })
+
+      }else{
+        sendResponse({
+          check: "update",
+          note: data.note,
+          user: data.user.name,
+          money: data.buyer_paid_amount,
+          status: names[0],
+          exportId: "CHƯA GIAO ĐƠN",
+          exDate: (new Date()).getTime()
+        })
+      }
+      
     }
 
     function callback() {}

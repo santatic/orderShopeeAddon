@@ -12,6 +12,11 @@
   float: right
 }
 
+.selectUser div {
+  display: inline-block;
+  margin: 20px;
+}
+
 div.grid3 {
   width: 485px;
   height: 200px;

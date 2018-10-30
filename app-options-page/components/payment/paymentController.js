@@ -427,13 +427,10 @@ app.directive("fileread", [function () {
                         ).then(() => {
                           console.log("save successful");
                           $('#null').text(notExist.length - (i + 1))
-                          n.close()
                         })
                       })
-
                     })
                   })
-
                 })
 
 
@@ -459,17 +456,19 @@ app.directive("fileread", [function () {
                     chrome.storage.local.get('data', function (obj) {
                       chrome.storage.local.get('export', function (obj1) {
                         arrayId.forEach(function (orderId) {
-                          var selectedExpTags = [orderId.id];
-                          var names = selectedExpTags.map(x => obj.data.find(y => y.id == x).exportId)
-                          if (names[0] && jQuery.inArray(names[0], arrEx) == -1) {
-                            arrEx.push(names[0])
-                            var selectedExpTags1 = [names[0]];
-                            var names1 = selectedExpTags1.map(x => obj1.export.find(y => y.id == x).orders)
-                            dataExToSend.push({
-                              exId: names[0],
-                              orders: names1[0]
+                          firestore.collection("orderShopee").doc(orderId.id).get()
+                            .then(function (doc) {
+                              var exportId = doc.data().exportId ? doc.data().exportId : ""
+                              if (exportId !== "" && jQuery.inArray(exportId, arrEx) == -1) {
+                                arrEx.push(exportId)
+                                var selectedExpTags1 = [exportId];
+                                var names1 = selectedExpTags1.map(x => obj1.export.find(y => y.id == x).orders)
+                                dataExToSend.push({
+                                  exId: exportId,
+                                  orders: names1[0]
+                                })
+                              }
                             })
-                          }
                         })
                         console.log(dataExToSend);
                         chrome.runtime.sendMessage({

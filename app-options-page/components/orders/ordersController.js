@@ -368,8 +368,49 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             }
 
             // } else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
+        }        
+    },{
+        title: "CHIA ĐƠN",
+        action: function () { 
+            $scope.users = []
+            var selected = $scope.gridApi.selection.getSelectedRows();
+            if(selected.length > 0){
+                $('#chiadon').modal()
+                
+                firestore.collection("usersMobile").get().then(col=>{
+                    col.forEach(doc=>{
+                        console.log(doc.data());
+                        $scope.users.push({
+                            name: doc.data().displayName? doc.data().displayName: "null",
+                            email: doc.data().email,
+                            uid: doc.data().uid
+                        })   
+                        $scope.$apply()             
+                    })
+                })
+                $scope.chiadon = function(){
+                    $('#selectUser input:checkbox:checked').each(function(){
+                        // console.log($(this).attr("id"))
+                    })
+                    var orders1 = []
+                    selected.forEach(val=>{
+                        var obj = dataForPro.find(ol=> {return ol.id == val.id})
+                        // console.log(obj);
+                        obj['order-items'].forEach(function(o) {  
+                            orders1.push(o)
+                        })
+                    })
+
+                    // var averageItem = (orders.length)/($('#selectUser input:checkbox:checked').length)
+                    // console.log(averageItem);
+
+                }
+            }else{
+                alert("Vui lòng chọn đơn cần chia cho người làm")
+            }
         }
-    }]
+    }
+]
     $('#bulkStatus input:radio').change(function (e) {
         var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI CÁC ĐƠN ĐÃ CHỌN")
         if (confirmChange) {
@@ -518,7 +559,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         action: function () {
 
             var selected = $scope.gridApi.selection.getSelectedRows();
-            // console.log(selected);
+
             var products = []
 
             var condi = true

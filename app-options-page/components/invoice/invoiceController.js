@@ -187,8 +187,9 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
         enableRowSelection: true,
         enableSelectAll: true,
         enableGridMenu: true,
-        paginationPageSizes: [15, 30, 45],
-        paginationPageSize: 8,
+        
+        // paginationPageSizes: [15, 30, 45],
+        // paginationPageSize: 8,
         enableSorting: true,
         showColumnFooter: true,
         // showGridFooter: false,
@@ -231,8 +232,6 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                 name: "Giá",
                 field: "price",
                 width: "60",
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
             }, {
                 name: "Tổng",
                 field: "sum",
@@ -645,7 +644,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
 
     }
 
-    $('div.itemInvoice select').on('change', function () {
+    $('select#selectStatus').on('change', function () {
         console.log(this.value);
         var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI ĐƠN")
         if (confirmChange) {

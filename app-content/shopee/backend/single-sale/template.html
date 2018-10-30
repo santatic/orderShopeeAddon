@@ -4,7 +4,26 @@
             < </span>
     </div>
     <div class="panel-body collapse in">
-        <div class="form-group-status noprint" ng-show="showSelect">
+        
+        <div class="exDetail">
+            <div class="note" style="width: 145px;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: #ff5722;
+            color: #fff;
+            font-weight: bold;">
+                "{{note}}"
+            </div>
+            <a href="{{exLink}}" target="_blank" class="exId" title="Mã Phiếu Xuất" style="padding: 5px;
+            background: #00bf33;
+            color: #fff;">{{exId}}</a>
+            <br>
+            <span class="dateEx" title="Thời gian tạo Mã Phiếu Xuất">{{exDate | date:'dd/MM/yyyy hh:mm'}}</span>
+        </div>
+        <div ng-show="statusRadio == 'PAID'">
+            ĐÃ THANH TOÁN
+        </div>
+        <div ng-show="statusRadio!=='PAID'" class="form-group-status noprint" ng-show="showSelect">
             <div class="form-check">
                 <input type="radio" ng-model="statusRadio" value="NEW">ĐƠN MỚI
             </div>
