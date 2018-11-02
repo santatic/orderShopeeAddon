@@ -650,9 +650,6 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
         {
             title: "TẠO ĐƠN NHẬP",
             action: function () {
-
-
-
                 var selected = $scope.gridApi.selection.getSelectedRows();
                 $("#addInvoiceSelected").modal()
                 $("#addInvoiceSelected").on("hidden.bs.modal", function () {
@@ -670,12 +667,10 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     $scope.discountPre = 0
                     $scope.shipping_fee = 0
                     $scope.sumPaid = 0
-                    // $('ul#listClassify').html("")
                 })
                 $scope.shippingNo = []
 
                 $scope.addShippingNo = function () {
-
                     var shippingNo = prompt("Nhập Mã Vận Đơn");
                     if (shippingNo != null) {
                         var weightOfShippingNo = prompt("Nhập cân nặng (Kg)")
@@ -916,21 +911,16 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     document.addEventListener('paste', function (e) {
                         if ($("input#target").is(":focus")) {
                             e.preventDefault();
-
+                            
                             var pastedText = ''
-
                             if (window.clipboardData && window.clipboardData.getData) { // IE
-
                                 pastedText = window.clipboardData.getData('Text');
-
                             } else if (e.clipboardData && e.clipboardData.getData) {
-
                                 pastedText = e.clipboardData.getData('text/html');
-
                             }
-
+                            
                             $('div#previewCopy').html(pastedText)
-                            $('div#previewCopy').html("<table class='has-multi-entry-order'>" + $('table.has-multi-entry-order').html() + "</table>")
+                            $('div#previewCopy').html("<table class='has-multi-entry-order'>" + $('div#previewCopy table').html() + "</table>")
                             $('div#previewCopy table').removeAttr("style")
                             $('div#previewCopy table tr').removeAttr("style")
                             $('div#previewCopy table td').removeAttr("style")

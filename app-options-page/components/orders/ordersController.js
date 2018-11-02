@@ -188,6 +188,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 field: "fromNow",
                 type: "number",
                 width: 60
+            }, {
+                name: "Người đóng gói",
+                field: "packer"
             }
         ],
         enableFiltering: true,
@@ -368,49 +371,130 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             }
 
             // } else alert("Vui lòng chọn nhiều hơn 1 sản phẩm")
-        }        
-    },{
+        }
+    }, {
         title: "CHIA ĐƠN",
-        action: function () { 
+        action: function () {
             $scope.users = []
             var selected = $scope.gridApi.selection.getSelectedRows();
-            if(selected.length > 0){
+            var condi = true
+            selected.forEach(function (val) {
+                if (val.ownStatus !== 1) condi = false;
+            })
+            if (condi && selected.length > 0) {
                 $('#chiadon').modal()
-                
-                firestore.collection("usersMobile").get().then(col=>{
-                    col.forEach(doc=>{
-                        console.log(doc.data());
+                var tasks = []
+                firestore.collection("usersMobile").get().then(col => {
+                    col.forEach(doc => {
+                        // console.log(doc.data());
                         $scope.users.push({
-                            name: doc.data().displayName? doc.data().displayName: "null",
+                            name: doc.data().displayName ? doc.data().displayName : "null",
                             email: doc.data().email,
                             uid: doc.data().uid
-                        })   
-                        $scope.$apply()             
+                        })
+                        $scope.$apply()
                     })
                 })
-                $scope.chiadon = function(){
-                    $('#selectUser input:checkbox:checked').each(function(){
+                $scope.chiadon = function () {
+                    tasks = []
+                    Array.prototype.sum = function (prop) {
+                        var total = 0
+                        for (var i = 0, _len = this.length; i < _len; i++) {
+                            total += this[i][prop]
+                        }
+                        return total
+                    }
+
+                    $('#selectUser input:checkbox:checked').each(function () {
                         // console.log($(this).attr("id"))
-                    })
-                    var orders1 = []
-                    selected.forEach(val=>{
-                        var obj = dataForPro.find(ol=> {return ol.id == val.id})
-                        // console.log(obj);
-                        obj['order-items'].forEach(function(o) {  
-                            orders1.push(o)
+                        tasks.push({
+                            name: $(this).parent().find("#name").text(),
+                            uid: $(this).attr("id"),
+                            email: $(this).parent().find("#email").text(),
+                            orderNeedPack: []
                         })
                     })
 
-                    // var averageItem = (orders.length)/($('#selectUser input:checkbox:checked').length)
-                    // console.log(averageItem);
+                    var orders1 = []
+                    var tempOrders = []
+                    selected.forEach(val => {
+                        var obj = dataForPro.find(ol => {
+                            return ol.id == val.id
+                        })
+                        // console.log(obj);
+                        var objOrder = {
+                            modelNum: obj['item-models'].length,
+                            proNum: obj.products.length,
+                            amount: obj['order-items'].sum("amount"),
+                            orderId: obj.id
+                        }
+                        orders1.push(objOrder)
+                        tempOrders.push(objOrder)
+                    })
+
+                    orders1.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
+
+                    var averageItem = (orders1.sum("modelNum")) / ($('#selectUser input:checkbox:checked').length)
+                    averageItem = Math.round(averageItem);
+                    console.log(averageItem, orders1, tasks.length)
+
+                    for (var i = 0; i < tasks.length;) {             
+                        tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
+                        if (tasks[i].numModel < averageItem) {
+                            if (orders1.length > 0) {
+                                tasks[i].orderNeedPack.push(orders1[0])
+                                orders1.splice(0, 1)                                
+                            }else break
+                        }
+                        i++
+                        i = i == tasks.length ? 0 :i 
+                        console.log(i);
+                    }
+
+                    tasks.forEach(function (task) {  
+                        task.numOrder = task.orderNeedPack.length
+                        task.numModel = task.orderNeedPack.sum("modelNum")
+                        task.numProduct = task.orderNeedPack.sum("proNum")
+                        task.sum = task.orderNeedPack.sum("amount")
+                    })
+
+                    $scope.tasks = tasks
+
 
                 }
-            }else{
-                alert("Vui lòng chọn đơn cần chia cho người làm")
+                $scope.updatechiadon = function () {
+                    var batch = firestore.batch()
+                    tasks.forEach(function (task, i) {
+                        task.orderNeedPack.forEach(function (val, i1) {
+                            let obj = {
+                                name: task.name,
+                                email: task.email,
+                                uid: task.uid
+                            }
+                            var docRef = firestore.collection('orderShopee').doc(val.orderId.toString())
+                            batch.update(docRef, {
+                                "packer": obj
+                            })
+                            if ((i + 1) == tasks.length && (i1 + 1) == task.orderNeedPack.length) {
+                                batch.commit().then(function () {
+                                    new Noty({
+                                        layout: 'bottomRight',
+                                        theme: "success",
+                                        timeout: 2500,
+                                        type: 'warning',
+                                        text: 'ĐÃ THÊM NGƯỜI ĐÓNG GÓI'
+                                    }).show();
+                                    $('#chiadon').modal("hide")
+                                })
+                            }
+                        })
+                    })
+                }
+            } else {
+                alert("Vui lòng chọn đơn cần chia cho người làm và phải là đơn mới")
             }
         }
-    }
-]
+    }]
     $('#bulkStatus input:radio').change(function (e) {
         var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI CÁC ĐƠN ĐÃ CHỌN")
         if (confirmChange) {
@@ -765,7 +849,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         }
     })
 
-    $scope.createEx = function (name) {  
+    $scope.createEx = function (name) {
         let names = $scope.arr4.filter(y => y.name == name)
         console.log(name, names[0].orders);
         helper.validateExportOrder(names[0].orders)
@@ -820,7 +904,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)),
                 size: myData.order_items.length,
                 orderId: myData.ordersn,
-                lengthClassify: myData["order-items"].length
+                lengthClassify: myData["order-items"].length,
+                packer: myData.packer ? myData.packer.email : ""
             }
             sources.push(obj)
         })
@@ -925,4 +1010,3 @@ function mapGender() {
         }
     }
 };
-

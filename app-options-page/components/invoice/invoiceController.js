@@ -1,43 +1,6 @@
-app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstants) {
-    var arrayStatus = [{
-            id: 1,
-            name: "Đơn Mới"
-        },
-        {
-            id: 2,
-            name: "Đã Thanh Toán"
-        },
-        {
-            id: 3,
-            name: "Đã Gửi Đi"
-        },
-        {
-            id: 4,
-            name: "Đã Nhận TQ"
-        },
-        {
-            id: 5,
-            name: "Đã Nhận VN"
-        },
-        {
-            id: 6,
-            name: "Đã Về Kho"
-        },
-        {
-            id: 7,
-            name: "Thiếu"
-        },
-        {
-            id: 8,
-            name: "Đủ"
-        }, {
-            id: 9,
-            name: "Hủy"
-        }
-    ]
-
+app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGridConstants) {
+    
     $scope.options = {
-        // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
         enableSelectAll: true,
         enableGridMenu: true,
@@ -110,16 +73,12 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                 $scope.selectionInv()
             });
             gridApi.edit.on.afterCellEdit($scope, $scope.saveRow);
-            // gridApi.rowEdit.on.saveRow($scope, $scope.saveRow);
         }
     };
     $scope.optionsShipping = {
-        // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
         enableSelectAll: true,
         enableGridMenu: true,
-        // paginationPageSizes: [15, 30, 45],
-        // paginationPageSize: 8,
         enableSorting: true,
         showGridFooter: false,
         columnDefs: [{
@@ -138,16 +97,9 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
             }
 
         ],
-        // showGridFooter: true,
-        // enableFiltering: true,
-        // gridFooterTemplate: "<div style='margin-left: 12px;'><span id='countClas'></span> Phân Loại - Số lượng: <span id='quantity'></span> </div>",
         onRegisterApi: function (gridApi) {
-
             $scope.gridApiShipping = gridApi;
-
             gridApi.edit.on.afterCellEdit($scope, $scope.saveRowShipping);
-            // gridApi.rowEdit.on.saveRow($scope, $scope.saveRow);
-
         }
     };
 
@@ -183,16 +135,12 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
     }
 
     $scope.optionsDetail = {
-        // enableHorizontalScrollbar = 0,
         enableRowSelection: true,
         enableSelectAll: true,
         enableGridMenu: true,
         
-        // paginationPageSizes: [15, 30, 45],
-        // paginationPageSize: 8,
         enableSorting: true,
         showColumnFooter: true,
-        // showGridFooter: false,
         columnDefs: [{
                 name: "Id",
                 field: "original_sku",
@@ -204,7 +152,6 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                 enableFiltering: false,
                 width: "50",
                 footerCellTemplate: '<div class="ui-grid-cell-contents">Tổng</div>',
-                // field: "size",
                 cellTemplate: "<img class='previewImg' src='{{row.entity.image}}' width=30 height=30 />"
             }, {
                 name: "Tên Sản Phẩm",
@@ -322,10 +269,6 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
             }
         })     
        
-    }
-
-    $scope.roundToTwo = function(num) {    
-        return +(Math.round(num + "e+2")  + "e-2");
     }
 
     $scope.saveRowDetail = function (rowEntity, colDef, newValue, oldValue) {
@@ -478,6 +421,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
 
         obj.models.forEach(function (element, i) {
             obj.models[i].quantity = Number(obj.models[i].quantity)
+            console.log(obj.models[i].price);
             obj.models[i].price = Number(obj.models[i].price)
             obj.models[i].sum = obj.models[i].quantity * obj.models[i].price
             obj.models[i].image = obj.models[i].image ? obj.models[i].image : "https://i.imgur.com/NWUJZb1.png",
@@ -488,7 +432,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
 
         $scope.models = obj.models
 
-        $scope.arrayStatus = arrayStatus
+        $scope.arrayStatus = helper.buyOrderStatus
         $scope.invoiceId = obj.id
         $scope.currency_rate = Number(obj.currency_rate)
         console.log(obj);
@@ -549,9 +493,6 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
                                     };
                                 })
                             }).then(() => {
-                                // $scope.traceNo.forEach(function(element){                                
-                                //     element.time = moment(element.time.seconds * 1000).format("MM/DD/YYYY HH:mm")
-                                // })
                                 new Noty({
                                     layout: 'bottomRight',
                                     timeout: 1000,
@@ -623,25 +564,6 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
             }
         }, 100)
 
-        // var timer = setInterval(function () {
-        //     var $input = $('table.itemInvoicePreview input')
-        //     console.log($input.length);
-        //     if ($input.length > 0) {
-        //         clearInterval(timer)
-        //         $input.on("keyup change click", function () {
-
-        //             $scope.sumPaid = 0
-        //             $('table.itemInvoicePreview tbody tr').each(function () {
-        //                 var newPrice = $(this).find("input[name='priceItem']").val()
-        //                 var newQuantity = $(this).find("input[name='quantityItem']").val()
-        //                 $scope.sumPaid = $scope.sumPaid + (newPrice * newQuantity)
-        //                 $scope.$apply()
-        //             })
-        //             console.log("change", $scope.sumPaid);
-        //         })
-        //     }
-        // })
-
     }
 
     $('select#selectStatus').on('change', function () {
@@ -706,7 +628,6 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
     });
 
     function getInvoice(invoices) {
-        // console.log(invoices);
         invoices.forEach(element => {
             element.create_at = moment(element.create_at.seconds * 1000).format("MM/DD/YYYY")
             var InvoicePrice = Number(element.sumPaid) + Number(element.shipping_fee) - Number(element.voucher_price)
@@ -715,7 +636,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, uiGridConstan
             element.note = element.note ? element.note : ""
 
             let selectedExpTags = [parseInt(element.status.status)];
-            let names = selectedExpTags.map(x => arrayStatus.find(y => y.id === x).name)
+            let names = selectedExpTags.map(x => helper.buyOrderStatus.find(y => y.id === x).name)
             element.statusName = names[0]
 
             element.models.forEach(function (valModel, i) {

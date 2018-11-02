@@ -6,12 +6,34 @@
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: #F5F5F5;
 }
-
+ul.tasks span {
+  display: inline-block;
+  padding: 5px 10px;
+  margin-right: 5px;
+}
 #qrcodeEx img {
   width: unset !important;
   float: right
 }
-
+.tasks thead th{
+  background: #233242;
+  color: #fff
+}
+span.info {
+  background: #8251f5;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+span.name{
+  background: #ea5050;
+  color: #fff;
+  border-radius: 50px;
+}
+ul.tasks {
+  list-style-type: circle;
+  padding-left: 20px;
+}
 .selectUser div {
   display: inline-block;
   margin: 20px;

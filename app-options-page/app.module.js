@@ -1,14 +1,7 @@
 'use strict';
-
 firebase.initializeApp({
   apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
   projectId: "nguoitimship",
-
-  // apiKey: "AIzaSyDVNIaP7FBvbf5MuQ0snFvus83BJYCkLnc",
-  // projectId: "shopngocanh-2018",
-
-  // apiKey: "AIzaSyDQGNExQfK_QGLyGrqGZ4RE247-l3M84bA",
-  // projectId: "ext-chrome-6aaac"
 });
 
 const firestore = firebase.firestore();
@@ -16,30 +9,50 @@ const settings = { /* your settings... */
   timestampsInSnapshots: true
 };
 firestore.settings(settings);
-// Initialize Cloud Firestore through Firebase
-// const  firestore = firebase.firestore();
-// const settings = {/* your settings... */ timestampsInSnapshots: true};
-// firestore.settings(settings);
-// firestore.collection("users").add({
-//     first: "Ada",
-//     last: "Lovelace",
-//     born: 1815
-// })
-// .then(function(docRef) {
-//     console.log("Document written with ID: ", docRef.id);
-// })
-// .catch(function(error) {
-//     console.error("Error adding document: ", error);
-// });
 
-var app = angular.module("app", ["ngRoute", 'ui.bootstrap', "chart.js",'ui.grid.autoResize', 'ui.grid.treeView', 'ui.grid.rowEdit', "ui.grid", 'ui.grid.grouping', 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', 'ui.grid.exporter', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
+var app = angular.module("app", ["ngRoute", 'ui.bootstrap', "chart.js", 'ui.grid.autoResize', 'ui.grid.treeView', 'ui.grid.rowEdit', "ui.grid", 'ui.grid.grouping', 'ui.grid.selection', 'ui.grid.resizeColumns', 'ui.grid.cellNav', 'ui.grid.importer', 'ui.grid.exporter', "ui.grid.edit", "ui.grid.pagination", "angularMoment"]);
 
 app.config(function ($compileProvider) {
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);
 });
 
 app.service('helper', function () {
-
+  this.buyOrderStatus = [{
+      id: 1,
+      name: "Đơn Mới"
+    },
+    {
+      id: 2,
+      name: "Đã Thanh Toán"
+    },
+    {
+      id: 3,
+      name: "Đã Gửi Đi"
+    },
+    {
+      id: 4,
+      name: "Đã Nhận TQ"
+    },
+    {
+      id: 5,
+      name: "Đã Nhận VN"
+    },
+    {
+      id: 6,
+      name: "Đã Về Kho"
+    },
+    {
+      id: 7,
+      name: "Thiếu"
+    },
+    {
+      id: 8,
+      name: "Đủ"
+    }, {
+      id: 9,
+      name: "Hủy"
+    }
+  ];
   this.validateExportOrder = function (arrayOrders) {
     var n = new Noty({
       layout: 'bottomRight',
@@ -76,10 +89,6 @@ app.service('helper', function () {
       dataSingle = keys.data
       act(dataSingle)
     })
-    //   chrome.storage.onChanged.addListener(function (changes) {
-    //     dataSingle = changes.data.newValue
-    // })
-
 
     function act(dataSingle) {
       arrayOrders.forEach(function (val) {
@@ -110,7 +119,7 @@ app.service('helper', function () {
       })
     }
 
-    var timer = setInterval(function ()  {
+    var timer = setInterval(function () {
       if (arrExportId.length == arrayOrders.length) {
         clearInterval(timer)
         console.log(arrExportId);
@@ -119,11 +128,11 @@ app.service('helper', function () {
         var batch = firestore.batch()
         var exCol = firestore.collection("exportCode").doc(date.getTime().toString())
         batch.set(exCol, {
-                "orders": arrExportId,
-                "shipper": "",
-                "create_at": date,
-                "status": "MỚI",
-                "carrier": carrier
+          "orders": arrExportId,
+          "shipper": "",
+          "create_at": date,
+          "status": "MỚI",
+          "carrier": carrier
         })
         var check = []
         arrExportId.forEach(function (val, i) {
@@ -137,12 +146,12 @@ app.service('helper', function () {
         var timerSec = setInterval(function () {
           if (check.length == arrExportId.length) {
             clearInterval(timerSec)
-           
+
             batch.commit().then(function () {
-                n.close()
-                var win = window.open(chrome.extension.getURL("options.html#/export/") + date.getTime(), "_blank");
-                win.focus()
-              })
+              n.close()
+              var win = window.open(chrome.extension.getURL("options.html#/export/") + date.getTime(), "_blank");
+              win.focus()
+            })
 
             ;
           }
@@ -169,7 +178,7 @@ app.controller("header-controller", ['$scope', '$location', function ($scope, $l
 
   $('#rightDiv').on('hidden.bs.collapse', function (e) {
     $('#leftDiv').css({
-      "width":"100%"
+      "width": "100%"
     })
     $('nav.right').css({
       "margin-left": "45px"
@@ -177,7 +186,7 @@ app.controller("header-controller", ['$scope', '$location', function ($scope, $l
   })
   $('#rightDiv').on('shown.bs.collapse', function (e) {
     $('#leftDiv').css({
-      "width":"83.333333%"
+      "width": "83.333333%"
     })
     $('nav.right').css({
       "margin-left": "0px"
@@ -190,7 +199,7 @@ app.controller("header-controller", ['$scope', '$location', function ($scope, $l
         console.log(user);
         $scope.$apply(function () {
           $scope.firebaseUser = user;
-          
+
           $scope.textButton = 'Đăng Xuất';
         });
       } else {

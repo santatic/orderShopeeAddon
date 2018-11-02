@@ -114,16 +114,44 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <button class="btn btn-success" ng-click="chiadon()" >CHIA ĐƠN</button>
+                <button class="btn btn-primary" ng-click="chiadon()">CHIA ĐƠN</button>
+                <button class="btn btn-success" ng-click="updatechiadon()">CHỐT</button>
             </div>
             <div class="modal-body">
                 <div class="form-group-status" id="selectUser" style="padding-top: 0">
                     <div class="selectUser">
                         <div ng-repeat="i in users">
-                            <input type="checkbox" id="{{i.uid}}" style="cursor:pointer">
-                            <b>{{i.name}}</b><br>{{i.email}}
+                            <input  type="checkbox" id="{{i.uid}}" style="cursor:pointer">
+                            <span id="name"><b>{{i.name}}</b></span> <br> <span id="email">{{i.email}}</span>
                         </div>
                     </div>
+                </div>
+                <div class="tasks">
+                    <!-- <ul class="tasks">
+                        <li ng-repeat="i in tasks">
+                            <span class="name" id="{{i.uid}}" title="{{i.email}}">{{i.name}}</span><span class="info" title="Số lượng Đơn">{{i.numOrder}}</span><span class="info" title="Số lượng Sản phẩm">{{i.numProduct}}</span><span class="info" title="Số lượng Phân loại hàng">{{i.numModel}}</span><span class="info" title="Tổng số lượng hàng">{{i.sum}}</span>
+                        </li>
+                    </ul> -->
+                    <table class="table table-bordered" ng-show="tasks.length > 0">
+                        <thead>
+                            <tr>
+                                <th>Người Đóng Gói</th>
+                                <th>Số Đơn</th>
+                                <th>Sản Phẩm</th>
+                                <th>Phân Loại</th>
+                                <th>Lượng hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="i in tasks">
+                                <th title="{{i.email}}">{{i.name}}</th>
+                                <th>{{i.numOrder}}</th>
+                                <th>{{i.numProduct}}</th>
+                                <th>{{i.numModel}}</th>
+                                <th>{{i.sum}}</th>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -201,15 +229,13 @@
     <div class="panel-header noprint" style="padding:5px 0 0 20px;">
         ĐÃ ĐÓNG GÓI
         <span class="pull-right" data-toggle="collapse" data-target=".panel-body.arr4">
-            <<< </span>
-    </div>
-    <div class="panel-body arr4 collapse in"  style="padding: 15px;
+            <<< </span> </div> <div class="panel-body arr4 collapse in" style="padding: 15px;
     padding-left: 0px;">
-        <ul style="    padding-left: 20px;" class="noprint">
-            <li style="margin-bottom: 8px;" ng-repeat="item in arr4">{{item.name}}: {{item.orders.length}} đơn <span
-                    style="cursor:pointer" ng-click="createEx(item.name)" class="glyphicon glyphicon-new-window"></span>
-            </li>
-        </ul>
+                <ul style="    padding-left: 20px;" class="noprint">
+                    <li style="margin-bottom: 8px;" ng-repeat="item in arr4">{{item.name}}: {{item.orders.length}} đơn
+                        <span style="cursor:pointer" ng-click="createEx(item.name)" class="glyphicon glyphicon-new-window"></span>
+                    </li>
+                </ul>
     </div>
 </div>
 
