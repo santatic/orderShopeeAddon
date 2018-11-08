@@ -91,6 +91,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         paginationPageSize: 15,
         enableSorting: true,
         columnDefs: [{
+                name: "Shop Bán",
+                field: "shop",
+                visible: false
+            }, {
                 name: "ID",
                 field: "id",
                 enableCellEdit: false,
@@ -264,44 +268,54 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         title: "IN ĐƠN",
         action: function () {
             var selected = $scope.gridApi.selection.getSelectedRows();
-            // console.log(selected);
-            // $.each(selected, function (i, value) {
-            //     var selectedExpTags = [parseInt(value.ownStatus)];
-            //     var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-            //     value.own_Status = names[0];
-            // })
-            selected.sort(function (a, b) {
-                return (a.trackno > b.trackno) ? 1 : ((b.trackno > a.trackno) ? -1 : 0)
-            })
-            $scope.rowSelected = selected;
-            // window.onload = function () {
+            var condi = true
             selected.forEach(function (val) {
-                // console.log(val.id);
-                var timer = setInterval(function () {
-                    if (($("#" + val.id)).length) {
-                        clearInterval(timer)
-                        console.log(val.id);
-                        var qrcode = new QRCode(document.getElementById(val.id), {
-                            width: 60,
-                            height: 60,
-                            correctLevel: QRCode.CorrectLevel.H
-                        });
-
-                        function makeCode() {
-                            qrcode.makeCode(val.id.toString());
-                        }
-                        makeCode();
-                    }
-                })
-
-
+                if (val.ownStatus !== 1) {
+                    condi = false
+                }
             })
-            // }
 
-            $timeout(function () {
-                window.print();
-                $scope.rowSelected = []
-            }, 500)
+            if (condi) {
+                selected.sort(function (a, b) {
+                    return (a.trackno > b.trackno) ? 1 : ((b.trackno > a.trackno) ? -1 : 0)
+                })
+                selected.sort(function (a, b) {
+                    return (a.packer > b.packer) ? 1 : ((b.packer > a.packer) ? -1 : 0)
+                })
+                $scope.rowSelected = selected;
+                // window.onload = function () {
+                selected.forEach(function (val) {
+                    // console.log(val.id);
+                    var timer = setInterval(function () {
+                        if (($("#" + val.id)).length) {
+                            clearInterval(timer)
+                            console.log(val.id);
+                            var qrcode = new QRCode(document.getElementById(val.id), {
+                                width: 60,
+                                height: 60,
+                                correctLevel: QRCode.CorrectLevel.H
+                            });
+
+                            function makeCode() {
+                                qrcode.makeCode(val.id.toString());
+                            }
+                            makeCode();
+                        }
+                    })
+
+
+                })
+                // }
+
+                $timeout(function () {
+                    window.print();
+                    $scope.rowSelected = []
+                }, 500)
+            } else {
+                alert("Vui lòng chọn đơn mới")
+            }
+
+
         }
     }, {
         title: "TẠO PHIẾU XUẤT",
@@ -379,12 +393,12 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             var selected = $scope.gridApi.selection.getSelectedRows();
             var condi = true
             selected.forEach(function (val) {
-                if (val.ownStatus !== 1) condi = false;
+                if (val.ownStatus !== 1 || val.packer) condi = false;
             })
             if (condi && selected.length > 0) {
                 $('#chiadon').modal()
                 var tasks = []
-                firestore.collection("usersMobile").get().then(col => {
+                firestore.collection("usersMobile").where("role", "==", 2).get().then(col => {
                     col.forEach(doc => {
                         // console.log(doc.data());
                         $scope.users.push({
@@ -438,20 +452,20 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     averageItem = Math.round(averageItem);
                     console.log(averageItem, orders1, tasks.length)
 
-                    for (var i = 0; i < tasks.length;) {             
+                    for (var i = 0; i < tasks.length;) {
                         tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
                         if (tasks[i].numModel < averageItem) {
                             if (orders1.length > 0) {
                                 tasks[i].orderNeedPack.push(orders1[0])
-                                orders1.splice(0, 1)                                
-                            }else break
+                                orders1.splice(0, 1)
+                            } else break
                         }
                         i++
-                        i = i == tasks.length ? 0 :i 
+                        i = i == tasks.length ? 0 : i
                         console.log(i);
                     }
 
-                    tasks.forEach(function (task) {  
+                    tasks.forEach(function (task) {
                         task.numOrder = task.orderNeedPack.length
                         task.numModel = task.orderNeedPack.sum("modelNum")
                         task.numProduct = task.orderNeedPack.sum("proNum")
@@ -479,9 +493,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                                 batch.commit().then(function () {
                                     new Noty({
                                         layout: 'bottomRight',
-                                        theme: "success",
+                                        theme: "relax",
                                         timeout: 2500,
-                                        type: 'warning',
+                                        type: 'success',
                                         text: 'ĐÃ THÊM NGƯỜI ĐÓNG GÓI'
                                     }).show();
                                     $('#chiadon').modal("hide")
@@ -905,7 +919,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 size: myData.order_items.length,
                 orderId: myData.ordersn,
                 lengthClassify: myData["order-items"].length,
-                packer: myData.packer ? myData.packer.email : ""
+                packer: myData.packer ? myData.packer.name : "",
+                shop: helper.myShop.find(x => x.id == myData.shopid).name
             }
             sources.push(obj)
         })

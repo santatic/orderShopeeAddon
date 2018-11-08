@@ -230,7 +230,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         }, function (reminder) {
           console.log("created notification");
         })
-          firestore.collection("orderShopee").where("own_status.status", "<=", 6)
+        firestore.collection("orderShopee").where("own_status.status", "<=", 6)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
@@ -531,7 +531,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         names[0].forEach(function (order, index2) {
           firestore.collection("orderShopee").doc(order.toString()).get()
             .then(function (doc) {
-              const data = doc.datfa()
+              const data = doc.data()
               var status = data.own_status.status
               if (status == 5 || status == 11) {
                 okey.push(order)
@@ -541,13 +541,13 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 var docRef = firestore.collection("exportCode").doc(ex)
                 batch.update(docRef, {
                   "status": "SHIPPED"
-                })    
-                count = count + 1            
+                })
+                count = count + 1
               }
-              if((index1 + 1) == response.exs.length && (index2 + 1)== names[0].length){
+              if ((index1 + 1) == response.exs.length && (index2 + 1) == names[0].length) {
                 batch.commit().then(() => {
                   sendResponse()
-                  alert("ĐÃ CHUYỂN " + count + " PHIẾU XUẤT VỀ ĐÃ GIAO")                  
+                  alert("ĐÃ CHUYỂN " + count + " PHIẾU XUẤT VỀ ĐÃ GIAO")
                 })
               }
             })
@@ -745,57 +745,68 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   }
 
   function getHomepage(response, sendResponse) {
-
-    var res = [];
-    var loop = [
-      1,
-      4,
-      5
-    ]
-
-
-    $.each(loop, function (i, val) {
-      console.log(val);
-      var logistics = [];
-      var homeArray = dataOnSnapshot.filter(function (event) {
-        return event.own_status.status == val;
-      });
-      console.log(homeArray);
-      // var colRef = firestore.collection("orderShopee").where("own_status.status", "==", val)
-      // colRef.get().then(function (querySnapshot) {
-      //   console.log(querySnapshot.size);
-      var ids = []
-      homeArray.forEach(function (doc) {
-        const data = doc
-        var obj = new Object()
-        obj = {
-          id: doc.id,
-          logistics: data.logistic['logistics-logs'].length > 0 ? data.logistic['logistics-logs'][0].description : "",
-          logistics_status: data.logistics_status,
-          exId: data.exportId ? data.exportId : ""
+    console.log("hompe");
+    const promise = request_center.request_trigger_shopee_backend_homepage
+    // new Promise(function (resolve, reject) {
+    //   resolve() = request_center.request_trigger_shopee_backend_homepage()
+    //   return resolve()
+    // })
+    promise.then(function(){
+      chrome.storage.local.get('shopCurrent', function (keys) {
+        if (keys.shopCurrent.length > 0) {
+          var res = [];
+          var loop = [
+            1,
+            4,
+            5
+          ]
+  
+  
+          $.each(loop, function (i, val) {
+            console.log(val);
+            var logistics = [];
+            var homeArray = dataOnSnapshot.filter(function (event) {
+              return event.own_status.status == val && event.shopid == keys.shopCurrent[0].shopid;
+            });
+            console.log(homeArray);
+            var ids = []
+            homeArray.forEach(function (doc) {
+              const data = doc
+              var obj = new Object()
+              obj = {
+                id: doc.id,
+                logistics: data.logistic['logistics-logs'].length > 0 ? data.logistic['logistics-logs'][0].description : "",
+                logistics_status: data.logistics_status,
+                exId: data.exportId ? data.exportId : ""
+              }
+              logistics.push(obj)
+            })
+            var obj = new Object();
+            var selectedExpTags = [val];
+            var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
+            obj = {
+              status: names[0],
+              size: homeArray.length,
+              logistics: logistics
+            }
+            res.push(obj)
+            // })
+          })
+          console.log(res);
+          var timer = setInterval(function () {
+            if (res.length == 3) {
+              console.log(res);
+              sendResponse({
+                data: res
+              })
+              clearInterval(timer)
+            }
+          }, 500)
         }
-        logistics.push(obj)
-      })
-      var obj = new Object();
-      var selectedExpTags = [val];
-      var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
-      obj = {
-        status: names[0],
-        size: homeArray.length,
-        logistics: logistics
-      }
-      res.push(obj)
-      // })
-    })
-    var timer = setInterval(function () {
-      if (res.length == 3) {
-        console.log(res);
-        sendResponse({
-          data: res
-        })
-        clearInterval(timer)
-      }
-    }, 500)
+      });
+    }
+
+    )
 
   }
 
@@ -1092,22 +1103,22 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       // var id = response.url.toString()
       var selectedExpTags = [data.own_status.status];
       var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
-      
-      if(data.exportId){
-        firestore.collection("exportCode").doc(data.exportId).get()
-        .then(function(doc){
-          sendResponse({
-            check: "update",
-            note: data.note,
-            user: data.user.name,
-            money: data.buyer_paid_amount,
-            status: names[0],
-            exportId: data.exportId,
-            exDate: doc.data().create_at.seconds*1000
-          })
-        })
 
-      }else{
+      if (data.exportId) {
+        firestore.collection("exportCode").doc(data.exportId).get()
+          .then(function (doc) {
+            sendResponse({
+              check: "update",
+              note: data.note,
+              user: data.user.name,
+              money: data.buyer_paid_amount,
+              status: names[0],
+              exportId: data.exportId,
+              exDate: doc.data().create_at.seconds * 1000
+            })
+          })
+
+      } else {
         sendResponse({
           check: "update",
           note: data.note,
@@ -1118,7 +1129,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           exDate: (new Date()).getTime()
         })
       }
-      
+
     }
 
     function callback() {}

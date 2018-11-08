@@ -1,4 +1,4 @@
-app.controller("print-controller", function ($scope, $rootScope, $routeParams, moment) {
+app.controller("print-controller", function ($scope, $rootScope, $routeParams, helper,moment) {
     $scope.printProducts = false
     var arrayFilter = [{
             id: 1,
@@ -219,6 +219,14 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
         $scope.name = data.buyer_address_name;
         $scope.address = data.shipping_address;
         $scope.phone = data.buyer_address_phone;
+
+        $scope.packer = data.packer? data.packer.name:"Chưa có người đóng gói"
+
+        
+
+        $scope.shop = (helper.myShop.find(x=> x.id == data.shopid)).name
+
+        console.log(helper.myShop);
         
         $scope.orderId = data.ordersn;
         $scope.urlId = id;
@@ -245,7 +253,15 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, m
     }
 
 
-
+    function httpGet(theUrl, headers) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", theUrl, false); // false for synchronous request
+        for (var i = 0; i < headers.length; i++) {
+          xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
+        }
+        xmlHttp.send(null);
+        return JSON.parse(xmlHttp.responseText);
+      }
 
 
 });

@@ -88,12 +88,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
             mission: "getHomepage"
         }, function (response) {
             console.log(response.data);
-            var data = response.data;
-            data.forEach(function (val) {})
-            // var selectedExpTags = [parseInt(value.ownStatus)];
-            // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-            // value.own_Status = names[0];
-            $scope.data = data
+            $scope.data = response.data;
             $scope.$apply()
         })
         $scope.update = function (status) {

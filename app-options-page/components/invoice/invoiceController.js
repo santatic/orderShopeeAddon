@@ -1,5 +1,5 @@
 app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGridConstants) {
-    
+
     $scope.options = {
         enableRowSelection: true,
         enableSelectAll: true,
@@ -138,7 +138,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         enableRowSelection: true,
         enableSelectAll: true,
         enableGridMenu: true,
-        
+        enableFiltering: true,
         enableSorting: true,
         showColumnFooter: true,
         columnDefs: [{
@@ -156,11 +156,13 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
             }, {
                 name: "Tên Sản Phẩm",
                 field: "productName",
+                enableFiltering: true,
                 enableCellEdit: false
             },
             {
                 name: "Phân Loại",
                 field: "name",
+                enableFiltering: false,
                 width: "100",
             },
             {
@@ -168,16 +170,19 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
                 field: "quantity",
                 aggregationType: uiGridConstants.aggregationTypes.sum,
                 aggregationHideLabel: true,
+                enableFiltering: false,
                 width: "60",
             }, {
                 name: "Thực Nhập",
                 field: "actual_quantity",
+                enableFiltering: false,
                 width: "60",
                 aggregationType: uiGridConstants.aggregationTypes.sum,
                 aggregationHideLabel: true,
             }, {
                 name: "Giá",
                 field: "price",
+                enableFiltering: false,
                 width: "60",
             }, {
                 name: "Tổng",
@@ -185,11 +190,14 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
                 width: "60",
                 aggregationType: uiGridConstants.aggregationTypes.sum,
                 aggregationHideLabel: true,
+                enableFiltering: false,
                 enableCellEdit: false
+
             }, {
                 name: "Chênh lệch",
                 field: "offset",
                 width: "60",
+                enableFiltering: false,
                 aggregationType: uiGridConstants.aggregationTypes.sum,
                 aggregationHideLabel: true,
             }
@@ -241,34 +249,34 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
     }
 
     $scope.selectionClassify = function () {
-        var promise = new Promise((resolve, reject)=>{
+        var promise = new Promise((resolve, reject) => {
             $scope.optionsDetail.showGridFooter = true
             $scope.gridApiDetail.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS)
             resolve()
         })
 
-        promise.then(()=>{
+        promise.then(() => {
             var selected = $scope.gridApiDetail.selection.getSelectedRows();
-            if (selected.length !== 0) {            
-    
+            if (selected.length !== 0) {
+
                 $("#countClas").text("0")
                 $("#quantity").text("0")
-    
+
                 function amountQuan(item) {
                     return Number(item.quantity);
                 }
-    
+
                 function sum(prev, next) {
                     return parseInt(prev) + parseInt(next);
                 }
                 $("#countClas").text(selected.length)
                 $("#quantity").text(selected.map(amountQuan).reduce(sum))
-            }else{
+            } else {
                 $scope.optionsDetail.showGridFooter = false
                 $scope.gridApiDetail.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS)
             }
-        })     
-       
+        })
+
     }
 
     $scope.saveRowDetail = function (rowEntity, colDef, newValue, oldValue) {
@@ -383,30 +391,29 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
     $scope.optionsShipping.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
     var invoicesData = []
     chrome.storage.local.get('invoices', function (obj) {
-
         invoicesData = obj.invoices
         console.log(invoicesData);
         getInvoice(obj.invoices);
-
     })
     chrome.storage.onChanged.addListener(function (changes) {
-
-        console.log("change", changes);
-        invoicesData = changes.invoices.newValue
-        getInvoice(changes.invoices.newValue);
-        console.log(invoicesData);
+        if (changes.invoices.newValue.length > 0) {
+            console.log("change", changes);
+            invoicesData = changes.invoices.newValue
+            getInvoice(changes.invoices.newValue);
+            console.log(invoicesData);
+        }
 
     })
     var lastSel
     $scope.detailInvoice = function (row) {
-        // console.log(row.id,invoicesData);
-        $scope.options = false
         var obj = invoicesData.find(y => {
             return y.id === row.entity.id
         })
 
         $scope.note = obj.note ? obj.note : ""
-
+        $scope.status = obj.status.status;
+        $scope.orderId = obj.invoiceId
+        console.log($scope.status);
         $scope.sumPaid = Number(obj.sumPaid)
         $scope.shipping_fee = Number(obj.shipping_fee)
         $scope.voucher = Number(obj.voucher_price)
@@ -438,12 +445,15 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         console.log(obj);
         $('#showInvoice').modal()
         $("#showInvoice").on("hidden.bs.modal", function () {
-
+            $scope.status = 0
+            $scope.$apply()
+            $("#countClas").text("0")
+            $("#quantity").text("0")
             // $('ul#listClassify').html("")
         })
         $('div.itemInvoice select').val(obj.status.status)
         lastSel = obj.status.status
-        $scope.status = obj.status.status
+
 
         $scope.saveNote = function () {
             console.log($scope.note);

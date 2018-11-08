@@ -25,6 +25,12 @@ span.info {
   border-radius: 4px;
   cursor: pointer;
 }
+p.packer{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50px;
+}
 span.name{
   background: #ea5050;
   color: #fff;

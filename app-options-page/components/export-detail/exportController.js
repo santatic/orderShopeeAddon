@@ -471,8 +471,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     // .then(function(querySnapshot) {
     //     getData(querySnapshot)
     // })
+    var ordersInEx
     chrome.storage.local.get('data', function (keys) {
-        var ordersInEx
+        
         firestore.collection("exportCode").doc(id.toString()).get().then(function (doc) {
             const data = doc.data()
             $scope.originLength = data.orders.length
@@ -507,9 +508,11 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         // })
 
     })
-    // chrome.storage.onChanged.addListener(function (changes) {
-    //     getData(changes.data.newValue);
-    // })
+    chrome.storage.onChanged.addListener(function (changes) {
+        $scope.options.data = []
+        $scope.$apply()
+        getData(ordersInEx, changes.data.newValue);
+    })
     var sources = []
     function getData(ordersInExport, arrayData) {
         // console.log(arrayData);

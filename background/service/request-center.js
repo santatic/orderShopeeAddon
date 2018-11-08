@@ -73,45 +73,29 @@ app.service('request_center', function (helper_center) {
     //         }
     //     })
 
-    this.request_trigger_shopee_backend_orders_list = function () {
-        var arrIdExisted = [],
-            arrIdNotExisted = []
-        var checkArr
-        var obj = new Object()
+    this.request_trigger_shopee_backend_homepage = new Promise(function (r,j) {
         chrome.webRequest.onBeforeSendHeaders.addListener(
             function (details) {
-                if (helper_center.checkUrlContainSubstring(details.url, ["banhang.shopee.vn/api/v2/orders/?", "limit=40", "offset"]) == true) {
-                    console.log("done");
-                    // var docRef = firestore.collection("orderShopee");
-                    // let data = helper_center.httpGet(details.url, [])
-                    // data.orders.forEach(function (val) {
-                    //     docRef.doc((val.id).toString()).get().then(function (doc) {
-                    //         if (doc.exists) {
-                    //             arrIdExisted.push(val.id)
-                    //             // console.log(doc.data());
-                    //         } else {
-                    //             arrIdNotExisted.push(val.id)
-                    //             // console.log("not existed");
-                    //         }
-                    //     }).then(function () {})
-                    // })
-                    // var timer = setInterval(function () {
-                    //     if (arrIdExisted.length + arrIdNotExisted.length == data.orders.length) {
-                    //         var res = new Object()
-                    //         res = {
-                    //             exist: arrIdExisted,
-                    //             notExist: arrIdNotExisted
-                    //         }
-                    //         // return res
-                    //         clearInterval(timer)
-                    //     }
-                    // }, 100)
+                console.log(details);
+                if (helper_center.checkUrlContainSubstring(details.url, ["banhang.shopee.vn/api/v2/shops/"]) == true) {
+                    var shopid = details.url.match(/\/shops\/(\d+)\//);
+                    console.log("done",shopid[1]);
+                    chrome.storage.local.set({
+                        shopCurrent: [{
+                            shopid: Number(shopid[1])
+                        }]
+                    }, function () {
+                        chrome.storage.local.get('shopCurrent', function (keys) {
+                            console.log("shopid", keys);
+                            return r()
+                        });
+                    })
                 }
             }, {
-                urls: ["https://banhang.shopee.vn/api/v2/orders*"]
+                urls: ["https://banhang.shopee.vn/api/v2/shops*"]
             }, ["blocking", "requestHeaders"]);
 
-       
-    }
+
+    })
 
 });

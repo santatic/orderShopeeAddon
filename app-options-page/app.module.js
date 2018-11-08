@@ -53,6 +53,13 @@ app.service('helper', function () {
       name: "Hủy"
     }
   ];
+  this.myShop = [{
+    id: 92727482,
+    name: "Shop Banana"
+  },{
+    id: 20340126,
+    name: "ShopNgocAnh"
+  }]
   this.validateExportOrder = function (arrayOrders) {
     var n = new Noty({
       layout: 'bottomRight',
