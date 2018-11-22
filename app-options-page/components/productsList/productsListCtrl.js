@@ -1,3 +1,4 @@
+
 app.controller("productsList-controller", productsList)
 
 productsList.$inject = ['$scope', '$q', '$timeout', 'moment', 'uiGridConstants'];
@@ -57,7 +58,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
         }, {
             name: "Tên sản phẩm",
             field: "productName",
-            enableCellEdit: true
+            enableCellEdit: true,
+            cellTemplate: '<div class="ui-grid-cell-contents" ><b> <a target="_blank" href="https://detail.1688.com/offer/{{row.entity.linked_filltered[0].id}}.html"> {{row.entity.productName}} </a></b></div>'
         }, {
             name: "Phân loại",
             enableCellEdit: false,
@@ -910,6 +912,9 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
 
                     document.addEventListener('paste', function (e) {
                         if ($("input#target").is(":focus")) {
+
+                        
+
                             e.preventDefault();
                             
                             var pastedText = ''
@@ -935,7 +940,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                             $scope.$apply()
                             var models = []
                             var products = []
-                            $('table.has-multi-entry-order tr').each(function () {
+                            $('table.has-multi-entry-order:eq(1) tr').each(function () {
                                 $this = $(this)
                                 
                                 var disId = $(this).find('td.s1 a').attr("href")
@@ -951,10 +956,11 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                     arrData.every(obj => {
                                         // console.log("loop1", obj);
                                         var found = obj.linked_classify.forEach(function (el, index) {
+
                                             // console.log("loop2", el);
                                             console.log(el.id,disId.toString(), el.skuName.replace(/\s/g,'') , classify.replace(/\s/g,'').toString());
                                             if (el.id == disId.toString() && el.skuName.replace(/\s/g,'') == classify.replace(/\s/g,'').toString()) {
-                                                
+                                             
                                                 let linked_classify = obj['linked_classify'].find(o => o.skuName.replace(/\s/g,'') == classify.replace(/\s/g,''));
                                                 // console.log(index, linked_classify)
                                                 $this.find('a.productName').text(obj.productName)
@@ -964,6 +970,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                                 var tradespecdiv = $this.find('div.trade-spec')
                                                 console.log(tradespecdiv.length);
                                                 if(tradespecdiv.length > 0){
+
                                                     tradespecdiv.html("<b class='dontHighlight'>[ " + names[0] + " ]</b> ")
                                                 }else{
                                                     $this.find('td.s2 .c').prepend('<div class="trade-spec" style="padding-top: 0px; color: rgb(136, 136, 136);"><b class="dontHighlight">[ ' + names[0] + ']</b> </div>')
@@ -1061,6 +1068,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                 if(found){
                                     alert("MÃ ĐƠN NÀY ĐÃ TỒN TẠI");
                                     $scope.invoiceId = ""
+                                    $scope.$apply()
                                 }
                             },500)
                             

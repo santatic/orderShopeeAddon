@@ -1,3 +1,4 @@
+
 app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
     function ($scope, moment, Chat) {
         Chat.getSuggests()
@@ -60,6 +61,20 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 vietnamese: "Đã hủy"
             },
         ]
+
+        function httpGet(theUrl, headers) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", theUrl, false); // false for synchronous request
+            for (var i = 0; i < headers.length; i++) {
+              xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
+            }
+            xmlHttp.send(null);
+            return JSON.parse(xmlHttp.responseText);
+        }
+
+        
+
+
         var beforeRadio
         $('.form-group-status input:radio').mouseup(function () {
             beforeRadio = $('input:radio:checked');
@@ -133,9 +148,6 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                     }).show();
                 })
             }
-
-
-
         });
 
         $('#linkOpenOptionsPage').click(function () {
@@ -148,10 +160,26 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
         url = url.toString();
 
         console.log(url);
+        var products = httpGet("https://banhang.shopee.vn/api/v2/orders/" + url, []).products
+        console.log(products);
+
+        function findProduct(name){
+            var obj = products.find(x=>x.name == name)
+            console.log(obj);
+            return obj
+        }
+
+        $('.product-name').each(function(){
+            console.log($(this).text());
+            var product = findProduct($(this).text().trim())
+            var link = "https://shopee.vn/!-i." + product.shopid + "." +product.itemid
+            $(this).html('<a style="color:#0400bf" href="'+ link +'" target="_blank">'+$(this).text()+'</>')
+        })
+
         $scope.url = url;
 
         var optionsUrl = chrome.extension.getURL("options.html#/orders/" + url);
-
+        $scope.okey = false
         $scope.printLink = optionsUrl;
         chrome.runtime.sendMessage({
             mission: "checkExist",
@@ -172,10 +200,16 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 chrome.runtime.sendMessage({
                     mission: "detailOrder",
                     url: url
+                }, function (response) {  
+                    if(response.check == "success"){
+                        location.reload()
+                    }
+                    
                 })
             }
             if (response.check == "update") {
                 $scope.showSelect = true
+                $scope.okey = true
                 new Noty({
                     layout: 'bottomRight',
                     timeout: 2500,

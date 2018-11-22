@@ -1,3 +1,4 @@
+// 'use strict';
 app.controller("home-controller", function ($scope, moment) {
     $scope.msg = "I love 34325";
     

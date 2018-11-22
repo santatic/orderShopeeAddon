@@ -144,7 +144,7 @@
                         <tr ng-repeat="item in products">
                             <td class="imageProduct" style="background: #fff;">
                                 <img src="{{item.imageUrl}}" width="80px" height="80px" alt=""> </td>
-                            <td>{{ item.name }}</td>
+                            <td><a href="{{item.productUrl}}" target="_blank">{{ item.name }}</a></td>
                             <td>{{ item.model }}</td>
                             <td>{{ item.amount }}</td>
                         </tr>

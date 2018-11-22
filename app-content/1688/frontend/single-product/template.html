@@ -15,7 +15,7 @@
   <div class="panel-body left collapse in" style="display: inline-block;">    
     <!-- <a ng-click="addDis()" class="btn btn-success" ng-show="dontfound">+ sản phẩm có sẵn</a> -->
     <a ng-click="addDisNew()" class="btn btn-primary" ng-show="dontfound">+ sản phẩm mới</a>
-    <span style="padding: 4px 10px 11px;font-size: 16px;" ng-show="!dontfound">{{id_products}}</span>
+    <span style="padding: 4px 10px 11px;font-size: 16px;" ng-show="!dontfound">{{id_products}} <button class="btn btn-success" ng-click="addDisNew()">UPDATE</button> </span>
     <!-- <div ng-show="showAddName" class="addDis">
       <angucomplete-alt id="ex1" placeholder="Tìm kiếm sản phẩm..." selected-object="selectedObj" local-data="productsName" search-fields="productName"
         title-field="productName" minlength="1" inputclass="form-control form-control-small" match-class="highlight" /> {{getClassifyCount}} phân loại
@@ -34,7 +34,7 @@
                   <div class="row" style="margin: 20px 5px">                   
                       <div class="addDIS">
                           
-                          <input style="text-transform: uppercase" placeholder="Nhập tên sản phẩm..." id="newName" type="text">
+                          <input style="text-transform: uppercase" placeholder="Nhập tên sản phẩm..." id="newName" type="text" ng-value="productName">
                       </div>
                       <div class="classifyList">
                         <li ng-repeat="i in arrayClassifyNew">
@@ -48,7 +48,7 @@
               </div>
               <div class="modal-footer">
                   <img src="{{preImg}}" style="float: left" height="34px" class="classify" alt="">
-                  <button type="button" ng-click="submitDisNew()" class="btn btn-success" style="float: right;">ADD</button>
+                  <button type="button" ng-click="submitDisNew()" class="btn btn-success" style="float: right;"><span ng-show="id_products">UPDATE</span><span ng-show="!id_products">ADD</span></button>
               </div>
           </div>
       </div>

@@ -1,3 +1,4 @@
+// 'use strict';
 app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
     function ($scope, Chat, getList) {
 

@@ -1,3 +1,4 @@
+
 app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGridConstants) {
 
     $scope.options = {
@@ -11,7 +12,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         columnDefs: [{
             name: "Mã Đơn",
             field: "invoiceId",
-            cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để xem chi tiết đơn" ng-click = "grid.appScope.detailInvoice(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span> &nbsp;&nbsp;{{row.entity.invoiceId}}</a></div>'
+            cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để xem chi tiết đơn" ng-click = "grid.appScope.detailInvoice(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span> &nbsp;&nbsp; <a title="{{row.entity.invoiceId}}" href="https://trade.1688.com/order/new_step_order_detail.htm?orderId={{row.entity.invoiceId}}" target="_blank"> {{row.entity.invoiceId}}</a></div>'
         }, {
             name: "Id Đơn",
             field: "id",
@@ -157,13 +158,15 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
                 name: "Tên Sản Phẩm",
                 field: "productName",
                 enableFiltering: true,
-                enableCellEdit: false
+                enableCellEdit: false,
+                cellTemplate: '<div class="ui-grid-cell-contents" ><b> <a target="_blank" href="https://detail.1688.com/offer/{{row.entity.distributer}}.html"> {{row.entity.productName}} </a></b></div>'
             },
             {
                 name: "Phân Loại",
                 field: "name",
                 enableFiltering: false,
                 width: "100",
+
             },
             {
                 name: "Số Lượng",

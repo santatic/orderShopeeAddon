@@ -50,19 +50,19 @@
         <span ng-show="!cancel">{{status}}</span>
         <div ng-show="cancel">
 
-            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="NEW"> MỚI
+            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="1"> MỚI
             <br>
 
-            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="SHIPPED"> ĐÃ GIAO
+            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="2"> ĐÃ GIAO
             <br>
             <span ng-show="arrDone.length == size">
                 <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status"
-                    value="DONE"> HOÀN THÀNH
+                    value="3"> HOÀN THÀNH
                     
             <br>
             </span>
 
-            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="CANCEL"> HỦY
+            <input type="radio" style="margin: 4px 5px 22px 15px;" ng-model="status" value="4"> HỦY
 
         </div>
     </div>

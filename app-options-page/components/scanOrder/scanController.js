@@ -1,3 +1,4 @@
+
 app.controller("scan-controller", function ($scope, $routeParams) {
 
 

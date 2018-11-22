@@ -1,3 +1,4 @@
+
 app.controller("1688Ctrl", ['$scope', 'moment',
     function ($scope, moment) {
 
@@ -32,6 +33,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
                         $scope.dontfound = false
                         console.log(pro.id, pro.linked_classify[index]);
                         $scope.id_products = pro.id
+                        $scope.productName = pro.productName
                         $scope.$apply()
                         // break;
                     } else {
@@ -50,7 +52,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
 
         $scope.getClassifyCount = 0
 
-        $('div.obj-content').prepend('<input type="checkbox" style="display:none" checked id="checkall"/><span> Chọn hết</span> <br/>')
+        $('div.obj-content').prepend('<div style="display:none"><input type="checkbox"  checked id="checkall"/><span> Chọn hết</span></div> <br/>')
 
         $('input#checkall').click(function ($event) {
             console.log($event.currentTarget.checked);
@@ -178,22 +180,41 @@ app.controller("1688Ctrl", ['$scope', 'moment',
                         id: (date.getTime()).toString()
                     }
                     console.log(obj);
-                    chrome.runtime.sendMessage({
-                        mission: "saveProductNew",
-                        obj: obj
-                    }, function (response) {
-                        $('#addDistributorToNew').modal('hide')
-                        new Noty({
-                            layout: 'bottomRight',
-                            theme: "relax",
-                            type: 'success',
-                            timeout: 1500,
-                            text: 'Đã tạo sản phẩm mới và thêm nhà phân phối'
-                        }).show();
-                        setTimeout(function () {
-                            location.reload()
-                        }, 1000)
-                    })
+                    if($scope.id_products){
+                        console.log($scope.id_products);
+                        chrome.runtime.sendMessage({
+                            mission: "updatePro",
+                            id: $scope.id_products,
+                            linked_classify: obj.linked_classify,
+                            classify: obj.classify
+                        },function(response){
+                            new Noty({
+                                layout: 'bottomRight',
+                                theme: "relax",
+                                type: 'success',
+                                timeout: 1500,
+                                text: 'Đã cập nhật các phân loại'
+                            }).show();
+                        })
+                    }else{
+                        chrome.runtime.sendMessage({
+                            mission: "saveProductNew",
+                            obj: obj
+                        }, function (response) {
+                            $('#addDistributorToNew').modal('hide')
+                            new Noty({
+                                layout: 'bottomRight',
+                                theme: "relax",
+                                type: 'success',
+                                timeout: 1500,
+                                text: 'Đã tạo sản phẩm mới và thêm nhà phân phối'
+                            }).show();
+                            setTimeout(function () {
+                                location.reload()
+                            }, 1000)
+                        })
+                    }
+                    
 
                 } else {
                     alert("please fill all")
@@ -218,6 +239,10 @@ app.controller("1688Ctrl", ['$scope', 'moment',
 
                 }
             }, 100)
+        }
+
+        $scope.updatePro = function(id){
+            console.log(id);
         }
 
         $scope.submitDis = function () {

@@ -138,7 +138,7 @@ app.service('helper', function () {
           "orders": arrExportId,
           "shipper": "",
           "create_at": date,
-          "status": "MỚI",
+          "status": 1,
           "carrier": carrier
         })
         var check = []

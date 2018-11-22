@@ -1,3 +1,4 @@
+
 app.controller("exports-controller", ordersController)
 
 ordersController.$inject = ['$scope', '$q', '$timeout', 'moment', 'uiGridConstants'];
@@ -8,16 +9,16 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
 
     var arrStatus = [
         {
-            original: "NEW",
+            original: 1,
             new: "MỚI"
         },{
-            original: "SHIPPED",
+            original: 2,
             new: "ĐÃ GIAO"
         },{
-            original: "DONE",
+            original: 3,
             new: "HOÀN THÀNH"
         },{
-            original: "CANCEL",
+            original: 4,
             new: "ĐÃ HỦY"
         }
     ]
@@ -146,18 +147,10 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                 shipper: myData.shipper,
                 time: ctime,
                 size: myData.orders.length,
-                carrier: myData.carrier
+                carrier: myData.carrier,
+                status: arrStatus.find(x=>x.original == myData.status).new
             }
-            var found = arrStatus.some(function (el) {
-                return el.original == myData.status;
-            });
-            if(found){
-                let selectedExpTags = [myData.status];
-                let names = selectedExpTags.map(x => arrStatus.find(y => y.original == x).new)
-                obj.status = names[0]
-            }else{
-                obj.status =  myData.status
-            }
+            
             
             if (myData.shopeePaid && myData.buyerPaid) {
                 obj.shopeePaid = myData.shopeePaid.toLocaleString()

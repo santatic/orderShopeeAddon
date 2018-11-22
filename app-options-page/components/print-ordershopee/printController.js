@@ -1,3 +1,4 @@
+
 app.controller("print-controller", function ($scope, $rootScope, $routeParams, helper,moment) {
     $scope.printProducts = false
     var arrayFilter = [{
@@ -196,8 +197,8 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
                 name: product.name,
                 model: model.name,
                 amount: item.amount,
-                imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"
-
+                imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
+                productUrl:  "https://shopee.vn/!-i." + product.shopid + "." +product.itemid
             }
             products.push(productsObj)
         });

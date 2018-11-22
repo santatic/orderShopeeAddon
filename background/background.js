@@ -1,3 +1,4 @@
+
 firebase.initializeApp({
   apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
   projectId: "nguoitimship"
@@ -10,7 +11,7 @@ const settings = { /* your settings... */
   timestampsInSnapshots: true
 };
 firestore.settings(settings);
-
+console.log("run");
 
 // navigator.usb.requestDevice({ filters: [] }).then(function (device) {
 
@@ -76,41 +77,24 @@ var arrayFilter = [{
   },
 ]
 
-// var Col = firestore.collection('orderShopee')
-// var bat = firestore.batch()
-// var pushar = []
-// Col.get().then(function (querySnapshot) {
-//   console.log(querySnapshot.size);
-//   querySnapshot.forEach(function (doc) {
-//     const data = doc.data()
-//     var status = data.own_status.status
-// var selectedExpTags = [status];
-// var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
-//     console.log(status);
-//     var Doc = firestore.collection('orderShopee').doc(doc.id).update({
-//       "own_status": {
-//         "status": names[0],
-//         "create_at": new Date()
-//       }
-//     })
-//     pushar.push(doc.id)
-//   })
-//   console.log(pushar);
-//   var timer3 = setInterval(function () {
-//     if (pushar.length == querySnapshot.size) {
-
-//       console.log("update done");
-
-//       clearInterval(timer3)
-//     }
-//   }, 500)
-// })
-
-
+var exArr = [{
+  id: 1,
+  status: 'MỚI'
+}, {
+  id: 2,
+  status: 'ĐÃ GIAO'
+}, {
+  id: 3,
+  status: 'DONE'
+}, {
+  id: 4,
+  status: 'HỦY PHIẾU'
+}]
 
 
 var app = angular.module('app', []);
 app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_center, helper_center) {
+
 
 
 
@@ -210,13 +194,51 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     }
   });
 
+  firestore.collection("exportCode").get()
+  .then((querySnapshot)=>{
+    querySnapshot.forEach(doc=>{
+      if(doc.data().status == "MỚI"){
+        firestore.collection("exportCode").doc(doc.id).update({
+          "status": 1
+        }).then(()=>{
+          console.log("1");
+        })
+      }
+      else if(doc.data().status == "SHIPPED"){
+        firestore.collection("exportCode").doc(doc.id).update({
+          "status": 2
+        }).then(()=>{
+          console.log("2");
+        })
+      }
+      if(doc.data().status == "DONE"){
+        firestore.collection("exportCode").doc(doc.id).update({
+          "status": 3
+        }).then(()=>{
+          console.log("3");
+        })
+      }
+    })
+  })
+
+
   request_center.request_trigger()
+
+  function filterData(obj, arr){
+    var returnObj = new Object
+    arr.forEach((e)=>{
+      returnObj[e] = obj[e]
+    })
+    return returnObj
+  }
 
   var isRunOnSnapshot = true
   chrome.tabs.onActivated.addListener(function (tabId) {
     var url;
     var tab_id = tabId.tabId;
     chrome.tabs.get(tab_id, function (tab) {
+
+
       url = tab.url.toString();
       if (isRunOnSnapshot && (url.indexOf("banhang.shopee.vn") !== -1 || url.indexOf("chrome-extension://") !== -1 || url.indexOf("detail.1688.com") !== -1)) {
         isRunOnSnapshot = false;
@@ -230,7 +252,8 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         }, function (reminder) {
           console.log("created notification");
         })
-        firestore.collection("orderShopee").where("own_status.status", "<=", 6)
+        firestore.collection("orderShopee")
+        .where("own_status.status", "<=", 6)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
@@ -242,7 +265,8 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 // if (!found) {
                 // dataOnSnapshot.push(obj)
                 // }
-                dataSet.push(obj)
+
+                dataSet.push(filterData(obj, ["shopid", "packer", "id","actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount","create_at","exportId", "own_status","item-models", "logistic","note","order-items","ordersn","products","shipping_fee","shipping_address","shipping_traceno","user","importMoneyId"]))
 
               }
               if (change.type === "modified") {
@@ -308,6 +332,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             });
           })
         firestore.collection("exportCode")
+        .where("status", "<=", 2)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
@@ -425,7 +450,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 $scope.storageFirestore.syncStock();
               }
             });
-          })
+        })
       }
 
 
@@ -517,8 +542,25 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           updateExFromHome(request, sendResponse)
           return true
           break
+        case "updatePro":
+          updatePro(request, sendResponse)
+          return true
+          break
       }
     });
+
+  function updatePro(response, sendResponse){
+    console.log(response.id, response.classify);
+    firestore.collection("products").doc(response.id).set({
+      "linked_classify": response.linked_classify,
+      "classify": response.classify
+    },{
+      merge: true
+    }).then(()=>{
+      sendResponse()
+    })
+  }
+
 
   function updateExFromHome(response, sendResponse) {
     var count = 0
@@ -533,14 +575,14 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             .then(function (doc) {
               const data = doc.data()
               var status = data.own_status.status
-              if (status == 5 || status == 11) {
+              if (status == 5 || status == 6 || status == 11) {
                 okey.push(order)
               }
               if (okey.length == names[0].length) {
                 console.log(ex, names[0]);
                 var docRef = firestore.collection("exportCode").doc(ex)
                 batch.update(docRef, {
-                  "status": "SHIPPED"
+                  "status": 2
                 })
                 count = count + 1
               }
@@ -585,7 +627,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               dataRes.forEach(function (data, i) {
                 var docRef = firestore.collection("exportCode").doc(data)
                 batch.update(docRef, {
-                  "status": "DONE"
+                  "status": 3
                 })
                 if ((i + 1) == dataRes.length) {
                   batch.commit().then(() => {
@@ -632,20 +674,28 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       response.obj
     ).then(function () {
       sendResponse()
-    })
+    })  
   }
 
   function getSingle(response, sendResponse) {
     firestore.collection("orderShopee").doc(response.id.toString()).get()
       .then(function (doc) {
-        const data = doc.data()
-        sendResponse({
-          buyer_paid_amount: data.buyer_paid_amount,
-          shipping_fee: data.shipping_fee,
-          id: response.id,
-          exportId: data.exportId ? data.exportId : "Chưa có Mã Phiếu Xuất",
-          status: data.own_status.status
-        })
+        if (doc.exists) {
+          const data = doc.data()
+          sendResponse({
+            state: true,
+            buyer_paid_amount: data.buyer_paid_amount,
+            shipping_fee: data.shipping_fee,
+            id: response.id,
+            exportId: data.exportId ? data.exportId : "Chưa có Mã Phiếu Xuất",
+            status: data.own_status.status
+          })
+        } else {
+          sendResponse({
+            state: false
+          })
+        }
+
       })
   }
 
@@ -751,60 +801,60 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     //   resolve() = request_center.request_trigger_shopee_backend_homepage()
     //   return resolve()
     // })
-    promise.then(function(){
-      chrome.storage.local.get('shopCurrent', function (keys) {
-        if (keys.shopCurrent.length > 0) {
-          var res = [];
-          var loop = [
-            1,
-            4,
-            5
-          ]
-  
-  
-          $.each(loop, function (i, val) {
-            console.log(val);
-            var logistics = [];
-            var homeArray = dataOnSnapshot.filter(function (event) {
-              return event.own_status.status == val && event.shopid == keys.shopCurrent[0].shopid;
-            });
-            console.log(homeArray);
-            var ids = []
-            homeArray.forEach(function (doc) {
-              const data = doc
-              var obj = new Object()
-              obj = {
-                id: doc.id,
-                logistics: data.logistic['logistics-logs'].length > 0 ? data.logistic['logistics-logs'][0].description : "",
-                logistics_status: data.logistics_status,
-                exId: data.exportId ? data.exportId : ""
-              }
-              logistics.push(obj)
-            })
-            var obj = new Object();
-            var selectedExpTags = [val];
-            var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
-            obj = {
-              status: names[0],
-              size: homeArray.length,
-              logistics: logistics
-            }
-            res.push(obj)
-            // })
-          })
-          console.log(res);
-          var timer = setInterval(function () {
-            if (res.length == 3) {
-              console.log(res);
-              sendResponse({
-                data: res
+    promise.then(function () {
+        chrome.storage.local.get('shopCurrent', function (keys) {
+          if (keys.shopCurrent.length > 0) {
+            var res = [];
+            var loop = [
+              1,
+              4,
+              5
+            ]
+
+
+            $.each(loop, function (i, val) {
+              console.log(val);
+              var logistics = [];
+              var homeArray = dataOnSnapshot.filter(function (event) {
+                return event.own_status.status == val && event.shopid == keys.shopCurrent[0].shopid;
+              });
+              console.log(homeArray);
+              var ids = []
+              homeArray.forEach(function (doc) {
+                const data = doc
+                var obj = new Object()
+                obj = {
+                  id: doc.id,
+                  logistics: data.logistic['logistics-logs'].length > 0 ? data.logistic['logistics-logs'][0].description : "",
+                  logistics_status: data.logistics_status,
+                  exId: data.exportId ? data.exportId : ""
+                }
+                logistics.push(obj)
               })
-              clearInterval(timer)
-            }
-          }, 500)
-        }
-      });
-    }
+              var obj = new Object();
+              var selectedExpTags = [val];
+              var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).english)
+              obj = {
+                status: names[0],
+                size: homeArray.length,
+                logistics: logistics
+              }
+              res.push(obj)
+              // })
+            })
+            console.log(res);
+            var timer = setInterval(function () {
+              if (res.length == 3) {
+                console.log(res);
+                sendResponse({
+                  data: res
+                })
+                clearInterval(timer)
+              }
+            }, 500)
+          }
+        });
+      }
 
     )
 

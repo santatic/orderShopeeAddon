@@ -1,3 +1,4 @@
+
 app.controller("export-controller", ordersController)
     .filter('mapGender', mapGender)
 
@@ -148,9 +149,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
 
     $('input:radio').change(function (e) {
-        var valueSelected = this.value;
+        var valueSelected = Number(this.value);
         console.log(valueSelected);
-        if (valueSelected == "CANCEL") {
+        if (valueSelected == 4) {
             console.log("cancel");
             var docRef = firestore.collection("orderShopee").where("exportId", "==", id);
             docRef.get().then(
@@ -162,7 +163,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     })
                 }).then(function () {
                     firestore.collection("exportCode").doc(id).update({
-                        "status": "HỦY PHIẾU"
+                        "status": 4
                     }).then(function () {
                         new Noty({
                             layout: 'bottomRight',
@@ -180,11 +181,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
                 })
 
-        } else if(valueSelected == "DONE"){
-
-            
-
-        }else{
+        } else{
             firestore.collection("exportCode").doc(id).update({
                 "status": valueSelected
             }).then(function () {
@@ -480,19 +477,11 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             $scope.id = doc.id
             $scope.shipperName = data.shipper;
             ordersInEx = data.orders
-            if (data.status == "HỦY PHIẾU") {
+            if (data.status == 4) {
                 $scope.cancel = false
                 $scope.status = "PHIẾU NÀY ĐÃ BỊ HỦY"
             } else {
-                $scope.status = data.status
-                switch (data.status){
-                    case "MỚI":
-                        $scope.status = "NEW"
-                        break
-                    case "ĐÃ GIAO":
-                        $scope.status = "SHIPPED"
-                        break
-                }
+                $scope.status = data.status.toString()                
             }
             $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY HH:mm");
             $scope.$apply()
@@ -629,7 +618,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         }
     }
     var timer = setInterval(function () {
-        if($scope.arrDone.length == $scope.size && $scope.status !== "DONE"&& $scope.status !== "CANCEL"){
+        if($scope.arrDone.length == $scope.size && $scope.status !== "3"&& $scope.status !== "4"){
             clearInterval(timer)
             console.log("ok");
             var n = new Noty({
@@ -639,10 +628,10 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 text: 'ĐANG CHUYỂN TRẠNG THÁI PHIẾU VỀ HOÀN THÀNH...'
             }).on("afterShow", function () {
                 firestore.collection("exportCode").doc(id).update({
-                    "status": "DONE"
+                    "status": 3
                 }).then(()=>{
                     n.close()
-                    $scope.status = "DONE"
+                    $scope.status = "3"
                     $scope.$apply()
                 })
             }).show()

@@ -1,3 +1,4 @@
+
 app.controller("shopeeCtrl", ['$scope', 'moment',
     function ($scope, moment) {
         function httpGet(theUrl, headers) {
@@ -9,6 +10,49 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
             xmlHttp.send(null);
             return JSON.parse(xmlHttp.responseText);
         }
+
+        $(".shopee-modal__content").ready(function () {
+            console.log("I showed up");
+        });
+        var timer
+        var func = function () {
+            if ($("div._3TtC8T").length > 0) {
+                clearInterval(timer)
+                // $("._3FzHnX").prepend("<button id='copy'>COPY IMAGE</button>")
+                function getImg(){
+                    var $divImg = $("._3FzHnX div._3TtC8T")
+                    var Img = $divImg.css("background-image")
+                    Img = Img.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+                    return Img.toString()
+                } 
+                
+                var append = setInterval(function(){
+                    if(getImg() !== "none"){
+                        clearInterval(append)
+                        $("._3FzHnX").append("<img id='img' width='100%' src='" + getImg() + "'>")
+                    }
+                },500)              
+                
+
+                $('._2ZLnVl').click(function () {
+                    var last = getImg()
+                    var timerImg = setInterval(function(){
+                        $('img#img').attr('src', getImg())
+                        if(getImg() !== last) clearInterval(timerImg)
+                    },500)
+                    setTimeout(function( ) { clearInterval( timerImg ); }, 5000);
+                                     
+                })
+                var timer2 = setInterval(function () {
+                    if ($("div._3TtC8T").length == 0) {
+                        clearInterval(timer2)
+                        timer = setInterval(func, 1000)
+                    }
+                })
+                // console.log($(".shopee-modal__content"));
+            }
+        }
+        timer = setInterval(func, 1000)
 
         $scope.item = {};
         $scope.init = function () {
@@ -26,7 +70,7 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
         }
         $scope.init();
 
-        var request = httpGet('https://shopee.vn/api/v1/item_detail/?item_id='+ $scope.item.itemid +'&shop_id='+$scope.item.shopid, []);
+        var request = httpGet('https://shopee.vn/api/v1/item_detail/?item_id=' + $scope.item.itemid + '&shop_id=' + $scope.item.shopid, []);
         $scope.sold = request.sold
         console.log(request);
         // $scope.timeSubtract = function () {
@@ -59,13 +103,13 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
 
             folderName = $scope.item.itemid + "-" + $scope.item.shopid;
             // console.log($scope.GLOBAL_FIRST_RESPONSE[$scope.item.itemid]);
-            request.image_list.forEach(function(val){
-                var url = "https://cf.shopee.vn/file/"+val+"_tn"
+            request.image_list.forEach(function (val) {
+                var url = "https://cf.shopee.vn/file/" + val + "_tn"
                 var filename = val
                 zip.file(filename + '.jpg', $scope.urlToPromise(url), {
                     binary: true
                 });
-            })            
+            })
 
             zip.generateAsync({
                 type: "blob"

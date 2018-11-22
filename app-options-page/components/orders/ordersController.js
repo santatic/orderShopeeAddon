@@ -1,3 +1,4 @@
+
 app.controller("orders-controller", ordersController)
     .filter('mapGender', mapGender)
 app.controller("orders-controller", ordersController)
@@ -916,7 +917,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 importId: myData.importMoneyId,
                 ownStatus: myData.own_status.status,
                 fromNow: Math.round((now - start) / (1000 * 60 * 60 * 24)),
-                size: myData.order_items.length,
+                size: myData.item_count,
                 orderId: myData.ordersn,
                 lengthClassify: myData["order-items"].length,
                 packer: myData.packer ? myData.packer.name : "",
