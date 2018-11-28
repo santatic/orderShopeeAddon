@@ -940,7 +940,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                             $scope.$apply()
                             var models = []
                             var products = []
-                            $('table.has-multi-entry-order:eq(1) tr').each(function () {
+                            $('table.has-multi-entry-order:last tr').each(function () {
                                 $this = $(this)
                                 
                                 var disId = $(this).find('td.s1 a').attr("href")
