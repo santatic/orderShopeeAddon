@@ -1,4 +1,3 @@
-
 app.controller("orders-controller", ordersController)
     .filter('mapGender', mapGender)
 app.controller("orders-controller", ordersController)
@@ -91,6 +90,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         paginationPageSizes: [15, 30, 45],
         paginationPageSize: 15,
         enableSorting: true,
+        
         columnDefs: [{
                 name: "Shop Bán",
                 field: "shop",
@@ -203,7 +203,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         exporterCsvFilename: 'ExportFromOrders' + now + '.csv',
         exporterMenuAllData: false,
         exporterMenuVisibleData: false,
-        exporterMenuExcel: false,
+        exporterExcelFilename: 'myFile.xlsx',
+        exporterExcelSheetName: 'Sheet1',
+        // exporterMenuExcel: false,
         exporterMenuPdf: false,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

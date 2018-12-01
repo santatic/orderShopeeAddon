@@ -302,7 +302,9 @@ app.directive("fileread", [function () {
                       id: val.id,
                       shopeeMoney: shopeeMoney,
                       exMoney: data[i].moneyEx.toString(),
-                      shopeePayPre: val.shopeePayPre
+                      shopeePayPre: val.shopeePayPre,
+                      content: data[i][Object.keys(data[i])[1]] + ", " + data[i][Object.keys(data[i])[3]],
+                      own_transaction : val.own_transaction
                     }
                     arrayId.push(obj)
                   }
