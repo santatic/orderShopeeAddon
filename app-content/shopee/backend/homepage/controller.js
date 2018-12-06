@@ -108,31 +108,34 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                     n.close()
                     var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
                     $.each(names[0], function (i, val) {
-                        if (val.exId !== "" && jQuery.inArray(val.exId, arrEx) == -1) {
-                            arrEx.push(val.exId)
-                        }
-                        console.log(i, val);
-                        // console.log(val.logistics);
-                        var sub = "Đã giao hàng"
-                        if (val.logistics.indexOf(sub) !== -1) {
-                            idsDaGiao.push(val.id)
-                        } else {
-                            var data = httpGet("https://banhang.shopee.vn/api/v2/orders/" + val.id, [], i + 1)
-                            var logistics = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [], i + 1)
-
-                            if (val.logistics_status !== data.order.logistics_status) {
-                                var obj = new Object()
-
-                                obj = {
-                                    id: val.id,
-                                    log: data.order.logistics_status,
-                                    logistics: logistics,
-                                }
-                                console.log(obj);
-                                updateLogShopee.push(obj)
+                        if(i<499){
+                            if (val.exId !== "" && jQuery.inArray(val.exId, arrEx) == -1) {
+                                arrEx.push(val.exId)
                             }
-
+                            console.log(i, val);
+                            // console.log(val.logistics);
+                            var sub = "Đã giao hàng"
+                            if (val.logistics.indexOf(sub) !== -1) {
+                                idsDaGiao.push(val.id)
+                            } else {
+                                var data = httpGet("https://banhang.shopee.vn/api/v2/orders/" + val.id, [], i + 1)
+                                var logistics = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [], i + 1)
+    
+                                if (val.logistics_status !== data.order.logistics_status) {
+                                    var obj = new Object()
+    
+                                    obj = {
+                                        id: val.id,
+                                        log: data.order.logistics_status,
+                                        logistics: logistics,
+                                    }
+                                    console.log(obj);
+                                    updateLogShopee.push(obj)
+                                }
+    
+                            }
                         }
+                        
                     })
                     resovle()
                 }).show();

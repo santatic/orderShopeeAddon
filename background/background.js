@@ -258,7 +258,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           console.log("created notification");
         })
         firestore.collection("orderShopee")
-          .where("own_status.status", "<=", 6)
+          .where("own_status.status", "<=", 5)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
