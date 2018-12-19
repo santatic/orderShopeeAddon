@@ -184,6 +184,7 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
         console.log(data);
         // const data = dataOrders[index]
         // console.log(data.own_status);
+        $scope.transaction = data.own_transaction ? data.own_transaction : [];
         $scope.trackingNo = data.shipping_traceno;
         $scope.nickName = data.user.name;
         data['order-items'].forEach((item, index) => {
@@ -221,9 +222,7 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
         $scope.address = data.shipping_address;
         $scope.phone = data.buyer_address_phone;
 
-        $scope.packer = data.packer? data.packer.name:"Chưa có người đóng gói"
-
-        
+        $scope.packer = data.packer? data.packer.name:"Chưa có người đóng gói"        
 
         $scope.shop = (helper.myShop.find(x=> x.id == data.shopid)).name
 

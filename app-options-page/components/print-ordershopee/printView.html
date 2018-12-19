@@ -119,6 +119,14 @@
                 </table>
             </div>
 
+            <div class="transaction" ng-show="transaction.length > 0 ">
+                <ul>
+                    <li ng-repeat="i in transaction">
+                        {{i.content}}: <b>{{i.value}}</b> (vnđ)
+                    </li>
+                </ul>
+            </div>
+
             <div class="card noprint" style=" box-shadow: 2px 8px 17px -4px rgba(0, 0, 0, 0.34);transition: all 0.3s ease;">
                 <div class="card-body">
                     <textarea ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="2" id="noteEdit">{{note}}</textarea>

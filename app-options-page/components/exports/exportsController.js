@@ -64,6 +64,13 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
             }
         ],
         enableFiltering: true,
+        exporterCsvFilename: 'ExportCodes.csv',
+        exporterMenuAllData: false,
+        exporterMenuVisibleData: false,
+        exporterExcelFilename: 'myFile.xlsx',
+        exporterExcelSheetName: 'Sheet1',
+        // exporterMenuExcel: false,
+        exporterMenuPdf: false,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
 
