@@ -259,15 +259,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             snapshot.docChanges.forEach(function (change, i) {
               var obj = change.doc.data()
               if (change.type === "added") {
-                // var found = dataOnSnapshot.some(function (el) {
-                //   return el.id == obj.id;
-                // });
-                // if (!found) {
-                // dataOnSnapshot.push(obj)
-                // }
-
                 dataSet.push(filterData(obj, ["shopid", "packer", "id","actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount","create_at","exportId", "own_status","item-models", "logistic","note","order-items","ordersn","products","shipping_fee","shipping_address","shipping_traceno","user","importMoneyId"]))
-
               }
               if (change.type === "modified") {
                 let index = dataSet.findIndex(x => x.id == obj.id)

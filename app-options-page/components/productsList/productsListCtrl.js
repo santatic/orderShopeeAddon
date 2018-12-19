@@ -908,8 +908,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                 } else {
                     $scope.copy = true
                     $('span.previewInvoice').attr("disabled", true)
-                    $('input#target').focus()
-
+                    
                     document.addEventListener('paste', function (e) {
                         if ($("input#target").is(":focus")) {
 
@@ -925,7 +924,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                             }
                             
                             $('div#previewCopy').html(pastedText)
-                            $('div#previewCopy').html("<table class='has-multi-entry-order'>" + $('div#previewCopy table').html() + "</table>")
+                            $('div#previewCopy').html("<table class='tmpTable'>" + $('div#previewCopy  table').html() + "</table>")
                             $('div#previewCopy table').removeAttr("style")
                             $('div#previewCopy table tr').removeAttr("style")
                             $('div#previewCopy table td').removeAttr("style")
@@ -940,7 +939,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                             $scope.$apply()
                             var models = []
                             var products = []
-                            $('table.has-multi-entry-order:eq(1) tr').each(function () {
+                            $('table.tmpTable tr').each(function () {
                                 $this = $(this)
                                 
                                 var disId = $(this).find('td.s1 a').attr("href")

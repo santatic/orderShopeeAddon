@@ -56,7 +56,9 @@
             <li ng-class="{active:isActive('/payment')}">
               <a href="#payment"><span class="glyphicon glyphicon-usd"></span> Đối Soát</a>
             </li>           
-            
+            <li ng-class="{active:isActive('/completed-orders')}">
+              <a href="#completed-orders"><span class="glyphicon glyphicon-usd"></span> Đơn Hoàn Thành</a>
+            </li>  
             <li ng-class="{active:isActive('/configuration')}">
               <a href="#configuration"><span class="glyphicon glyphicon-cog"></span> Cài Đặt</a>
             </li>
@@ -98,17 +100,12 @@
         </ul>
       </nav>
       <div class="container">
-        <div ng-view style="padding-right: 10px"></div>
+        <div ng-view style="padding-right: 5px"></div>
       </div>
       <!-- your page content -->
     </div>
   </div>
 
-
-
-  <!-- <div class="container"> -->
-
-  <!-- </div> --> 
 
   <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
@@ -153,6 +150,7 @@
   <script src="app-options-page/components/configuration/configurationController.js"></script>
   <script src="app-options-page/components/print-ordershopee/printController.js"></script>
   <script src="app-options-page/components/payment/paymentController.js"></script>
+  <script src="app-options-page/components/completed-orders/completed-ordersController.js"></script>
   <script src="app-options-page\components\scanOrder\scanController.js"></script>
   <script src="app-options-page\components\exports\exportsController.js"></script>
   <script src="app-options-page\components\export-detail\exportController.js"></script>

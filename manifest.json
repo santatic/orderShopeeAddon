@@ -80,7 +80,7 @@
     ],
     "content_security_policy": "script-src 'self' 'nonce-d452460d-e219-a6e5-5709-c8af6ca82889' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com ; object-src 'self'",
     "oauth2": {
-        "client_id": "340986983672-et6re1a3agi2dr9kkqvtmhu8upmg8ljl.apps.googleusercontent.com",
+        "client_id": "340986983672-ehrt5mna72i0sv92dc6ms9a2g3n13o9s.apps.googleusercontent.com",
         "scopes": [
           "https://www.googleapis.com/auth/userinfo.email",
           "https://www.googleapis.com/auth/userinfo.profile"
