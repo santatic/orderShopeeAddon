@@ -169,12 +169,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
             return obj
         }
 
-        $('.product-name').each(function(){
-            console.log($(this).text());
-            var product = findProduct($(this).text().trim())
-            var link = "https://shopee.vn/!-i." + product.shopid + "." +product.itemid
-            $(this).html('<a style="color:#0400bf" href="'+ link +'" target="_blank">'+$(this).text()+'</>')
-        })
+        
 
         $scope.url = url;
 
@@ -223,7 +218,16 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 $scope.note = response.note                
                 $scope.exDate = response.exDate
                 $scope.exLink = chrome.extension.getURL("options.html#/export/" + response.exportId);
-                
+                $('.product-name').each(function(){
+                    var productName = $(this).clone()    //clone the element
+                    .children() //select all the children
+                    .remove()   //remove all the children
+                    .end().text().trim();
+                    var product = findProduct(productName)
+                    var link = "https://shopee.vn/!-i." + product.shopid + "." +product.itemid
+                    console.log(link);
+                    $(this).html('<a style="color:#0400bf" href="'+ link +'" target="_blank">'+productName+'</>')
+                })
                 $scope.$apply()
                 chrome.runtime.sendMessage({
                     mission: "update",

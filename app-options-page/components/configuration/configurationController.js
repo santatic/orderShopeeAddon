@@ -94,16 +94,22 @@ app.controller("configuration-controller", function ($scope, $q, chromeStorage, 
         action: function () {
             var n = new Noty({
                 closeWith: [],
-                text: 'Do you want to continue? <input id="suggest" type="text">',
+                text: '<textarea rows="3" id="suggest" autofocus style = "width:100%"></textarea>',
                 buttons: [
                     Noty.button('YES', 'btn btn-success', function () {
-                        var input = $('input#suggest').val()
+                        var input = $('textarea#suggest').val()
                         if (input) {
                             docRef.doc().set({
                                 "suggest_chat": input
                             }).then(function () {
                                 getSuggest()
                                 n.close();
+                                new Noty({
+                                    timeout: 2000,
+                                    type: 'success',
+                                    text: 'Đã Lưu Câu',
+                                    theme: "relax"
+                                }).show();
                             })
                         }
                     }, { id: 'button1', 'data-status': 'ok' }),

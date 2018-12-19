@@ -1,4 +1,3 @@
-
 firebase.initializeApp({
   apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
   projectId: "nguoitimship"
@@ -12,6 +11,7 @@ const settings = { /* your settings... */
 };
 firestore.settings(settings);
 console.log("run");
+
 
 // navigator.usb.requestDevice({ filters: [] }).then(function (device) {
 
@@ -95,7 +95,13 @@ var exArr = [{
 var app = angular.module('app', []);
 app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_center, helper_center) {
 
+  var uid = ""
 
+  firebase.auth().onAuthStateChanged(function (user) {
+    // console.log(user.displayName);
+    // console.log('da log usser');
+    uid = user ? user.uid : ""
+  });
 
 
   // helper_center.doesConnectionExist()
@@ -195,38 +201,37 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   });
 
   firestore.collection("exportCode").get()
-  .then((querySnapshot)=>{
-    querySnapshot.forEach(doc=>{
-      if(doc.data().status == "MỚI"){
-        firestore.collection("exportCode").doc(doc.id).update({
-          "status": 1
-        }).then(()=>{
-          console.log("1");
-        })
-      }
-      else if(doc.data().status == "SHIPPED"){
-        firestore.collection("exportCode").doc(doc.id).update({
-          "status": 2
-        }).then(()=>{
-          console.log("2");
-        })
-      }
-      if(doc.data().status == "DONE"){
-        firestore.collection("exportCode").doc(doc.id).update({
-          "status": 3
-        }).then(()=>{
-          console.log("3");
-        })
-      }
+    .then((querySnapshot) => {
+      querySnapshot.forEach(doc => {
+        if (doc.data().status == "MỚI") {
+          firestore.collection("exportCode").doc(doc.id).update({
+            "status": 1
+          }).then(() => {
+            console.log("1");
+          })
+        } else if (doc.data().status == "SHIPPED") {
+          firestore.collection("exportCode").doc(doc.id).update({
+            "status": 2
+          }).then(() => {
+            console.log("2");
+          })
+        }
+        if (doc.data().status == "DONE") {
+          firestore.collection("exportCode").doc(doc.id).update({
+            "status": 3
+          }).then(() => {
+            console.log("3");
+          })
+        }
+      })
     })
-  })
 
 
   request_center.request_trigger()
 
-  function filterData(obj, arr){
+  function filterData(obj, arr) {
     var returnObj = new Object
-    arr.forEach((e)=>{
+    arr.forEach((e) => {
       returnObj[e] = obj[e]
     })
     return returnObj
@@ -253,13 +258,25 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           console.log("created notification");
         })
         firestore.collection("orderShopee")
-        .where("own_status.status", "<=", 6)
+          .where("own_status.status", "<=", 5)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
               var obj = change.doc.data()
               if (change.type === "added") {
+<<<<<<< HEAD
                 dataSet.push(filterData(obj, ["shopid", "packer", "id","actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount","create_at","exportId", "own_status","item-models", "logistic","note","order-items","ordersn","products","shipping_fee","shipping_address","shipping_traceno","user","importMoneyId"]))
+=======
+                // var found = dataOnSnapshot.some(function (el) {
+                //   return el.id == obj.id;
+                // });
+                // if (!found) {
+                // dataOnSnapshot.push(obj)
+                // }
+
+                dataSet.push(filterData(obj, ["shopid", "packer", "id", "actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount", "create_at", "exportId", "own_status", "item-models", "logistic", "note", "order-items", "ordersn", "products", "shipping_fee", "shipping_address", "shipping_traceno", "user", "importMoneyId"]))
+
+>>>>>>> c5fa65b6d4efadf00a1b53b41a61dd7e1bc4f12e
               }
               if (change.type === "modified") {
                 let index = dataSet.findIndex(x => x.id == obj.id)
@@ -324,7 +341,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             });
           })
         firestore.collection("exportCode")
-        .where("status", "<=", 2)
+          .where("status", "<=", 2)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
@@ -442,7 +459,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 $scope.storageFirestore.syncStock();
               }
             });
-        })
+          })
       }
 
 
@@ -541,14 +558,14 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       }
     });
 
-  function updatePro(response, sendResponse){
+  function updatePro(response, sendResponse) {
     console.log(response.id, response.classify);
     firestore.collection("products").doc(response.id).set({
       "linked_classify": response.linked_classify,
       "classify": response.classify
-    },{
+    }, {
       merge: true
-    }).then(()=>{
+    }).then(() => {
       sendResponse()
     })
   }
@@ -666,7 +683,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       response.obj
     ).then(function () {
       sendResponse()
-    })  
+    })
   }
 
   function getSingle(response, sendResponse) {
@@ -902,28 +919,60 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       "buyerPaid": response.sumBuyerPaid
     })
     $.each(response.id, function (i, id) {
-      console.log(id);
-      var docRef = firestore.collection("orderShopee").doc(id.id);
 
-      batch.update(docRef, {
-        "own_status": {
-          status: 9,
-          create_at: new Date()
-        },
-        "actual_money_shopee_paid": id.shopeeMoney,
-        "importMoneyId": date.getTime().toString()
-      })
-      check.push(i)
-    });
 
-    var timer = setInterval(function () {
-      if (check.length == response.id.length) {
-        clearInterval(timer)
+      if (uid && Number(id.shopeeMoney) !== Number(id.shopeePayPre)) {
+        
+        var docRef = firestore.collection("orderShopee").doc(id.id);
+        id.own_transaction.push({
+          time: new Date(),
+          value: id.shopeeMoney,
+          content: id.content,
+          user: uid
+        }) 
+        console.log(id);
+        var status = new Object()
+        switch (true) {
+          case Number(id.shopeePayPre) + Number(id.shopeeMoney) < Number(id.exMoney):
+            status = {
+              status: 1,
+              create_at: new Date()
+            }
+            break;
+          case Number(id.shopeePayPre) + Number(id.shopeeMoney) == Number(id.exMoney):
+            status = {
+              status: 2,
+              create_at: new Date()
+            }
+            break;
+          case Number(id.shopeePayPre) + Number(id.shopeeMoney) > Number(id.exMoney):
+            status = {
+              status: 3,
+              create_at: new Date()
+            }
+            break;
+        }
+
+
+        batch.update(docRef, {
+          "own_transaction": id.own_transaction,
+          "actual_money_shopee_paid": Number(id.shopeePayPre) + Number(id.shopeeMoney),
+          "importMoneyId": date.getTime().toString(),
+          "paymentStatus": status
+        })
+        check.push(i)
+
+      }
+      if((i+1)==response.id.length){
         batch.commit().then(function () {
           sendResponse()
         });
       }
-    }, 500)
+
+
+    });
+
+    
   }
 
   function paymentCheck(response, sendResponse) {
@@ -952,7 +1001,9 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               shipping_fee: parseInt(((data.shipping_fee) * 100) / 100),
               id: doc.id,
               status: names[0],
-              traceno: data.shipping_traceno
+              traceno: data.shipping_traceno,
+              shopeePayPre: data.actual_money_shopee_paid ? data.actual_money_shopee_paid : 0,
+              own_transaction: data.own_transaction? data.own_transaction: []
             }
             resOrdersn.push(obj)
           })
@@ -963,7 +1014,9 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             shipping_fee: "chua co trong Firestore",
             id: "",
             status: "chua co trong Firestore",
-            traceno: "chua co trong Firestore"
+            traceno: "chua co trong Firestore",
+            shopeePayPre: "chua co trong Firestore",
+            own_transaction: "chua co trong Firestore"
           }
           resOrdersn.push(obj)
         }

@@ -1,4 +1,3 @@
-
 app.controller("orders-controller", ordersController)
     .filter('mapGender', mapGender)
 app.controller("orders-controller", ordersController)
@@ -91,6 +90,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         paginationPageSizes: [15, 30, 45],
         paginationPageSize: 15,
         enableSorting: true,
+
         columnDefs: [{
                 name: "Shop Bán",
                 field: "shop",
@@ -111,11 +111,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 enableCellEdit: false,
                 width: '150',
                 field: "nickname",
-            }, {
-                name: "Dự kiến thu",
-                enableCellEdit: false,
-                field: "paid",
-                width: '100'
+                visible: false
             }, {
                 name: "Mã đơn hàng",
                 enableCellEdit: false,
@@ -123,7 +119,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 cellTooltip: function (row) {
                     return row.entity.orderId;
                 },
-                visible: false
+                // visible: false
                 // width: '100'
             }, {
                 name: "Nhà Vận Chuyển",
@@ -153,13 +149,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     ]
                 },
                 cellFilter: 'mapCarrier'
-            },
-            {
-                name: "Phí Ship",
-                enableCellEdit: false,
-                width: '100',
-                field: "shippingFee",
-                // visible: false
             }, {
                 name: "Phiếu Xuất",
                 field: "exId",
@@ -174,6 +163,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 name: "Logistics Shopee",
                 enableCellEdit: false,
                 field: "status",
+                visible: false,
                 cellTooltip: function (row) {
                     return row.entity.status;
                 }
@@ -195,7 +185,20 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 width: 60
             }, {
                 name: "Người đóng gói",
-                field: "packer"
+                field: "packer",
+                visible: false
+            }, {
+                name: "Dự kiến thu",
+                enableCellEdit: false,
+                field: "paid",
+                width: '100'
+            },
+            {
+                name: "Phí Ship",
+                enableCellEdit: false,
+                width: '100',
+                field: "shippingFee",
+                visible: false
             }
         ],
         enableFiltering: true,
@@ -203,7 +206,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         exporterCsvFilename: 'ExportFromOrders' + now + '.csv',
         exporterMenuAllData: false,
         exporterMenuVisibleData: false,
-        exporterMenuExcel: false,
+        exporterExcelFilename: 'myFile.xlsx',
+        exporterExcelSheetName: 'Sheet1',
+        // exporterMenuExcel: false,
         exporterMenuPdf: false,
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

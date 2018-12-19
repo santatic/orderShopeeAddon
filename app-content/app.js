@@ -316,7 +316,6 @@ app.service('Chat', function () {
                 input.autocomplete({
                     delay: 100,
                     minLength: 1,
-                    autoFocus: true,
                     source: states,
                     appendTo: 'div.chat-content',
                     focus: function (event, ui) {
