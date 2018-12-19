@@ -1,0 +1,26 @@
+<div class="filter-completed-orders">
+    <div>
+        <input type="radio" ng-model="filterOrderStatus" value="0" name="ALL">
+        Tất Cả
+    </div>
+    <div>
+        <input type="radio" ng-model="filterOrderStatus" value="5" name="SHIPPED">
+        Đã Gửi Đi
+    </div>
+    <div>
+        <input type="radio" ng-model="filterOrderStatus" value="6" name="DELIVERED">
+        Khách Đã Nhận
+    </div>
+    <div>
+        <input type="radio" ng-model="filterOrderStatus" value="8" name="RETURNED">
+        Đã Hoàn
+    </div>
+    <div>
+        <input type="radio" ng-model="filterOrderStatus" value="11" name="CANCELED">
+        Đã Hủy
+    </div>
+
+</div>
+
+<div ui-grid="gridOptions" ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-pagination class="grid">
+</div>

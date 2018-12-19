@@ -145,6 +145,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         }, {
                             value: 5,
                             label: "VNPost Nhanh"
+                        },  {
+                            value: 6,
+                            label: "J&T Express"
                         }
                     ]
                 },
@@ -403,6 +406,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             })
             if (condi && selected.length > 0) {
                 $('#chiadon').modal()
+                $scope.tasks= []
                 var tasks = []
                 firestore.collection("usersMobile").where("role", "==", 2).get().then(col => {
                     col.forEach(doc => {
@@ -456,19 +460,19 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
                     var averageItem = (orders1.sum("modelNum")) / ($('#selectUser input:checkbox:checked').length)
                     averageItem = Math.round(averageItem);
-                    console.log(averageItem, orders1, tasks.length)
+                    tempOrders = orders1
+                    console.log(averageItem, tempOrders, tasks.length)
 
-                    for (var i = 0; i < tasks.length;) {
+                    for (var i = 0; i < tasks.length;i++) {
                         tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
-                        if (tasks[i].numModel < averageItem) {
-                            if (orders1.length > 0) {
+                        if (orders1.length > 0) {
+                            if (tasks[i].numModel < averageItem) {
                                 tasks[i].orderNeedPack.push(orders1[0])
                                 orders1.splice(0, 1)
-                            } else break
-                        }
-                        i++
-                        i = i == tasks.length ? 0 : i
-                        console.log(i);
+                            }                             
+                            i = ((i+1) == tasks.length)? 0: i
+                        } else break   
+                        console.log(i+1, tasks.length);
                     }
 
                     tasks.forEach(function (task) {
@@ -479,7 +483,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     })
 
                     $scope.tasks = tasks
-
+                    console.log(tasks);
 
                 }
                 $scope.updatechiadon = function () {
@@ -614,26 +618,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     alert("Đơn này đã có trong danh sách quét")
                     $(that).val("")
                 }
-
-
-                // let index = dataForPro.findIndex(x => x.id == inputScan)
-                // const data = dataForPro[index]
-                // let indexAfterScan = $scope.BulkChangeStatus.findIndex(x => x.id == inputScan)
-                // if (indexAfterScan == -1) {
-
-                //     let selectedExpTags = [data.own_status.status];
-                //     let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                //     $scope.BulkChangeStatus.unshift({
-                //         id: inputScan,
-                //         status: names[0],
-                //         new_status: ""
-                //     })
-                //     $scope.$apply()
-                //     $(that).val("")
-                // } else {
-                //     alert("Đơn này đã có trong danh sách quét")
-                //     $(that).val("")
-                // }
             }
 
         }, 100);
@@ -981,6 +965,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 case "VNPost Nhanh":
                     row.carrier = 5
                     break
+                case "J&T Express":
+                    row.carrier = 6
+                    break
             }
 
 
@@ -996,7 +983,8 @@ function mapCarrier() {
         2: "Viettel Post",
         3: "Giao Hàng Nhanh",
         4: "VNPost Tiết Kiệm",
-        5: "VNPost Nhanh"
+        5: "VNPost Nhanh",
+        6: "J&T Express"
     };
 
     return function (input) {

@@ -83,6 +83,9 @@ app.service('helper', function () {
       }, {
         id: 5,
         carrier: "VNPost Nhanh"
+      }, {
+        id: 6,
+        carrier: "J&T Express"
       }
     ]
     var arrayTempExportId = []
