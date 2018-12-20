@@ -108,7 +108,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                     n.close()
                     var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
                     $.each(names[0], function (i, val) {
-                        if(i<499){
+                        if(i<400){
                             if (val.exId !== "" && jQuery.inArray(val.exId, arrEx) == -1) {
                                 arrEx.push(val.exId)
                             }

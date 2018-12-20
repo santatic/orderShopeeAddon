@@ -1,89 +1,135 @@
-app.controller("completed-orders-controller", function ($scope, $http, uiGridConstants) {
-    console.log($scope.filterOrderStatus)
-    $scope.filterOrderStatus = "0"
-    console.log($scope.filterOrderStatus)
 
-    var paginationOptions = {
-        pageNumber: 1,
-        pageSize: 25,
-        sort: null
-    };
-    $scope.gridOptions = {
-        paginationPageSizes: [25, 50, 75],
-        paginationPageSize: 25,
-        useExternalPagination: true,
-        useExternalSorting: true,
-        columnDefs: [
-            { name: 'name' },
-            { name: 'gender', enableSorting: false },
-            { name: 'company', enableSorting: false }
-        ],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-            $scope.gridApi.core.on.sortChanged($scope, function (grid, sortColumns) {
-                if (sortColumns.length == 0) {
-                    paginationOptions.sort = null;
-                } else {
-                    paginationOptions.sort = sortColumns[0].sort.direction;
+app.controller("completed-orders-controller", ordersController)
+
+ordersController.$inject = ['$scope', '$q', '$timeout', 'moment', 'uiGridConstants'];
+
+function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
+    $scope.loading = true;
+    var saleUrl = chrome.extension.getURL("options.html#/");
+
+    $scope.options = {
+        // enableHorizontalScrollbar = 0,
+        enableRowSelection: true,
+        enableSelectAll: true,
+        enableGridMenu: true,
+        paginationPageSizes: [15, 30, 45],
+        paginationPageSize: 15,
+        enableSorting: true,
+        showGridFooter: false,
+        columnDefs: [{
+                name: "Export Id",
+                field: "exportCode",
+                enableCellEdit: false,
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exportCode}}">{{row.entity.exportCode}}</a></div>'
+            }, {
+                name: "Id",
+                field: "id",
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
+            },{
+                name: "Mã Đơn",
+                field: "ordersn",
+                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{row.entity.ordersn}}</a></div>'
+            }, {
+                name: "Mã Vận Đơn",
+                field: "shippingId",
+            }, {
+                name: "Create At (m-d-y)",
+                enableCellEdit: false,
+                field: "time",
+                
+                sort: {
+                    direction: 'desc',
+                    priority: 0
                 }
-                getPage();
-            });
-            gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
-                paginationOptions.pageNumber = newPage;
-                paginationOptions.pageSize = pageSize;
-                getPage();
-            });
+            },{
+                name: "Nhà Vận Chuyển",
+                field: "carrier"
+            },{
+                name: "Mã Phiếu Thu",
+                field: "importCode"
+            },{
+                name: "Tiền Hàng (A)",
+                field: "paid_amount"
+            },{
+                name: "Thực Nhận (B)",
+                field: "actual_recive",
+            },{
+                name: "A - B",
+                field: "offset",
+            }
+        ],
+        enableFiltering: true,
+        exporterCsvFilename: 'ExportCompleted.csv',
+        exporterMenuAllData: false,
+        exporterMenuVisibleData: false,
+        exporterExcelFilename: 'myFile.xlsx',
+        exporterExcelSheetName: 'Sheet1',
+        // exporterMenuExcel: false,
+        exporterMenuPdf: false,
+        onRegisterApi: function (gridApi) {
+            $scope.gridApi = gridApi;          
         }
     };
-
-    var getPage = function () {
-        var url;
-        switch (paginationOptions.sort) {
-            case uiGridConstants.ASC:
-                url = 'http://ui-grid.info/data/100_ASC.json';
-                break;
-            case uiGridConstants.DESC:
-                url = 'http://ui-grid.info/data/100_DESC.json';
-                break;
-            default:
-                url = 'http://ui-grid.info/data/100.json';
-                break;
-        }
-
-        $http.get(url)
-            .then(function (response) {
-                var data = response.data;
-
-                $scope.gridOptions.totalItems = 100;
-                var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
-                $scope.gridOptions.data = data.slice(firstRow, firstRow + paginationOptions.pageSize);
-            });
-
-        var first = db.collection("test")
-            .orderBy("gender")
-            .limit(paginationOptions.pageSize);
-
-        return first.get().then(function (documentSnapshots) {
-            // Get the last visible document
-            var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-            console.log("last", lastVisible);
-
-            // Construct a new query starting at this document,
-            // get the next 25 cities.
-            var next = db.collection("cities")
-                .orderBy("population")
-                .startAfter(lastVisible)
-                .limit(25);
-        });
+    // angular.element(document.getElementsByClassName('grid')[0]).css('height', '900px');
+    $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
+    $scope.saveRow = function (rowEntity) {
+        // create a fake promise - normally you'd use the promise returned by $http or $resource
+        var promise = $q.defer();
+        $scope.gridApi.rowEdit.setSavePromise(rowEntity, promise.promise);
+        var jobskill_query = firestore.collection('exportCode').doc(rowEntity.id)
+        // jobskill_query.update({
+        //     "shipper": rowEntity.shipper
+        // }).then(function () {
+        //     new Noty({
+        //         layout: 'bottomRight',
+        //         theme: 'relax',
+        //         timeout: 3000,
+        //         type: 'success',
+        //         text: 'ĐÃ CẬP NHẬT TÊN SHIPPER'
+        //     }).show();
+        // });
     };
 
+    
 
-    //   firestore.collection("test").onSnapshot(function (snapshot){
-    //     snapshot.docChanges.forEach(function (doc){
-    //         console.log(doc.data())
-    //       })
-    //   })
+    $scope.options.multiSelect = true;
+    
+    chrome.storage.local.get('dataPayment1', function (keys) {
+        getOrders(keys.dataPayment1)
+    })
+
+    chrome.storage.onChanged.addListener(function (changes) {
+        getOrders(changes.dataPayment1.newValue);
+    })
+
+    function getOrders(arr){
+        var sources = []
+        arr.forEach(function (doc) {
+            const myData = doc
+            // console.log(myData);
+            ctime = moment(myData.create_at.seconds * 1000).format("MM-DD-YYYY / HH:MM")
+
+            obj = {
+                id: myData.id,
+                ordersn: myData.ordersn,
+                time: ctime,
+                paid_amount: Number(myData.buyer_paid_amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
+                actual_recive: Number(myData.actual_money_shopee_paid).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
+                exportCode: myData.exportId,
+                shippingId: myData.shipping_traceno,
+                carrier: myData.actual_carrier,
+                importCode: myData.importMoneyId,
+                offset: (Number(myData.buyer_paid_amount) - Number(myData.actual_money_shopee_paid)).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+            }
+            
+            sources.push(obj)
+        })
+        console.log(sources);
+        $scope.data = sources
+        $scope.options.data = $scope.data;
+        $scope.loading = false
+        $scope.gridApi.core.refresh();
+    }
 
 
-    getPage();
-});
+}

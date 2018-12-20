@@ -145,7 +145,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         }, {
                             value: 5,
                             label: "VNPost Nhanh"
-                        },  {
+                        }, {
                             value: 6,
                             label: "J&T Express"
                         }
@@ -406,7 +406,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             })
             if (condi && selected.length > 0) {
                 $('#chiadon').modal()
-                $scope.tasks= []
+                $scope.tasks = []
                 var tasks = []
                 firestore.collection("usersMobile").where("role", "==", 2).get().then(col => {
                     col.forEach(doc => {
@@ -462,18 +462,40 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     averageItem = Math.round(averageItem);
                     tempOrders = orders1
                     console.log(averageItem, tempOrders, tasks.length)
+                    // var i = 0
+                    // for (var ind = 0;;ind++) {
+                    //     ind ++ 
+                    // tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
+                    // if (orders1.length > 0) {
+                    //     if (tasks[i].numModel < averageItem) {
+                    //         tasks[i].orderNeedPack.push(orders1[0])
+                    //         orders1.splice(0, 1)
+                    //     }
+                    //     if((i+1)==tasks.length) {
+                    //         i = 0
+                    //     }
+                    //     console.log(i+1, tasks.length);
+                    // } else break  
 
-                    for (var i = 0; i < tasks.length;i++) {
-                        tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
-                        if (orders1.length > 0) {
-                            if (tasks[i].numModel < averageItem) {
-                                tasks[i].orderNeedPack.push(orders1[0])
-                                orders1.splice(0, 1)
-                            }                             
-                            i = ((i+1) == tasks.length)? 0: i
-                        } else break   
-                        console.log(i+1, tasks.length);
-                    }
+                    // }
+                    // var i = 0;
+                    // var length = tasks.length;
+                    // while (orders1.length > 0) {
+                    //     tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
+
+                    //     if (tasks[i].numModel < averageItem) {
+                    //         tasks[i].orderNeedPack.push(orders1[0])
+                    //         orders1.splice(0, 1)
+                    //     }
+                    //     if ((i + 1) == tasks.length) {
+                    //         i = 0
+                    //     }
+                    //     console.log(i + 1, tasks.length);
+                    //     i++;
+                    //     i = i == length ? 0 : i
+                    // }
+
+
 
                     tasks.forEach(function (task) {
                         task.numOrder = task.orderNeedPack.length

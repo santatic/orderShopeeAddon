@@ -12,50 +12,50 @@ const settings = { /* your settings... */
 firestore.settings(settings);
 console.log("run");
 
-firestore.collection("orderShopee")
-.where("own_status.status", "==", 9)
-.get().then(function (querySnapshot) {
-  console.log("DB", querySnapshot.docs)
-  var i = 0;
-  var batch = firestore.batch()
-  for (var doc of querySnapshot.docs) {
-    i++    
-    let data = doc.data();
-    let paymentStatus = new Object()
-    paymentStatus.create_at = new Date()
-    switch (true) {
-      case Number(data.actual_money_shopee_paid) < Number(data.buyer_paid_amount):
-        paymentStatus.status = 1
-        break
-      case Number(data.actual_money_shopee_paid) == Number(data.buyer_paid_amount):
-        paymentStatus.status = 2
-        break
-      case Number(data.actual_money_shopee_paid) > Number(data.buyer_paid_amount):
-        paymentStatus.status = 3
-        break
-      default:
-        break
-    }
+// firestore.collection("orderShopee")
+// .where("own_status.status", "==", 9)
+// .get().then(function (querySnapshot) {
+//   console.log("DB", querySnapshot.docs)
+//   var i = 0;
+//   var batch = firestore.batch()
+//   for (var doc of querySnapshot.docs) {
+//     i++    
+//     let data = doc.data();
+//     let paymentStatus = new Object()
+//     paymentStatus.create_at = new Date()
+//     switch (true) {
+//       case Number(data.actual_money_shopee_paid) < Number(data.buyer_paid_amount):
+//         paymentStatus.status = 1
+//         break
+//       case Number(data.actual_money_shopee_paid) == Number(data.buyer_paid_amount):
+//         paymentStatus.status = 2
+//         break
+//       case Number(data.actual_money_shopee_paid) > Number(data.buyer_paid_amount):
+//         paymentStatus.status = 3
+//         break
+//       default:
+//         break
+//     }
 
-    console.log(i,data.id, paymentStatus );
+//     console.log(i,data.id, paymentStatus );
 
-    let docRef = firestore.collection("orderShopee").doc(data.id.toString())
-    batch.update(docRef, {
-      "paymentStatus": paymentStatus,
-      "own_status.status": 6
-    })
+//     let docRef = firestore.collection("orderShopee").doc(data.id.toString())
+//     batch.update(docRef, {
+//       "paymentStatus": paymentStatus,
+//       "own_status.status": 6
+//     })
 
-    if (i == querySnapshot.docs.length) {      
-      batch.commit().then(()=> {
-        console.log("done");        
-      }) 
-      break     
-    }
+//     if (i == querySnapshot.docs.length) {      
+//       batch.commit().then(()=> {
+//         console.log("done");        
+//       }) 
+//       break     
+//     }
 
-  }
-}).catch(function (error) {
-  console.log("Error getting document:", error);
-});
+//   }
+// }).catch(function (error) {
+//   console.log("Error getting document:", error);
+// });
 
 //   console.log(data);
 var arrayFilter = [{
@@ -163,9 +163,10 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   var dataInvoice = []
   var stockSet = []
   var dataStock = []
+  var dataPayment1 = []
 
   var check = true
-  chrome.storage.local.get('export', function (obj) {
+  chrome.storage.local.get('dataPayment1', function (obj) {
     // console.log(obj);
     if (Object.keys(obj).length === 0) {
       chrome.storage.local.set({
@@ -192,9 +193,16 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       chrome.storage.local.set({
         stocks: []
       });
+      chrome.storage.local.set({
+        dataPayment1: []
+      });
 
       chrome.storage.local.get('data', function (obj) {
         dataOnSnapshot = obj.data;
+        // console.log(dataOnSnapshot);
+      });
+      chrome.storage.local.get('dataPayment1', function (obj) {
+        dataPayment1 = obj.dataPayment1;
         // console.log(dataOnSnapshot);
       });
       chrome.storage.local.get('export', function (obj) {
@@ -238,31 +246,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     }
   });
 
-  firestore.collection("exportCode").get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach(doc => {
-        if (doc.data().status == "MỚI") {
-          firestore.collection("exportCode").doc(doc.id).update({
-            "status": 1
-          }).then(() => {
-            console.log("1");
-          })
-        } else if (doc.data().status == "SHIPPED") {
-          firestore.collection("exportCode").doc(doc.id).update({
-            "status": 2
-          }).then(() => {
-            console.log("2");
-          })
-        }
-        if (doc.data().status == "DONE") {
-          firestore.collection("exportCode").doc(doc.id).update({
-            "status": 3
-          }).then(() => {
-            console.log("3");
-          })
-        }
-      })
-    })
+  
 
 
   request_center.request_trigger()
@@ -330,6 +314,43 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 $scope.storageFirestore.syncOrders()
                 dataOnSnapshot = dataSet
                 check = true
+              }
+            });
+          })
+          firestore.collection("orderShopee")
+          .where("paymentStatus.status", "==", 1)
+          .onSnapshot(function (snapshot) {
+            console.log("connected");
+            snapshot.docChanges.forEach(function (change, i) {
+              var obj = change.doc.data()
+              if (change.type === "added") {
+                // var found = dataOnSnapshot.some(function (el) {
+                //   return el.id == obj.id;
+                // });
+                // if (!found) {
+                // dataOnSnapshot.push(obj)
+                // }
+
+                dataPayment1.push(filterData(obj, ["actual_carrier", "importMoneyId","id","buyer_paid_amount", "create_at", "exportId","ordersn", "shipping_fee","shipping_traceno","actual_money_shopee_paid"]))
+
+              }
+              if (change.type === "modified") {
+                let index = dataPayment1.findIndex(x => x.id == obj.id)
+                // console.log("modified", obj);
+                dataPayment1[index] = obj
+              }
+              // console.log(change);
+              if (change.type === "removed") {
+                let index = dataPayment1.findIndex(x => x.id == obj.id)
+                // console.log("removed", obj);
+                dataPayment1.splice(index, 1);
+                // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+                // dataOnSnapshot[index] = obj
+              }
+              if ((i + 1) == snapshot.docChanges.length) {
+                $scope.storageFirestore.dataPayment1 = dataPayment1
+                $scope.storageFirestore.syncPayment1()
+
               }
             });
           })

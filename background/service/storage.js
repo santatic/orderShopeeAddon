@@ -6,6 +6,7 @@ app.service('storageFirestore', function ($q) {
     this.products = [];
     this.invoices = []
     this.stocks = []
+    this.dataPayment1 = []
     
     this.findAll = function (callback) {
         chrome.storage.local.get('data', function (keys) {
@@ -26,6 +27,16 @@ app.service('storageFirestore', function ($q) {
         }, function () {
             console.log('Stock is stored in Chrome storage');
             chrome.storage.local.get('stocks', function (keys) {
+                console.log(keys);
+            });
+        }); 
+    }
+    this.syncPayment1 = function(){
+        chrome.storage.local.set({
+            dataPayment1: this.dataPayment1
+        }, function () {
+            console.log('Stock is stored in Chrome storage');
+            chrome.storage.local.get('dataPayment1', function (keys) {
                 console.log(keys);
             });
         }); 

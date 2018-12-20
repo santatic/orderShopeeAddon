@@ -1,4 +1,5 @@
-<div class="filter-completed-orders">
+<img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
+<!-- <div class="filter-completed-orders">
     <div>
         <input type="radio" ng-model="filterOrderStatus" value="0" name="ALL">
         Tất Cả
@@ -20,7 +21,7 @@
         Đã Hủy
     </div>
 
-</div>
+</div> -->
 
-<div ui-grid="gridOptions" ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-pagination class="grid">
+<div ui-grid="options" ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-pagination class="grid">
 </div>
