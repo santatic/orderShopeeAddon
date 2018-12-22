@@ -12,6 +12,7 @@ const settings = { /* your settings... */
 firestore.settings(settings);
 console.log("run");
 
+
 // firestore.collection("orderShopee")
 // .where("own_status.status", "==", 9)
 // .get().then(function (querySnapshot) {
@@ -1051,7 +1052,8 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               status: names[0],
               traceno: data.shipping_traceno,
               shopeePayPre: data.actual_money_shopee_paid ? data.actual_money_shopee_paid : 0,
-              own_transaction: data.own_transaction ? data.own_transaction : []
+              own_transaction: data.own_transaction ? data.own_transaction : [],
+              importId: data.importMoneyId? data.importMoneyId: []
             }
             resOrdersn.push(obj)
           })
@@ -1064,7 +1066,8 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             status: "chua co trong Firestore",
             traceno: "chua co trong Firestore",
             shopeePayPre: "chua co trong Firestore",
-            own_transaction: "chua co trong Firestore"
+            own_transaction: "chua co trong Firestore",
+            importId:""
           }
           resOrdersn.push(obj)
         }

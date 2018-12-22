@@ -939,9 +939,10 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                             $scope.$apply()
                             var models = []
                             var products = []
-                            $('table.has-multi-entry-order:last tr').each(function () {
+                            console.log($('div#previewCopy table:last').html());
+
+                            $('div#previewCopy table:last tr').each(function () {
                                 $this = $(this)
-                                
                                 var disId = $(this).find('td.s1 a').attr("href")
                                 disId = disId.split('offer/').pop().split('.html').shift();
                                 var classify = $(this).find('div.trade-spec').text()                                

@@ -113,13 +113,19 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                 id: myData.id,
                 ordersn: myData.ordersn,
                 time: ctime,
-                paid_amount: Number(myData.buyer_paid_amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
-                actual_recive: Number(myData.actual_money_shopee_paid).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
+                paid_amount: Number(myData.buyer_paid_amount).toFixed(0).replace(/./g, function(c, i, a) {
+                    return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                  }),
+                actual_recive: Number(myData.actual_money_shopee_paid).toFixed(0).replace(/./g, function(c, i, a) {
+                    return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                  }),
                 exportCode: myData.exportId,
                 shippingId: myData.shipping_traceno,
                 carrier: myData.actual_carrier,
                 importCode: myData.importMoneyId,
-                offset: (Number(myData.buyer_paid_amount) - Number(myData.actual_money_shopee_paid)).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+                offset: (Number(myData.buyer_paid_amount) - Number(myData.actual_money_shopee_paid)).toFixed(0).replace(/./g, function(c, i, a) {
+                    return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                  })
             }
             
             sources.push(obj)

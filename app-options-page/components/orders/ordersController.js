@@ -362,6 +362,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             $("#changeBulkStatus").on("hidden.bs.modal", function () {
                 $scope.BulkStatusRadio = null
                 $scope.BulkChangeStatus = []
+                $scope.reportBulkScan = []
             })
             $scope.toggle = function (event) {
                 console.log(event.currentTarget.checked);
@@ -421,6 +422,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 })
                 $scope.chiadon = function () {
                     tasks = []
+                    var averageItem = 0
                     Array.prototype.sum = function (prop) {
                         var total = 0
                         for (var i = 0, _len = this.length; i < _len; i++) {
@@ -435,7 +437,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             name: $(this).parent().find("#name").text(),
                             uid: $(this).attr("id"),
                             email: $(this).parent().find("#email").text(),
-                            orderNeedPack: []
+                            orderNeedPack: [],
+                            numModel: 0
                         })
                     })
 
@@ -456,45 +459,29 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         tempOrders.push(objOrder)
                     })
 
-                    orders1.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
+                    tempOrders.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
 
-                    var averageItem = (orders1.sum("modelNum")) / ($('#selectUser input:checkbox:checked').length)
+                    averageItem = (orders1.sum("modelNum")) / ($('#selectUser input:checkbox:checked').length)
                     averageItem = Math.round(averageItem);
-                    tempOrders = orders1
-                    console.log(averageItem, tempOrders, tasks.length)
-                    // var i = 0
-                    // for (var ind = 0;;ind++) {
-                    //     ind ++ 
-                    // tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
-                    // if (orders1.length > 0) {
-                    //     if (tasks[i].numModel < averageItem) {
-                    //         tasks[i].orderNeedPack.push(orders1[0])
-                    //         orders1.splice(0, 1)
-                    //     }
-                    //     if((i+1)==tasks.length) {
-                    //         i = 0
-                    //     }
-                    //     console.log(i+1, tasks.length);
-                    // } else break  
+                    console.log(averageItem, orders1, tasks.length)
 
-                    // }
-                    // var i = 0;
-                    // var length = tasks.length;
-                    // while (orders1.length > 0) {
-                    //     tasks[i].numModel = tasks[i].orderNeedPack.length > 0 ? tasks[i].orderNeedPack.sum("modelNum") : 0
 
-                    //     if (tasks[i].numModel < averageItem) {
-                    //         tasks[i].orderNeedPack.push(orders1[0])
-                    //         orders1.splice(0, 1)
-                    //     }
-                    //     if ((i + 1) == tasks.length) {
-                    //         i = 0
-                    //     }
-                    //     console.log(i + 1, tasks.length);
-                    //     i++;
-                    //     i = i == length ? 0 : i
-                    // }
+                    var i = 0
+                    orders1.forEach(function (o, ind) {
 
+                        if ((tasks[i].numModel + tempOrders[0].modelNum) < averageItem || tasks.length == 1) {
+                            tasks[i].orderNeedPack.push(tempOrders[0])
+                            tasks[i].numModel = tasks[i].orderNeedPack.sum("modelNum")
+                            tempOrders.splice(0, 1)
+                        }
+                        i++
+                        if ((i) == tasks.length) {
+                            i = 0
+                        }
+                        if ((ind + 1) == orders1.length && tempOrders.length > 0) {
+                            Array.prototype.push.apply(tasks[tasks.length - 1].orderNeedPack, tempOrders)
+                        }
+                    })
 
 
                     tasks.forEach(function (task) {
@@ -553,12 +540,19 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             }).show();
             var batch = firestore.batch()
             var arrayAfterChange = $scope.BulkChangeStatus
+            var check = []
             $('input[name="scanId"]:checked').each(function () {
                 console.log($(that).val())
                 let selectedExpTags = [$(that).val()];
+                let index = arrayAfterChange.findIndex(x => x.id == $(this).val())
+                
+                if(arrayFilter.find(y => y.vietnamese == arrayAfterChange[index].status).id !== 1){
+                    check.push($(this).val())
+                };
                 let names = selectedExpTags.map(x => arrayFilter.find(y => y.english == x).id)
                 let status = selectedExpTags.map(x => arrayFilter.find(y => y.english == x).vietnamese)
                 var docRef = firestore.collection("orderShopee").doc($(this).val())
+
                 var obj = {
                     "own_status": {
                         status: names[0],
@@ -566,25 +560,30 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     }
                 }
                 batch.update(docRef, obj)
-                let index = arrayAfterChange.findIndex(x => x.id == $(this).val())
+                
                 arrayAfterChange[index].new_status = status[0]
 
             })
-            batch.commit().then(() => {
-                n.close()
-                $scope.BulkStatusRadio = null
-                $scope.BulkChangeStatus = arrayAfterChange
-                $('#checkall').prop('checked', false);
-                $('input[name="scanId"]:checked').prop('checked', false);
-                $scope.$apply()
-                new Noty({
-                    layout: 'bottomRight',
-                    timeout: 1500,
-                    theme: "relax",
-                    type: 'success',
-                    text: 'ĐÃ THAY ĐỔI TRẠNG THÁI!'
-                }).show();
-            })
+            if(check.length ==  0){
+                batch.commit().then(() => {
+                    n.close()
+                    $scope.BulkStatusRadio = null
+                    $scope.BulkChangeStatus = arrayAfterChange
+                    $('#checkall').prop('checked', false);
+                    $('input[name="scanId"]:checked').prop('checked', false);
+                    $scope.$apply()
+                    new Noty({
+                        layout: 'bottomRight',
+                        timeout: 1500,
+                        theme: "relax",
+                        type: 'success',
+                        text: 'ĐÃ THAY ĐỔI TRẠNG THÁI!'
+                    }).show();
+                })
+            }else{
+                alert("có đơn chưa phải là đơn mới")
+            }
+            
         } else $scope.BulkStatusRadio = null
 
 
@@ -604,7 +603,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     $scope.BulkChangeStatus.unshift({
                         id: inputScan,
                         status: "",
-                        new_status: ""
+                        new_status: "",
+                        carrier: ""
                     })
                     $(that).val("")
                     console.log($scope.BulkChangeStatus);
@@ -612,21 +612,13 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     let index = dataForPro.findIndex(x => x.id == inputScan)
                     if (index !== -1) {
                         const data = dataForPro[index]
-                        let selectedExpTags = [data.own_status.status];
-                        let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                        let indexPromise = $scope.BulkChangeStatus.findIndex(x => x.id == inputScan)
-                        $scope.BulkChangeStatus[indexPromise].status = names[0]
-                        $scope.$apply()
+                        $scope.getBulkChangeData(data, inputScan)
                     } else {
                         firestore.collection("orderShopee").doc(inputScan).get().then(function (doc) {
                             if (doc.exists) {
                                 console.log("from DB");
                                 const data = doc.data()
-                                let selectedExpTags = [data.own_status.status];
-                                let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                                let indexPromise = $scope.BulkChangeStatus.findIndex(x => x.id == inputScan)
-                                $scope.BulkChangeStatus[indexPromise].status = names[0]
-                                $scope.$apply()
+                                getBulkChangeData(data, inputScan)
                             } else {
                                 alert("Đơn này không tồn tại trong hệ thống")
                                 $(that).val("")
@@ -644,7 +636,30 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
         }, 100);
     });
-
+    $scope.getBulkChangeData = function (data, inputScan) {
+        let selectedExpTags = [data.own_status.status];
+        let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+        let indexPromise = $scope.BulkChangeStatus.findIndex(x => x.id == inputScan)
+        $scope.BulkChangeStatus[indexPromise].status = names[0]
+        $scope.BulkChangeStatus[indexPromise].carrier = data.actual_carrier
+        $scope.reportBulkScan = []
+        $scope.BulkChangeStatus.forEach(function (order) {
+            var found = $scope.reportBulkScan.some(function (el) {
+                return el.carrier == order.carrier
+            });
+            if (found) {
+                let ind = $scope.reportBulkScan.findIndex(x => x.carrier == order.carrier)
+                $scope.reportBulkScan[ind].count = $scope.reportBulkScan[ind].count + 1
+            } else {
+                $scope.reportBulkScan.push({
+                    carrier: order.carrier,
+                    count: 1
+                })
+            }
+        })
+        console.log($scope.reportBulkScan);
+        $scope.$apply()
+    }
 
     $scope.options.multiSelect = true;
     var now = new Date
