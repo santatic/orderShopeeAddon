@@ -133,10 +133,11 @@ app.service('helper', function () {
       if (arrExportId.length == arrayOrders.length) {
         clearInterval(timer)
         console.log(arrExportId);
+        var exid = date.getTime().toString()
         // var selectedExpTags = [arrayOrders[0].carrier];
         // var names = selectedExpTags.map(x => arrCarrier.find(y => y.id === x).carrier)
         var batch = firestore.batch()
-        var exCol = firestore.collection("exportCode").doc(date.getTime().toString())
+        var exCol = firestore.collection("exportCode").doc(exid)
         batch.set(exCol, {
           "orders": arrExportId,
           "shipper": "",
@@ -149,7 +150,7 @@ app.service('helper', function () {
           var docEx = firestore.collection("orderShopee").doc(val.toString());
 
           batch.update(docEx, {
-            "exportId": date.getTime().toString()
+            "exportId": exid
           })
           check.push(i)
         })
@@ -159,8 +160,13 @@ app.service('helper', function () {
 
             batch.commit().then(function () {
               n.close()
-              var win = window.open(chrome.extension.getURL("options.html#/export/") + date.getTime(), "_blank");
-              win.focus()
+              new Noty({
+                layout: 'bottomRight',
+                timeout: 1500,
+                theme: "relax",
+                type: 'success',
+                text: 'Đã tạo phiếu xuất '+ exid
+              }).show();
             })
 
             ;

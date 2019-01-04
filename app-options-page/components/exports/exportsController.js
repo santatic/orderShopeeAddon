@@ -1,4 +1,3 @@
-
 app.controller("exports-controller", ordersController)
 
 ordersController.$inject = ['$scope', '$q', '$timeout', 'moment', 'uiGridConstants'];
@@ -7,21 +6,19 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
     $scope.loading = true;
     var saleUrl = chrome.extension.getURL("options.html#/");
 
-    var arrStatus = [
-        {
-            original: 1,
-            new: "MỚI"
-        },{
-            original: 2,
-            new: "ĐÃ GIAO"
-        },{
-            original: 3,
-            new: "HOÀN THÀNH"
-        },{
-            original: 4,
-            new: "ĐÃ HỦY"
-        }
-    ]
+    var arrStatus = [{
+        original: 1,
+        new: "MỚI"
+    }, {
+        original: 2,
+        new: "ĐÃ GIAO"
+    }, {
+        original: 3,
+        new: "HOÀN THÀNH"
+    }, {
+        original: 4,
+        new: "ĐÃ HỦY"
+    }]
 
     $scope.options = {
         // enableHorizontalScrollbar = 0,
@@ -47,12 +44,12 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                 name: "Create At (m-d-y)",
                 enableCellEdit: false,
                 field: "time",
-                
+
                 sort: {
                     direction: 'desc',
                     priority: 0
                 }
-            },{
+            }, {
                 name: "Nhà vận chuyển",
                 field: "carrier"
             },
@@ -106,22 +103,37 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
     };
 
     $scope.options.gridMenuCustomItems = [{
-        title: "IN ĐƠN",
+        title: "IN PHIẾU",
         action: function () {
+            $scope.printArr = []
             var selected = $scope.gridApi.selection.getSelectedRows();
-            console.log(selected);
+            if (selected.length > 0) {
+                selected.sort((a, b) => (a.carrier > b.carrier) ? 1 : ((b.carrier > a.carrier) ? -1 : 0));
+                console.log(selected);
+                chrome.storage.local.get('data', function (keys) {
+                    selected.forEach(function (select, i) {
+                        select.arrTraceno = []
+                        select.orders.forEach(function (id) {
+                            let ref = keys.data.find(x => x.id == id)
+                            if (ref !== undefined) {
+                                select.arrTraceno.push(ref.shipping_traceno)
+                            }
+                        })
+                        if ((i + 1) == selected.length) {
+                            $scope.printArr = selected
+                            $scope.$apply()
+                            window.print();
+                        }
+                    })
+                })
 
-
-            // $timeout(function () {
-            //     window.print();
-            //     $scope.rowSelected = []
-            // }, 500)
+            }
         }
 
     }]
 
     $scope.options.multiSelect = true;
-    
+
     chrome.storage.local.get('export', function (keys) {
         getExport(keys.export)
     })
@@ -130,35 +142,21 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         getExport(changes.export.newValue);
     })
 
-    function getExport(arr){
+    function getExport(arr) {
         var sources = []
         arr.forEach(function (doc) {
             const myData = doc;
-            // console.log(myData);
-            ctime = moment(myData.create_at.seconds * 1000).format("MM-DD-YYYY / HH:MM")
-            // obj = new Object();
-
-            // if (myData.status == "HỦY PHIẾU") {
-            //     console.log(myData.status);
-            // } else {
-            //     var selectedExpTags = myData.orders;
-            //     var names = keys.data.filter(obj => {
-            //         return obj.exportId == doc.id
-            //     })
-
-            //     console.log(doc.id, names);
-            // }
-
+            ctime = moment(myData.create_at.seconds * 1000).format("YYYY-MM-DD / HH:MM")
             obj = {
                 id: doc.id,
                 shipper: myData.shipper,
                 time: ctime,
                 size: myData.orders.length,
                 carrier: myData.carrier,
-                status: arrStatus.find(x=>x.original == myData.status).new
+                status: arrStatus.find(x => x.original == myData.status).new,
+                orders: myData.orders,
             }
-            
-            
+
             if (myData.shopeePaid && myData.buyerPaid) {
                 obj.shopeePaid = myData.shopeePaid.toLocaleString()
                 obj.buyerPaid = myData.buyerPaid.toLocaleString()
@@ -166,11 +164,12 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
             }
             sources.push(obj)
         })
-        console.log(sources);
         $scope.data = sources
         $scope.options.data = $scope.data;
         $scope.loading = false
         $scope.gridApi.core.refresh();
+
+
     }
 
 

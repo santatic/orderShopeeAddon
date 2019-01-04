@@ -82,10 +82,10 @@
                                 PHIẾU XUẤT</button>
                         </div>                        
                     </div>
-                    <div class="report" ng-show="BulkChangeStatus.length > 0">
+                    <div style="font-size: 16px" class="report" ng-show="BulkChangeStatus.length > 0">
                             <li ng-repeat="i in reportBulkScan">
                                 <span>{{i.count}} đơn</span>
-                                <span>{{i.carrier}}</span>
+                                <span>{{i.carrier}} <span ng-show="i.note !== ''">({{i.note}})</span> </span>
                             </li>
                         </div>
                 </div>
@@ -160,14 +160,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <button class="btn btn-primary" ng-click="chiadon()">CHIA ĐƠN</button>
+                <!-- <button class="btn btn-primary" ng-click="chiadon()">CHIA ĐƠN</button> -->
                 <button class="btn btn-success" ng-click="updatechiadon()">CHỐT</button>
             </div>
             <div class="modal-body">
                 <div class="form-group-status" id="selectUser" style="padding-top: 0">
                     <div class="selectUser">
                         <div ng-repeat="i in users">
-                            <input type="checkbox" id="{{i.uid}}" style="cursor:pointer">
+                            <input type="checkbox" id="{{i.uid}}" ng-change="chiadon()" ng-model="checked" style="cursor:pointer">
                             <span id="name"><b>{{i.name}}</b></span> <br> <span id="email">{{i.email}}</span>
                         </div>
                     </div>

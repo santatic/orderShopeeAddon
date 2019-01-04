@@ -1,4 +1,3 @@
-
 app.controller("import-controller", ordersController)
     .filter('mapGender', mapGender)
 
@@ -123,7 +122,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 name: "A - B",
                 enableCellEdit: false,
                 field: "offset",
-                width:'100'
+                width: '100'
             },
             {
                 name: "Shopee's Status",
@@ -245,99 +244,104 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     $scope.options.multiSelect = true;
     var sources = []
     var arrTraceno = []
+    var arrOrderId = []
     firestore.collection("importCode").doc(id).get().then(function (doc) {
         const data = doc.data()
         // console.log(data);
         $scope.bank = data.myBank;
         $scope.date = data.reciveMoneyAt;
         $scope.$apply()
-    })
-    var docRef = firestore.collection("orderShopee").where("importMoneyId", "==", id);
-    docRef.get().then(
-        function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-
-                const myData = doc.data();
-                // console.log(myData);
-                var voucher_price = parseInt(((myData.voucher_price) * 100) / 100)
-                var money = parseInt(((myData.buyer_paid_amount) * 100) / 100)
-                money = myData.voucher_absorbed_by_seller ? money - voucher_price : money
-                ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
-                obj = new Object();
-
-                obj = {
-                    id: doc.id,
-                    trackno: myData.shipping_traceno,
-                    nickname: myData.user.name + " - " + myData.buyer_address_name,
-                    carrier: myData.actual_carrier,
-                    paid: money.toLocaleString(),
-                    shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
-                    status: myData.logistic["logistics-logs"][0].description,
-                    updateTime: ctime,
-                    voucherPrice: voucher_price,
-                    ownStatus: myData.own_status.status,
-                    shopeePrice: myData.actual_money_shopee_paid.toLocaleString(),
-                    ordersn: myData.ordersn
+        arrOrderId = data.orders
+        
+    }).then(function(doc){
+        arrOrderId.forEach(function (orderId) {
+            var docRef = firestore.collection("orderShopee").doc(orderId.id);
+            docRef.get().then(
+                function (orderDoc) {
+                    const myData = orderDoc.data();
+                    // console.log(myData);
+                    var voucher_price = parseInt(((myData.voucher_price) * 100) / 100)
+                    var money = parseInt(((myData.buyer_paid_amount) * 100) / 100)
+                    money = myData.voucher_absorbed_by_seller ? money - voucher_price : money
+                    ctime = moment((myData.logistic["logistics-logs"][0].ctime) * 1000).format('YYYY-MM-DD');
+                    obj = new Object();
+                    console.log(myData);
+                    obj = {
+                        id: orderDoc.id,
+                        trackno: myData.shipping_traceno,
+                        nickname: myData.user.name + " - " + myData.buyer_address_name,
+                        carrier: myData.actual_carrier,
+                        paid: money.toLocaleString(),
+                        shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
+                        status: myData.logistic["logistics-logs"][0].description,
+                        updateTime: ctime,
+                        voucherPrice: voucher_price,
+                        ownStatus: myData.own_status.status,
+                        shopeePrice: myData.actual_money_shopee_paid.toLocaleString(),
+                        ordersn: myData.ordersn
+                    }
+                    
+                    obj.offset = myData.actual_money_shopee_paid - money
+                    sources.push(obj)
+                    arrTraceno.push(obj.trackno)
+                    // console.log(querySnapshot.size);
                 }
-                obj.offset = myData.actual_money_shopee_paid - money
-                sources.push(obj)
-                arrTraceno.push(obj.trackno)
+            ).then(function () {
+                //$scope.apply();
             })
-            $scope.carrier = sources[0].carrier
-            $scope.arrTraceno = arrTraceno
-            $scope.size = querySnapshot.size
-            $scope.data = sources
-            $scope.options.data = $scope.data;
-            $scope.loading = false
-            $scope.gridApi.core.refresh();
-            sources.forEach(function (row, index) {
 
-                switch (row.ownStatus) {
-                    case "NEW":
-                        row.ownStatus = 1
-                        break
-                    case "PREPARED":
-                        row.ownStatus = 2
-                        break
-                    case "UNPREPARED":
-                        row.ownStatus = 3
-                        break
-                    case "PACKED":
-                        row.ownStatus = 4
-                        break
-                    case "SHIPPED":
-                        row.ownStatus = 5
-                        break
-                    case "DELIVERED":
-                        row.ownStatus = 6
-                        break
-                    case "RETURNING":
-                        row.ownStatus = 7
-                        break
-                    case "RETURNED":
-                        row.ownStatus = 8
-                        break
-                    case "PAID":
-                        row.ownStatus = 9
-                        break
-                    case "REFUNDED":
-                        row.ownStatus = "HT"
-                        break
-                    case "CANCELED":
-                        row.ownStatus = "0"
-                        break
-                }
-                // console.log(row.ownStatus);
-                // var selectedExpTags = [parseInt(value.ownStatus)];
-                // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                // value.own_Status = names[0];
-            })
-            // console.log(querySnapshot.size);
-        }
-    ).then(function () {
-        console.log($scope);
-        //$scope.apply();
+        })
+        $scope.carrier = sources[0].carrier
+        $scope.arrTraceno = arrTraceno
+        $scope.size = querySnapshot.size
+        $scope.data = sources
+        $scope.options.data = $scope.data;
+        $scope.loading = false
+        $scope.gridApi.core.refresh();
+        sources.forEach(function (row, index) {
+
+            switch (row.ownStatus) {
+                case "NEW":
+                    row.ownStatus = 1
+                    break
+                case "PREPARED":
+                    row.ownStatus = 2
+                    break
+                case "UNPREPARED":
+                    row.ownStatus = 3
+                    break
+                case "PACKED":
+                    row.ownStatus = 4
+                    break
+                case "SHIPPED":
+                    row.ownStatus = 5
+                    break
+                case "DELIVERED":
+                    row.ownStatus = 6
+                    break
+                case "RETURNING":
+                    row.ownStatus = 7
+                    break
+                case "RETURNED":
+                    row.ownStatus = 8
+                    break
+                case "PAID":
+                    row.ownStatus = 9
+                    break
+                case "REFUNDED":
+                    row.ownStatus = "HT"
+                    break
+                case "CANCELED":
+                    row.ownStatus = "0"
+                    break
+            }
+            // console.log(row.ownStatus);
+            // var selectedExpTags = [parseInt(value.ownStatus)];
+            // var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+            // value.own_Status = names[0];
+        })
     })
+
 
 }
 

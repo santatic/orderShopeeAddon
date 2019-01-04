@@ -122,7 +122,7 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                 exportCode: myData.exportId,
                 shippingId: myData.shipping_traceno,
                 carrier: myData.actual_carrier,
-                importCode: myData.importMoneyId,
+                importCode: myData.importMoneyId[0],
                 offset: (Number(myData.buyer_paid_amount) - Number(myData.actual_money_shopee_paid)).toFixed(0).replace(/./g, function(c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
                   })

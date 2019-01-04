@@ -552,7 +552,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     if (myData.own_status.status == 5) {
                         arrShipped.push(idOrder)
                     }
-                    if (myData.own_status.status == 8||myData.own_status.status == 9||myData.own_status.status == 11) {
+                    if (myData.own_status.status == 8||myData.paymentStatus.status == 2||myData.own_status.status == 11) {
                         arrDone.push(idOrder)
                     }
 

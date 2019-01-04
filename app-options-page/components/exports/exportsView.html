@@ -1,3 +1,23 @@
-
-    <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
-    <div id="grid1" ui-grid="options" ui-grid-exporter ui-grid-selection ui-grid-pagination ui-grid-edit ui-grid-row-edit class="grid"></div>
+<img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
+<div id="grid1" ui-grid="options" ui-grid-exporter ui-grid-selection ui-grid-pagination ui-grid-edit ui-grid-row-edit
+    class="grid noprint">
+</div>
+<div class="print">
+    <table class="table table-bordered exports">
+        <tbody>
+            <tr ng-repeat="i in printArr">
+                <td style="width: 22%">                    
+                    {{i.time}}<br>
+                    {{i.carrier}} <br>
+                    <span style="font-size: 11px">{{i.id}} </span>
+                </td>
+                <td>
+                    Mã vận đơn: <span ng-repeat="o in i.arrTraceno">{{o}}, </span>
+                </td>
+                <td style="width: 18%">
+                    Ký nhận <b>{{i.size}}</b> Đơn:
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

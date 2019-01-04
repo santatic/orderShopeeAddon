@@ -12,6 +12,35 @@ const settings = { /* your settings... */
 firestore.settings(settings);
 console.log("run");
 
+// firestore.collection("exportCode").where("status", "==", 2).get()
+// .then(querySnapshot=>{
+//   var i = 0
+//   var i1 = 0
+//   console.log(querySnapshot.docs);
+//   for(var doc of querySnapshot.docs) {    
+//     let data = doc.data()
+//     let ind = 0
+//     i1 ++
+//     data.orders.forEach(orderId=>{
+//       firestore.collection('orderShopee').doc(orderId.toString()).get().then(docOrder=>{
+//         let myData = docOrder.data()
+//         if(myData === undefined ) ;else{
+//           if (myData.own_status.status == 8||myData.paymentStatus.status == 2||myData.own_status.status == 11) {
+//             ind++                 
+//             if(ind == data.orders.length){
+//               firestore.collection('exportCode').doc(doc.id).update({
+//                 "status": 3
+//               }).then(()=> {
+//                 i++
+//                 console.log(i1, i, doc.id)
+//               })
+//             }
+//           }
+//         }        
+//       })
+//     })
+//   }
+// })
 
 // firestore.collection("orderShopee")
 // .where("own_status.status", "==", 9)
@@ -670,7 +699,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           .then(function (doc) {
             const data = doc.data()
             var status = data.own_status.status
-            if (status == 9 || status == 11 || status == 8) {
+            if (data.paymentStatus.status == 2 || status == 11 || status == 8) {
               okey.push(orId)
               // console.log(okey);              
             }
@@ -691,9 +720,13 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                   "status": 3
                 })
                 if ((i + 1) == dataRes.length) {
-                  batch.commit().then(() => {
-                    alert("ĐÃ CHUYỂN " + dataRes.length + " PHIẾU XUẤT VỀ HOÀN THÀNH")
-                  })
+                  if ( dataRes.length < 500){
+                    batch.commit().then(() => {
+                      alert("ĐÃ CHUYỂN " + dataRes.length + " PHIẾU XUẤT VỀ HOÀN THÀNH")
+                    })
+                  }else {
+                    alert("batch write không thể đọc quá 500 doc")
+                  }                  
                 }
               })
             }
@@ -962,7 +995,8 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     console.log(date.getTime().toString());
     var check = []
     var batch = firestore.batch()
-    var ImRef = firestore.collection("importCode").doc(date.getTime().toString());
+    var importId = date.getTime().toString()
+    var ImRef = firestore.collection("importCode").doc(importId);
     batch.set(ImRef, {
       "myBank": response.bank,
       "reciveMoneyAt": response.date,
@@ -1006,7 +1040,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         batch.update(docRef, {
           "own_transaction": id.own_transaction,
           "actual_money_shopee_paid": Number(id.shopeePayPre) + Number(id.shopeeMoney),
-          "importMoneyId": date.getTime().toString(),
+          "importMoneyId": id.importId.push(importId),
           "paymentStatus": status
         })
         check.push(i)
@@ -1051,9 +1085,10 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               id: doc.id,
               status: names[0],
               traceno: data.shipping_traceno,
+              exportId: data.exportId,
               shopeePayPre: data.actual_money_shopee_paid ? data.actual_money_shopee_paid : 0,
               own_transaction: data.own_transaction ? data.own_transaction : [],
-              importId: data.importMoneyId? data.importMoneyId: []
+              importMoneyId: data.importMoneyId? data.importMoneyId: []
             }
             resOrdersn.push(obj)
           })
@@ -1065,9 +1100,10 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             id: "",
             status: "chua co trong Firestore",
             traceno: "chua co trong Firestore",
+            exportId: "",
             shopeePayPre: "chua co trong Firestore",
             own_transaction: "chua co trong Firestore",
-            importId:""
+            importMoneyId:""
           }
           resOrdersn.push(obj)
         }

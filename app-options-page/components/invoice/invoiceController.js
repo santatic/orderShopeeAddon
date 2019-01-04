@@ -16,8 +16,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         }, {
             name: "Id Đơn",
             field: "id",
-            enableCellEdit: false,
-            visible: false
+            enableCellEdit: false
         }, {
             name: "Trạng Thái",
             enableCellEdit: false,

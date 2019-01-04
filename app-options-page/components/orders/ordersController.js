@@ -110,8 +110,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 name: "UserName",
                 enableCellEdit: false,
                 width: '150',
-                field: "nickname",
-                visible: false
+                field: "nickname"
             }, {
                 name: "Mã đơn hàng",
                 enableCellEdit: false,
@@ -409,6 +408,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 $('#chiadon').modal()
                 $scope.tasks = []
                 var tasks = []
+                var pickPros
+                var picks
                 firestore.collection("usersMobile").where("role", "==", 2).get().then(col => {
                     col.forEach(doc => {
                         // console.log(doc.data());
@@ -421,82 +422,146 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     })
                 })
                 $scope.chiadon = function () {
-                    tasks = []
-                    var averageItem = 0
-                    Array.prototype.sum = function (prop) {
-                        var total = 0
-                        for (var i = 0, _len = this.length; i < _len; i++) {
-                            total += this[i][prop]
+                    if ($('#selectUser input:checkbox:checked').length > 0) {
+                        tasks = []
+                        pickPros = []
+                        picks = []
+                        var averageItem = 0
+                        Array.prototype.sum = function (prop) {
+                            var total = 0
+                            for (var i = 0, _len = this.length; i < _len; i++) {
+                                total += this[i][prop]
+                            }
+                            return total
                         }
-                        return total
+
+                        $('#selectUser input:checkbox:checked').each(function () {
+                            // console.log($(this).attr("id"))
+                            var user = {
+                                name: $(this).parent().find("#name").text(),
+                                uid: $(this).attr("id"),
+                                email: $(this).parent().find("#email").text(),
+                                orderNeedPack: [],
+                                numModel: 0
+                            }
+                            tasks.push(user)
+                            picks.push({
+                                uid: $(this).attr("id"),
+                                modelNeedPick: [],
+                                create_at: new Date(),
+                                general_status: false
+                            })
+                        })
+
+                        var orders1 = []
+                        var tempOrders = []
+                        var tempOrdersPro = []
+                        selected.forEach(val => {
+                            var obj = dataForPro.find(ol => {
+                                return ol.id == val.id
+                            })
+                            var objOrder = {
+                                modelNum: obj['item-models'].length,
+                                proNum: obj.products.length,
+                                amount: obj['order-items'].sum("amount"),
+                                orderId: obj.id
+                            }
+                            orders1.push(objOrder)
+                            tempOrders.push(objOrder)
+                            obj['order-items'].forEach((item, index) => {
+                                let product = obj['products'].find(o => o.id === item.snapshotid);
+                                let model = obj['item-models'].find(o => o.id === item.modelid)
+                                var productsObj = new Object();
+                                productsObj = {
+                                    name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^", "").replace('FREESHIP TOÀN QUỐC 99K_ ', '').replace('FREESHIP 99K TOÀN QUỐC_ ', '').replace('FREESHIP 99K_ ', '').replace("FREESHIP ", ""),
+                                    model: model.name,
+                                    amount: item.amount,
+                                    imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
+                                    picked: [{
+                                        status: false,
+                                        create_at: new Date()
+                                    }],
+                                    note: "",
+                                    proId: product.itemid,
+                                    modelId: model.id,
+                                    orderId: obj.id,
+                                    shopid: product.shopid
+                                }
+                                tempOrdersPro.push(productsObj)
+                            });
+
+                        })
+
+                        tempOrders.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
+
+                        averageItem = (orders1.sum("modelNum")) / ($('#selectUser input:checkbox:checked').length)
+                        averageItem = Math.round(averageItem);
+                        console.log(averageItem, orders1, tasks.length)
+
+                        var i = 0
+                        orders1.forEach(function (o, ind) {
+
+                            if ((tasks[i].numModel + tempOrders[0].modelNum) < averageItem || tasks.length == 1) {
+                                tasks[i].orderNeedPack.push(tempOrders[0])
+                                tasks[i].numModel = tasks[i].orderNeedPack.sum("modelNum")
+                                tempOrders.splice(0, 1)
+                            }
+                            i++
+                            if ((i) == tasks.length) {
+                                i = 0
+                            }
+                            if ((ind + 1) == orders1.length && tempOrders.length > 0) {
+                                Array.prototype.push.apply(tasks[tasks.length - 1].orderNeedPack, tempOrders)
+                            }
+                        })
+
+                        tasks.forEach(function (task, i) {
+                            task.numOrder = task.orderNeedPack.length
+                            task.numModel = task.orderNeedPack.sum("modelNum")
+                            task.numProduct = task.orderNeedPack.sum("proNum")
+                            task.sum = task.orderNeedPack.sum("amount")
+                        })
+
+                        $scope.tasks = tasks
+                        console.log(tempOrdersPro);
+                        var checkPro = []
+                        tempOrdersPro.forEach(function (model) {
+                            let ind = pickPros.findIndex(x => x.productId == model.proId)
+                            if (ind !== -1) {
+                                pickPros[ind].model.push(model)
+                            } else {
+                                pickPros.push({
+                                    productId: model.proId,
+                                    model: [model]
+                                })
+                            }
+                        })
+                        pickPros.sort((a, b) => (a.model.length < b.model.length) ? 1 : ((b.model.length < a.model.length) ? -1 : 0));
+                        console.log(pickPros);
+                        var pickIndex = 0
+                        pickPros.forEach(function (pro, i) {
+                            pro.model.forEach(function (model) {
+                                let ind = picks[pickIndex].modelNeedPick.findIndex(x => x.name == model.name && x.model == model.model);
+                                if (ind !== -1) {
+                                    picks[pickIndex].modelNeedPick[ind].amount = picks[pickIndex].modelNeedPick[ind].amount + model.amount;
+                                } else {
+                                    picks[pickIndex].modelNeedPick.push(model)
+                                }                                
+                            })
+                            pickIndex++
+                            if ((pickIndex) == tasks.length) {
+                                pickIndex = 0
+                            }
+                        })
+                        console.log(picks);
+                    } else {
+                        $scope.tasks = []
                     }
-
-                    $('#selectUser input:checkbox:checked').each(function () {
-                        // console.log($(this).attr("id"))
-                        tasks.push({
-                            name: $(this).parent().find("#name").text(),
-                            uid: $(this).attr("id"),
-                            email: $(this).parent().find("#email").text(),
-                            orderNeedPack: [],
-                            numModel: 0
-                        })
-                    })
-
-                    var orders1 = []
-                    var tempOrders = []
-                    selected.forEach(val => {
-                        var obj = dataForPro.find(ol => {
-                            return ol.id == val.id
-                        })
-                        // console.log(obj);
-                        var objOrder = {
-                            modelNum: obj['item-models'].length,
-                            proNum: obj.products.length,
-                            amount: obj['order-items'].sum("amount"),
-                            orderId: obj.id
-                        }
-                        orders1.push(objOrder)
-                        tempOrders.push(objOrder)
-                    })
-
-                    tempOrders.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
-
-                    averageItem = (orders1.sum("modelNum")) / ($('#selectUser input:checkbox:checked').length)
-                    averageItem = Math.round(averageItem);
-                    console.log(averageItem, orders1, tasks.length)
-
-
-                    var i = 0
-                    orders1.forEach(function (o, ind) {
-
-                        if ((tasks[i].numModel + tempOrders[0].modelNum) < averageItem || tasks.length == 1) {
-                            tasks[i].orderNeedPack.push(tempOrders[0])
-                            tasks[i].numModel = tasks[i].orderNeedPack.sum("modelNum")
-                            tempOrders.splice(0, 1)
-                        }
-                        i++
-                        if ((i) == tasks.length) {
-                            i = 0
-                        }
-                        if ((ind + 1) == orders1.length && tempOrders.length > 0) {
-                            Array.prototype.push.apply(tasks[tasks.length - 1].orderNeedPack, tempOrders)
-                        }
-                    })
-
-
-                    tasks.forEach(function (task) {
-                        task.numOrder = task.orderNeedPack.length
-                        task.numModel = task.orderNeedPack.sum("modelNum")
-                        task.numProduct = task.orderNeedPack.sum("proNum")
-                        task.sum = task.orderNeedPack.sum("amount")
-                    })
-
-                    $scope.tasks = tasks
-                    console.log(tasks);
 
                 }
                 $scope.updatechiadon = function () {
                     var batch = firestore.batch()
+                    var batchPick = firestore.batch()
                     tasks.forEach(function (task, i) {
                         task.orderNeedPack.forEach(function (val, i1) {
                             let obj = {
@@ -510,14 +575,26 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             })
                             if ((i + 1) == tasks.length && (i1 + 1) == task.orderNeedPack.length) {
                                 batch.commit().then(function () {
-                                    new Noty({
-                                        layout: 'bottomRight',
-                                        theme: "relax",
-                                        timeout: 2500,
-                                        type: 'success',
-                                        text: 'ĐÃ THÊM NGƯỜI ĐÓNG GÓI'
-                                    }).show();
-                                    $('#chiadon').modal("hide")
+                                    picks.forEach(function (pick, iPick) {
+                                        var id = (pick.create_at).getTime().toString().slice(0, -3) + "-" + pick.uid
+                                        var docPickRef = firestore.collection('pickModel').doc(id)
+                                        batchPick.set(docPickRef, pick)
+                                        if ((iPick + 1) == picks.length) {
+                                            batchPick.commit().then(function () {
+                                                new Noty({
+                                                    layout: 'bottomRight',
+                                                    theme: "relax",
+                                                    timeout: 2500,
+                                                    type: 'success',
+                                                    text: 'ĐÃ THÊM NGƯỜI ĐÓNG GÓI và NHẶT HÀNG'
+                                                }).show();
+                                                $('#chiadon').modal("hide")
+                                            })
+                                        }
+
+                                    })
+
+
                                 })
                             }
                         })
@@ -545,8 +622,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 console.log($(that).val())
                 let selectedExpTags = [$(that).val()];
                 let index = arrayAfterChange.findIndex(x => x.id == $(this).val())
-                
-                if(arrayFilter.find(y => y.vietnamese == arrayAfterChange[index].status).id !== 1){
+
+                if (arrayFilter.find(y => y.vietnamese == arrayAfterChange[index].status).id !== 1) {
                     check.push($(this).val())
                 };
                 let names = selectedExpTags.map(x => arrayFilter.find(y => y.english == x).id)
@@ -560,11 +637,11 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     }
                 }
                 batch.update(docRef, obj)
-                
+
                 arrayAfterChange[index].new_status = status[0]
 
             })
-            if(check.length ==  0){
+            if (check.length == 0) {
                 batch.commit().then(() => {
                     n.close()
                     $scope.BulkStatusRadio = null
@@ -580,10 +657,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         text: 'ĐÃ THAY ĐỔI TRẠNG THÁI!'
                     }).show();
                 })
-            }else{
+            } else {
                 alert("có đơn chưa phải là đơn mới")
             }
-            
+
         } else $scope.BulkStatusRadio = null
 
 
@@ -643,20 +720,41 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         $scope.BulkChangeStatus[indexPromise].status = names[0]
         $scope.BulkChangeStatus[indexPromise].carrier = data.actual_carrier
         $scope.reportBulkScan = []
-        $scope.BulkChangeStatus.forEach(function (order) {
+        $scope.BulkChangeStatus.forEach(function (order,i) {
             var found = $scope.reportBulkScan.some(function (el) {
                 return el.carrier == order.carrier
             });
             if (found) {
                 let ind = $scope.reportBulkScan.findIndex(x => x.carrier == order.carrier)
                 $scope.reportBulkScan[ind].count = $scope.reportBulkScan[ind].count + 1
-            } else {
+
+            } else {                
                 $scope.reportBulkScan.push({
-                    carrier: order.carrier,
-                    count: 1
-                })
+                    carrier: order.carrier ,
+                    count: 1,
+                    note: ""
+                })  
             }
-        })
+            if((i+1) == $scope.BulkChangeStatus.length){
+                let ind1 = $scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Nhanh")
+                let ind2 = $scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Tiết Kiệm")
+                if(ind1 !== -1 || ind2 !== -1){
+                    $scope.reportBulkScan.push({
+                        carrier: "VNPost" ,
+                        count: (ind1 !== -1 ? $scope.reportBulkScan[ind1].count: 0) + (ind2 !== -1 ? $scope.reportBulkScan[ind2].count: 0),
+                        note: (ind1 !== -1 ? $scope.reportBulkScan[ind1].count + " Nhanh": "") + (ind2 !== -1 ? " + " + $scope.reportBulkScan[ind2].count + " Tiết Kiệm": ""),
+                    })  
+                    if(ind1 !==-1){
+                        $scope.reportBulkScan.splice(ind1, 1)
+                    }
+                    if(ind2 !==-1){
+                        $scope.reportBulkScan.splice(ind2, 1)
+                    }
+                }
+            }
+        })        
+
+        $scope.reportBulkScan.sort((a, b) => (a.carrier < b.carrier) ? 1 : ((b.carrier < a.carrier) ? -1 : 0));
         console.log($scope.reportBulkScan);
         $scope.$apply()
     }

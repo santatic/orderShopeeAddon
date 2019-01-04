@@ -21,6 +21,11 @@ ul.tasks span {
   float: right
 }
 
+.exports td{
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
+}
+
 .tasks thead th {
   background: #233242;
   color: #fff
