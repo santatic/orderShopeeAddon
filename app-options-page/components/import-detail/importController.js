@@ -280,9 +280,11 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                         shopeePrice: myData.actual_money_shopee_paid.toLocaleString(),
                         ordersn: myData.ordersn
                     }
+                    $scope.carrier = obj.carrier
                     
                     obj.offset = myData.actual_money_shopee_paid - money
-                    sources.push(obj)
+                    $scope.options.data.push(obj)
+                    $scope.$apply()
                     arrTraceno.push(obj.trackno)
                     // console.log(querySnapshot.size);
                 }
@@ -291,11 +293,9 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             })
 
         })
-        $scope.carrier = sources[0].carrier
+        
         $scope.arrTraceno = arrTraceno
-        $scope.size = querySnapshot.size
-        $scope.data = sources
-        $scope.options.data = $scope.data;
+        $scope.size = arrOrderId.length
         $scope.loading = false
         $scope.gridApi.core.refresh();
         sources.forEach(function (row, index) {

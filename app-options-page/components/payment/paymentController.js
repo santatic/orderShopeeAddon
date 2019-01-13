@@ -3,6 +3,7 @@ app.controller("payment-controller", paymentController)
 
 function paymentController($scope, moment, uiGridConstants) {
   // $scope.refresh = false;
+
   var now = moment((new Date()).getTime()).format('hh:mm_DD/MM/YYYY');
   $scope.gridOptions = {
     enableRowSelection: true,
@@ -179,7 +180,18 @@ app.directive("fileread", [function () {
                 vietnamese: "đã hủy"
               },
             ]
+            var paymentStatusRef = [{
+              id: 1,
+              status: "Thiếu"
+            }, {
+              id: 2,
+              status: "Đủ"
+            }, {
+              id: 3,
+              status: "Thừa"
+            }]
             var data = evt.target.result;
+            $scope.check = true
 
             var workbook = XLSX.read(data, {
               type: 'binary'
@@ -191,11 +203,11 @@ app.directive("fileread", [function () {
 
             var data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
-            if(data.length < 500 ){
+            if (data.length < 500) {
               $scope.opts.onRegisterApi = function (gridApi) {
                 $scope.gridApi = gridApi
               }
-  
+
               // $scope.opts.columnDefs = [];
               headerNames.forEach(function (h) {
                 $scope.opts.columnDefs.push({
@@ -203,6 +215,7 @@ app.directive("fileread", [function () {
                 });
               });
               $scope.opts.columnDefs[5].visible = false
+              $scope.opts.columnDefs[6].visible = false
               $scope.opts.columnDefs.push({
                 name: "Mã Id",
                 field: "orderId",
@@ -226,14 +239,18 @@ app.directive("fileread", [function () {
               }, {
                 name: "Hoàn tiền",
                 field: "refund"
+              }, {
+                name: "Trạng thái tt",
+                field: "paymentStatus"
               })
-  
+
               var sendOrderno = []
               var totalShopeeMoney = []
+              var shopeeMoneyOnce = []
               var totalOwnMoney = []
               var arrayId = []
               var notExist = []
-  
+
               data.forEach(function (value, i) {
                 var orderKey = Object.keys(value)[3];
                 var ordernoStr = value[orderKey];
@@ -247,18 +264,21 @@ app.directive("fileread", [function () {
                 mission: "payment",
                 arrayOrderno: sendOrderno
               }, function (response) {
-  
+
                 (response.moneyEx).forEach(function (val, i) {
                   data[i].moneyEx = val.money;
                   data[i].refund = 0
                   var shopeeMoney = data[i][Object.keys(data[i])[2]];
-                  totalShopeeMoney.push(shopeeMoney);
+                  var total = +shopeeMoney + +Number(val.shopeePayPre).toFixed(0)
+                  console.log(total);
+                  totalShopeeMoney.push(total);
+                  shopeeMoneyOnce.push(Number(shopeeMoney))
                   if (val.money == "chua co trong Firestore") {
                     notExist.push(val.orderId)
                     data[i].offset = "null"
                   } else {
                     let obj = new Object()
-                    
+
                     totalOwnMoney.push(val.money)
                     data[i].vc = val.vc
                     if (val.status == "PAID") {
@@ -275,23 +295,25 @@ app.directive("fileread", [function () {
                           data2["order-items"].forEach(function (item) {
                             if (item.status == 4) {
                               refund = refund + ((item.item_price) * 100 / 100)
-  
+
                               // console.log(data[i].moneyEx);                         
                             }
                           })
+                          // console.log(parseInt(shopeeMoney) , val.shopeePayPre);
                           data[i].moneyEx = val.money - refund
-                          data[i].offset = parseInt(shopeeMoney) - parseInt(data[i].moneyEx)
-                          data[i].refund = refund
+                          data[i].offset = (parseInt(shopeeMoney) + parseInt(val.shopeePayPre)) - parseInt(data[i].moneyEx)
+                          data[i].refund = refund                          
                           console.log(val.id, data[i].moneyEx, refund)
                         })
                       } else {
                         data[i].offset = parseInt(shopeeMoney) - parseInt(data[i].moneyEx)
                       }
                     }
-  
+                    console.log(val.paymentStatus.status);                          
+                    data[i].paymentStatus = val.paymentStatus.status !== undefined ? paymentStatusRef.find(x => x.id == val.paymentStatus.status).status : "chưa đối soát"
                     data[i].orderId = val.id;
                     data[i].traceno = val.traceno
-  
+
                     var selectedExpTags = [val.status];
                     var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
                     data[i].statuss = names[0]
@@ -301,37 +323,46 @@ app.directive("fileread", [function () {
                     obj = {
                       id: val.id,
                       shopeeMoney: shopeeMoney,
-                      exMoney: data[i].moneyEx.toString(),
+                      exMoney: (Number(data[i].moneyEx)-Number(val.vc)).toString(),
                       shopeePayPre: val.shopeePayPre,
                       content: data[i][Object.keys(data[i])[1]] + ", " + data[i][Object.keys(data[i])[3]],
-                      own_transaction : val.own_transaction,
+                      own_transaction: val.own_transaction,
                       importMoneyId: val.importMoneyId,
                       exportId: val.exportId
                     }
+                    if (val.paymentStatus.status)
+                      $scope.check = val.paymentStatus.status == 2 || val.paymentStatus.status == 3 ? false : $scope.check;
+                    if (val.paymentStatus.status == 2 || val.paymentStatus.status == 3) console.log(val);
                     arrayId.push(obj)
                   }
                   // console.log(data[i].offset);
                   data[i].shippingFee = val.shipping_fee
-  
+
                 })
-  
+                if (!$scope.check) alert("tồn tại đơn đã thanh toán đủ hoặc thừa");
+
                 console.log(notExist);
                 var sumShopee = 0;
                 var sumOwn = 0;
+                var sumShopeeOnce = 0
                 $.each(totalShopeeMoney, function () {
                   sumShopee += parseInt(this)
                 });
+                $.each(shopeeMoneyOnce, function(){
+                  sumShopeeOnce += parseInt(this)
+                })
                 $.each(totalOwnMoney, function () {
                   sumOwn += parseInt(this)
                 });
-  
+
                 // alert(sumShopee + "-"+ sumOwn)
-  
+
                 if (notExist.length == 0) {
                   $('p#pNull').remove()
                 } else {
                   $('#null').text(notExist.length)
                 }
+                console.log(sumShopeeOnce);
                 $('#shpm').text(sumShopee.toLocaleString())
                 $('#ownm').text(sumOwn.toLocaleString())
                 $("#offset").text((sumShopee - sumOwn).toLocaleString())
@@ -353,7 +384,7 @@ app.directive("fileread", [function () {
                 // statusDef.filter.selectOptions = arrStatus
                 $scope.notExist = notExist
                 $scope.$apply()
-  
+
                 function httpGet(theUrl, headers) {
                   var xmlHttp = new XMLHttpRequest();
                   xmlHttp.open("GET", theUrl, false); // false for synchronous request
@@ -365,7 +396,7 @@ app.directive("fileread", [function () {
                 }
                 $('span.update').click(function () {
                   var promise = new Promise(function (resolve, reject) {
-                    var n = new Noty({
+                    var n2 = new Noty({
                       layout: 'bottomRight',
                       theme: "relax",
                       type: 'warning',
@@ -425,7 +456,7 @@ app.directive("fileread", [function () {
                             val[key] = val['order'][key];
                           }
                         }
-  
+
                       }).then(function () {
                         delete val['order'];
                         firestore.collection("orderShopee").doc(valid.toString()).set(
@@ -441,75 +472,82 @@ app.directive("fileread", [function () {
                       })
                     })
                   })
-  
-  
+
+
                 })
-  
+
                 $('.updatePay').on('click', function () {
-  
+
                   if ($('#bank').text() == "Chọn Ngân Hàng") {
                     alert("Vui lòng chọn Ngân Hàng")
                   } else {
-                    $('#loading').text('loading....')
-  
-                    chrome.runtime.sendMessage({
-                      mission: "updatePayment",
-                      id: arrayId,
-                      date: $('#datepicker').val(),
-                      bank: $('#bank').text(),
-                      sumShopeePaid: sumShopee,
-                      sumBuyerPaid: sumOwn
-                    }, function (response) {
-                      var arrEx = []
-                      var dataExToSend = []
-                      chrome.storage.local.get('data', function (obj) {
-                        chrome.storage.local.get('export', function (obj1) {
-                          arrayId.forEach(function (orderId) {
-                            firestore.collection("orderShopee").doc(orderId.id).get()
-                              .then(function (doc) {
-                                var exportId = doc.data().exportId ? doc.data().exportId : ""
-                                if (exportId !== "" && jQuery.inArray(exportId, arrEx) == -1) {
-                                  arrEx.push(exportId)
-                                  var selectedExpTags1 = [exportId];
-                                  var names1 = selectedExpTags1.map(x => obj1.export.find(y => y.id == x).orders)
-                                  dataExToSend.push({
-                                    exId: exportId,
-                                    orders: names1[0]
-                                  })
-                                }
-                              })
-                          })
-                          console.log(dataExToSend);
-                          chrome.runtime.sendMessage({
-                            mission: "updateEx",
-                            data: dataExToSend
-                          }, function (response) {
-                            // console.log(response.exIdRes);
-                            $('#loading').text("")
-                            new Noty({
-                              layout: 'bottomRight',
-                              timeout: 2500,
-                              theme: "relax",
-                              type: 'success',
-                              text: 'Đã cập nhật trạng thái các đơn về "đã thanh toán" và tạo Phiếu thu'
-                            }).show();
-  
-                          })
-                        })
+                    console.log($scope.check);
+                    if ($scope.check) {
+                      $('#loading').text('loading....')
+                      chrome.runtime.sendMessage({
+                        mission: "updatePayment",
+                        id: arrayId,
+                        date: $('#datepicker').val(),
+                        bank: $('#bank').text(),
+                        sumShopeePaid: sumShopeeOnce,
+                        sumBuyerPaid: sumOwn
+                      }, function (response) {
+                        $('#loading').text("")
+                        // var arrEx = []
+                        // var dataExToSend = []
+                        // chrome.storage.local.get('data', function (obj) {
+                        //   chrome.storage.local.get('export', function (obj1) {
+                        //     arrayId.forEach(function (orderId) {
+                        //       firestore.collection("orderShopee").doc(orderId.id).get()
+                        //         .then(function (doc) {
+                        //           var exportId = doc.data().exportId ? doc.data().exportId : ""
+                        //           if (exportId !== "" && jQuery.inArray(exportId, arrEx) == -1) {
+                        //             arrEx.push(exportId)
+                        //             var selectedExpTags1 = [exportId];
+                        //             var names1 = selectedExpTags1.map(x => obj1.export.find(y => y.id == x).orders)
+                        //             dataExToSend.push({
+                        //               exId: exportId,
+                        //               orders: names1[0]
+                        //             })
+                        //           }
+                        //         })
+                        //     })
+                        //     console.log(dataExToSend);
+                        //     chrome.runtime.sendMessage({
+                        //       mission: "updateEx",
+                        //       data: dataExToSend
+                        //     }, function (response) {
+                        //       // console.log(response.exIdRes);
+                        //       $('#loading').text("")
+                        //       new Noty({
+                        //         layout: 'bottomRight',
+                        //         timeout: 2500,
+                        //         theme: "relax",
+                        //         type: 'success',
+                        //         text: 'Đã cập nhật trạng thái các đơn về "đã thanh toán" và tạo Phiếu thu'
+                        //       }).show();
+
+                        //     })
+                        //   })
+                        // })
                       })
-                    })
+                    } else {
+                      alert("tồn tại đơn đã thanh toán đủ hoặc thừa");
+                    }
+
                   }
                 })
                 // $scope.gridApi.core.refresh()
               })
+
               // $scope.opts.data = data;
               $elm.val(null);
-            }else{
+            } else {
               alert("Vui lòng giảm lượng rows xuống dưới 500")
               location.reload()
             }
 
-            
+
           });
         };
 
@@ -531,7 +569,7 @@ function mapGender() {
     8: "Đã hoàn về kho",
     9: "Đã thanh toán",
     "HT": "Đã hoàn tiền",
-    "0": "Đã hủy" 
+    "0": "Đã hủy"
   };
 
   return function (input) {

@@ -13,13 +13,6 @@ function myMain(evt) {
 
             switch (true) {
 
-                case $(location).attr('href').indexOf('work.1688.com/home/buyer.htm?') !== -1:
-                    $.get(chrome.extension.getURL('app-content/1688/backend/listOrders/ordersList.html'), function (data) {
-                        $(data).prependTo('body');
-                        angular.bootstrap($('.panel-1688-shopee'), ['myapp']);
-                    });
-                    break
-
                 case $(location).attr('href').indexOf('https://banhang.shopee.vn/portal/sale?') !== -1:
                     $.get(chrome.extension.getURL('app-content/shopee/backend/list-page/template.html'), function (data) {
                         $(data).prependTo('body');

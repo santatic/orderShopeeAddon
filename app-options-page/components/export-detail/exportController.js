@@ -445,7 +445,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     ]
 
     $scope.options.multiSelect = true;
-
+    $scope.arrDone = []
 
     $('#shipperName').keyup(function (eventObj) {
         if (eventObj.which == 13) {
@@ -469,10 +469,13 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
     //     getData(querySnapshot)
     // })
     var ordersInEx
+    console.log(id);
     chrome.storage.local.get('data', function (keys) {
-        
+        console.log(keys.data);
+        console.log(id);
         firestore.collection("exportCode").doc(id.toString()).get().then(function (doc) {
             const data = doc.data()
+            console.log(data);
             $scope.originLength = data.orders.length
             $scope.id = doc.id
             $scope.shipperName = data.shipper;
@@ -487,14 +490,6 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             $scope.$apply()
             getData(ordersInEx, keys.data)
         })
-        // .catch(function (error) {
-        //     new Noty({
-        //         layout: 'bottomRight',
-        //         theme: "relax",
-        //         type: 'error',
-        //         text: error
-        //     }).show();
-        // })
 
     })
     chrome.storage.onChanged.addListener(function (changes) {
@@ -552,10 +547,13 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     if (myData.own_status.status == 5) {
                         arrShipped.push(idOrder)
                     }
+                    myData.paymentStatus = myData.paymentStatus? myData.paymentStatus: {status: 0}
+                    console.log(myData.paymentStatus);
                     if (myData.own_status.status == 8||myData.paymentStatus.status == 2||myData.own_status.status == 11) {
                         arrDone.push(idOrder)
                     }
-
+                    $scope.carrier = obj.carrier
+                    console.log(obj, $scope.carrier);
                     sources.push(obj)
                     $scope.options.data.push(obj)
                     $scope.gridApi.core.refresh();
@@ -585,7 +583,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
             $scope.arrShipped = arrShipped
             $scope.arrDone = arrDone            
-            $scope.carrier = sources[0].carrier
+            
             $scope.arrTraceno = arrTraceno
             
             // console.log(arrayData.length);

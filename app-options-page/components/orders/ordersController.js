@@ -90,7 +90,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         paginationPageSizes: [15, 30, 45],
         paginationPageSize: 15,
         enableSorting: true,
-
+        enableCellEditOnFocus: true,
         columnDefs: [{
                 name: "Shop Bán",
                 field: "shop",
@@ -98,22 +98,22 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             }, {
                 name: "ID",
                 field: "id",
-                enableCellEdit: false,
+                
                 width: '100',
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
             }, {
                 name: "Số Vận Đơn",
-                enableCellEdit: false,
+                
                 field: "trackno",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để chỉnh sửa nhanh trạng thái" ng-click = "grid.appScope.doSomething(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp; <a target="_blank" title="{{row.entity.trackno}}" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
             }, {
                 name: "UserName",
-                enableCellEdit: false,
+                
                 width: '150',
                 field: "nickname"
             }, {
                 name: "Mã đơn hàng",
-                enableCellEdit: false,
+                
                 field: "orderId",
                 cellTooltip: function (row) {
                     return row.entity.orderId;
@@ -163,7 +163,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             // },
             {
                 name: "Logistics Shopee",
-                enableCellEdit: false,
+                
                 field: "status",
                 visible: false,
                 cellTooltip: function (row) {
@@ -171,7 +171,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 }
             }, {
                 name: "Thời gian của Logistics",
-                enableCellEdit: false,
+                
                 width: '100',
                 field: "updateTime",
                 sort: {
@@ -191,13 +191,13 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 visible: false
             }, {
                 name: "Dự kiến thu",
-                enableCellEdit: false,
+                
                 field: "paid",
                 width: '100'
             },
             {
                 name: "Phí Ship",
-                enableCellEdit: false,
+                
                 width: '100',
                 field: "shippingFee",
                 visible: false
@@ -401,9 +401,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             $scope.users = []
             var selected = $scope.gridApi.selection.getSelectedRows();
             var condi = true
-            selected.forEach(function (val) {
-                if (val.ownStatus !== 1 || val.packer) condi = false;
-            })
+            // selected.forEach(function (val) {
+            //     if (val.ownStatus !== 1 || val.packer) condi = false;
+            // })
             if (condi && selected.length > 0) {
                 $('#chiadon').modal()
                 $scope.tasks = []
@@ -421,9 +421,36 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         $scope.$apply()
                     })
                 })
-                $scope.chiadon = function () {
-                    if ($('#selectUser input:checkbox:checked').length > 0) {
-                        tasks = []
+                $scope.checkallChiaDon = function (event) {
+                    console.log(event.currentTarget.checked);
+                    checkboxes = document.getElementsByName('chiadon');
+                    for (var i = 0, n = checkboxes.length; i < n; i++) {
+                        checkboxes[i].checked = event.currentTarget.checked;
+                    }
+                    // $scope.chiadon()
+                }
+                $scope.chiadon = function (ev) {
+                    console.log(event.currentTarget.name);
+                    if (event.currentTarget.name == "checkall") {
+                        checkboxes = document.getElementsByName('chiadon');
+                        for (var i = 0, n = checkboxes.length; i < n; i++) {
+                            checkboxes[i].checked = event.currentTarget.checked;                            
+                        }
+                        (event.currentTarget.checked)? $scope.actionChiaDon():$scope.tasks = []
+                    }else{
+                        if ($('#selectUser input[name="chiadon"]:checkbox:checked').length == 0) {
+                            $scope.tasks = []
+                            $("#selectUser input[name='checkall']"). prop("checked", false);
+                        } else{
+                            $scope.actionChiaDon()
+                        }                        
+                        
+                    }
+                    
+
+                }
+                $scope.actionChiaDon = function () {  
+                    tasks = []
                         pickPros = []
                         picks = []
                         var averageItem = 0
@@ -435,7 +462,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             return total
                         }
 
-                        $('#selectUser input:checkbox:checked').each(function () {
+                        $('#selectUser input[name="chiadon"]:checkbox:checked').each(function () {
                             // console.log($(this).attr("id"))
                             var user = {
                                 name: $(this).parent().find("#name").text(),
@@ -494,7 +521,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
                         tempOrders.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
 
-                        averageItem = (orders1.sum("modelNum")) / ($('#selectUser input:checkbox:checked').length)
+                        averageItem = (orders1.sum("modelNum")) / ($('#selectUser input[name="chiadon"]:checkbox:checked').length)
                         averageItem = Math.round(averageItem);
                         console.log(averageItem, orders1, tasks.length)
 
@@ -541,12 +568,13 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         var pickIndex = 0
                         pickPros.forEach(function (pro, i) {
                             pro.model.forEach(function (model) {
+                                console.log(model);
                                 let ind = picks[pickIndex].modelNeedPick.findIndex(x => x.name == model.name && x.model == model.model);
                                 if (ind !== -1) {
                                     picks[pickIndex].modelNeedPick[ind].amount = picks[pickIndex].modelNeedPick[ind].amount + model.amount;
                                 } else {
                                     picks[pickIndex].modelNeedPick.push(model)
-                                }                                
+                                }
                             })
                             pickIndex++
                             if ((pickIndex) == tasks.length) {
@@ -554,10 +582,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             }
                         })
                         console.log(picks);
-                    } else {
-                        $scope.tasks = []
-                    }
-
                 }
                 $scope.updatechiadon = function () {
                     var batch = firestore.batch()
@@ -720,7 +744,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         $scope.BulkChangeStatus[indexPromise].status = names[0]
         $scope.BulkChangeStatus[indexPromise].carrier = data.actual_carrier
         $scope.reportBulkScan = []
-        $scope.BulkChangeStatus.forEach(function (order,i) {
+        $scope.BulkChangeStatus.forEach(function (order, i) {
             var found = $scope.reportBulkScan.some(function (el) {
                 return el.carrier == order.carrier
             });
@@ -728,33 +752,36 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 let ind = $scope.reportBulkScan.findIndex(x => x.carrier == order.carrier)
                 $scope.reportBulkScan[ind].count = $scope.reportBulkScan[ind].count + 1
 
-            } else {                
+            } else {
                 $scope.reportBulkScan.push({
-                    carrier: order.carrier ,
+                    carrier: order.carrier,
                     count: 1,
                     note: ""
-                })  
+                })
             }
-            if((i+1) == $scope.BulkChangeStatus.length){
-                let ind1 = $scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Nhanh")
-                let ind2 = $scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Tiết Kiệm")
-                if(ind1 !== -1 || ind2 !== -1){
-                    $scope.reportBulkScan.push({
-                        carrier: "VNPost" ,
-                        count: (ind1 !== -1 ? $scope.reportBulkScan[ind1].count: 0) + (ind2 !== -1 ? $scope.reportBulkScan[ind2].count: 0),
-                        note: (ind1 !== -1 ? $scope.reportBulkScan[ind1].count + " Nhanh": "") + (ind2 !== -1 ? " + " + $scope.reportBulkScan[ind2].count + " Tiết Kiệm": ""),
-                    })  
-                    if(ind1 !==-1){
-                        $scope.reportBulkScan.splice(ind1, 1)
-                    }
-                    if(ind2 !==-1){
-                        $scope.reportBulkScan.splice(ind2, 1)
-                    }
-                }
+        })
+        let ind1 = $scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Nhanh")
+        let ind2 = $scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Tiết Kiệm")
+        console.log(ind1, ind2);
+        if (ind1 !== -1 || ind2 !== -1) {
+            console.log($scope.reportBulkScan);
+            $scope.reportBulkScan.push({
+                carrier: "VNPost",
+                count: (ind1 !== -1 ? $scope.reportBulkScan[ind1].count : 0) + (ind2 !== -1 ? $scope.reportBulkScan[ind2].count : 0),
+                note: (ind1 !== -1 ? $scope.reportBulkScan[ind1].count + " Nhanh" : "") + (ind2 !== -1 ? " + " + $scope.reportBulkScan[ind2].count + " Tiết Kiệm" : ""),
+            })
+            if (ind1 !== -1) {
+                console.log(ind1);
+                $scope.reportBulkScan.splice($scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Nhanh"), 1)
             }
-        })        
+            if (ind2 !== -1) {
+                console.log(ind2);
+                $scope.reportBulkScan.splice($scope.reportBulkScan.findIndex(x => x.carrier == "VNPost Tiết Kiệm"), 1)
+            }
+        }
 
-        $scope.reportBulkScan.sort((a, b) => (a.carrier < b.carrier) ? 1 : ((b.carrier < a.carrier) ? -1 : 0));
+
+        // $scope.reportBulkScan.sort((a, b) => (a.carrier < b.carrier) ? 1 : ((b.carrier < a.carrier) ? -1 : 0));
         console.log($scope.reportBulkScan);
         $scope.$apply()
     }

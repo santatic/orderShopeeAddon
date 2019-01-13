@@ -641,7 +641,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
 
     function getInvoice(invoices) {
         invoices.forEach(element => {
-            element.create_at = moment(element.create_at.seconds * 1000).format("MM/DD/YYYY")
+            element.create_at = moment(element.create_at.seconds * 1000).format("YYYY/MM/DD")
             var InvoicePrice = Number(element.sumPaid) + Number(element.shipping_fee) - Number(element.voucher_price)
             element.sumPaidOriginal = InvoicePrice.toLocaleString()
             element.vndPrice = element.currency_rate ? (InvoicePrice * Number(element.currency_rate)).toLocaleString() : "CHƯA SET TỈ GIÁ"

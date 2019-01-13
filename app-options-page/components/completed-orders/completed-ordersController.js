@@ -17,23 +17,43 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         enableSorting: true,
         showGridFooter: false,
         columnDefs: [{
-                name: "Export Id",
+                name: "PHIEU XUAT",
                 field: "exportCode",
                 enableCellEdit: false,
+                visible: false,
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exportCode}}">{{row.entity.exportCode}}</a></div>'
             }, {
-                name: "Id",
+                name: "ID",
                 field: "id",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
             },{
-                name: "Mã Đơn",
+                name: "ID DON HANG",
                 field: "ordersn",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{row.entity.ordersn}}</a></div>'
             }, {
-                name: "Mã Vận Đơn",
+                name: "MA VAN DON",
                 field: "shippingId",
+            },{
+                name: "NHA VAN CHUYEN",
+                field: "carrier",
+                visible: false
+            },{
+                name: "PHIEU THU",
+                field: "importCode"
+            },{
+                name: "A.Doanh Thu",
+                field: "paid_amount"
+            },{
+                name: "B.Shopee Tra",
+                field: "actual_recive",
+            },{
+                name: "A - B",
+                field: "offset",
+            },{
+                name: "Voucher",
+                field: "sellerVoucher"
             }, {
-                name: "Create At (m-d-y)",
+                name: "NGAY",
                 enableCellEdit: false,
                 field: "time",
                 
@@ -41,21 +61,6 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
                     direction: 'desc',
                     priority: 0
                 }
-            },{
-                name: "Nhà Vận Chuyển",
-                field: "carrier"
-            },{
-                name: "Mã Phiếu Thu",
-                field: "importCode"
-            },{
-                name: "Tiền Hàng (A)",
-                field: "paid_amount"
-            },{
-                name: "Thực Nhận (B)",
-                field: "actual_recive",
-            },{
-                name: "A - B",
-                field: "offset",
             }
         ],
         enableFiltering: true,
@@ -107,27 +112,34 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants) {
         arr.forEach(function (doc) {
             const myData = doc
             // console.log(myData);
-            ctime = moment(myData.create_at.seconds * 1000).format("MM-DD-YYYY / HH:MM")
+            ctime = moment(myData.create_at.seconds * 1000).format("YYYY-MM-DD")
 
             obj = {
                 id: myData.id,
                 ordersn: myData.ordersn,
                 time: ctime,
-                paid_amount: Number(myData.buyer_paid_amount).toFixed(0).replace(/./g, function(c, i, a) {
+                paid_amount: Number(myData.buyer_paid_amount)
+                .toFixed(0)
+                .replace(/./g, function(c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
-                  }),
-                actual_recive: Number(myData.actual_money_shopee_paid).toFixed(0).replace(/./g, function(c, i, a) {
+                }),            
+                actual_recive: Number(myData.actual_money_shopee_paid)
+                .toFixed(0)
+                .replace(/./g, function(c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
-                  }),
+                }),
                 exportCode: myData.exportId,
                 shippingId: myData.shipping_traceno,
                 carrier: myData.actual_carrier,
                 importCode: myData.importMoneyId[0],
+                sellerVoucher: myData.voucher_absorbed_by_seller? Number(myData.voucher_price).toFixed(0)
+                .replace(/./g, function(c, i, a) {
+                    return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                }): 0,
                 offset: (Number(myData.buyer_paid_amount) - Number(myData.actual_money_shopee_paid)).toFixed(0).replace(/./g, function(c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
-                  })
-            }
-            
+                })
+            }            
             sources.push(obj)
         })
         console.log(sources);

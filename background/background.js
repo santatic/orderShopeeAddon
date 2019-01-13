@@ -12,6 +12,48 @@ const settings = { /* your settings... */
 firestore.settings(settings);
 console.log("run");
 
+// firestore.collection("orderShopee").where("importMoneyId", "==", 1).limit(500).get()
+//   .then(querySnapshot => {
+//     console.log(querySnapshot);
+//     var batch = firestore.batch()
+//     var i = 0
+//     for (var doc of querySnapshot.docs) {
+//       let docRef = firestore.collection("orderShopee").doc(doc.id.toString())
+//       batch.update(docRef, {
+//         "importMoneyId": []
+//       })
+//       console.log(doc.id);
+//       i++
+//       if (i == querySnapshot.size) {
+
+//         batch.commit().then(() => console.log(querySnapshot.size, "done"))
+//       }
+//     }
+//   })
+
+// firestore.collection("orderShopee").where("own_status.status", "==", 5)
+//   .get().then(querySnapshot => {
+//     console.log(querySnapshot.docs);
+//     for (var doc of querySnapshot.docs) {
+//       let data = doc.data()
+
+//       $.getJSON("https://banhang.shopee.vn/api/v2/tracking/orderHistories/" + data.id, function (logistic) {
+//         if($.parseJSON(JSON.stringify(logistic))["order-logs"][0] !== undefined){
+//           let status = $.parseJSON(JSON.stringify(logistic))["order-logs"][0].new_status
+//           if(status == 11){
+//             firestore.collection("orderShopee").doc(data.id.toString()).update({
+//               "own_status": {
+//                 status: 6,
+//                 create_at: new Date()
+//               }
+//             }).then(()=> console.log("done"))
+//           }          
+//         }        
+//       })
+//     }
+//   })
+
+
 // firestore.collection("exportCode").where("status", "==", 2).get()
 // .then(querySnapshot=>{
 //   var i = 0
@@ -43,49 +85,39 @@ console.log("run");
 // })
 
 // firestore.collection("orderShopee")
-// .where("own_status.status", "==", 9)
-// .get().then(function (querySnapshot) {
-//   console.log("DB", querySnapshot.docs)
-//   var i = 0;
-//   var batch = firestore.batch()
-//   for (var doc of querySnapshot.docs) {
-//     i++    
-//     let data = doc.data();
-//     let paymentStatus = new Object()
-//     paymentStatus.create_at = new Date()
-//     switch (true) {
-//       case Number(data.actual_money_shopee_paid) < Number(data.buyer_paid_amount):
-//         paymentStatus.status = 1
-//         break
-//       case Number(data.actual_money_shopee_paid) == Number(data.buyer_paid_amount):
+//   .where("paymentStatus.status", "==", 1)
+//   .get().then(function (querySnapshot) {
+//     console.log("DB", querySnapshot.docs)
+//     var i = 0;
+//     var batch = firestore.batch()
+//     for (var doc of querySnapshot.docs) {
+//       i++
+//       let data = doc.data();
+//       let paymentStatus = new Object()
+//       paymentStatus.create_at = new Date()
+//       let vc = data.voucher_absorbed_by_seller? Number(data.voucher_price).toFixed(0): 0
+//       let offset = Number(data.actual_money_shopee_paid).toFixed(0) - (Number(data.buyer_paid_amount).toFixed(0)-vc)
+//       console.log(vc,offset);   
+      
+//       if (offset == 1||offset == 0) {
 //         paymentStatus.status = 2
+//         let docRef = firestore.collection("orderShopee").doc(data.id.toString())
+//         batch.update(docRef, {
+//           "paymentStatus": paymentStatus
+//         })
+//         console.log(i, data.id, paymentStatus);
+//       }    
+//       if (i == querySnapshot.docs.length) {
+//         batch.commit().then(() => {
+//           console.log("done");
+//         })
 //         break
-//       case Number(data.actual_money_shopee_paid) > Number(data.buyer_paid_amount):
-//         paymentStatus.status = 3
-//         break
-//       default:
-//         break
+//       }
+
 //     }
-
-//     console.log(i,data.id, paymentStatus );
-
-//     let docRef = firestore.collection("orderShopee").doc(data.id.toString())
-//     batch.update(docRef, {
-//       "paymentStatus": paymentStatus,
-//       "own_status.status": 6
-//     })
-
-//     if (i == querySnapshot.docs.length) {      
-//       batch.commit().then(()=> {
-//         console.log("done");        
-//       }) 
-//       break     
-//     }
-
-//   }
-// }).catch(function (error) {
-//   console.log("Error getting document:", error);
-// });
+//   }).catch(function (error) {
+//     console.log("Error getting document:", error);
+//   });
 
 //   console.log(data);
 var arrayFilter = [{
@@ -195,7 +227,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   var dataStock = []
   var dataPayment1 = []
 
-  var check = true
+  var check = false
   chrome.storage.local.get('dataPayment1', function (obj) {
     // console.log(obj);
     if (Object.keys(obj).length === 0) {
@@ -276,7 +308,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     }
   });
 
-  
+
 
 
   request_center.request_trigger()
@@ -323,7 +355,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 // dataOnSnapshot.push(obj)
                 // }
 
-                dataSet.push(filterData(obj, ["shopid", "packer", "id", "actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount", "create_at", "exportId", "own_status", "item-models", "logistic", "note", "order-items", "ordersn", "products", "shipping_fee", "shipping_address", "shipping_traceno", "user", "importMoneyId"]))
+                dataSet.push(filterData(obj, ["paymentStatus", "own_transaction","voucher_absorbed_by_seller", "voucher_price", "shopid", "packer", "id", "actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount", "create_at", "exportId", "own_status", "item-models", "logistic", "note", "order-items", "ordersn", "products", "shipping_fee", "shipping_address", "shipping_traceno", "user", "importMoneyId"]))
 
               }
               if (change.type === "modified") {
@@ -347,7 +379,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               }
             });
           })
-          firestore.collection("orderShopee")
+        firestore.collection("orderShopee")
           .where("paymentStatus.status", "==", 1)
           .onSnapshot(function (snapshot) {
             console.log("connected");
@@ -361,7 +393,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 // dataOnSnapshot.push(obj)
                 // }
 
-                dataPayment1.push(filterData(obj, ["actual_carrier", "importMoneyId","id","buyer_paid_amount", "create_at", "exportId","ordersn", "shipping_fee","shipping_traceno","actual_money_shopee_paid"]))
+                dataPayment1.push(filterData(obj, ["voucher_absorbed_by_seller", "voucher_price", "actual_carrier", "importMoneyId", "id", "buyer_paid_amount", "create_at", "exportId", "ordersn", "shipping_fee", "shipping_traceno", "actual_money_shopee_paid"]))
 
               }
               if (change.type === "modified") {
@@ -422,7 +454,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             });
           })
         firestore.collection("exportCode")
-          .where("status", "<=", 2)
+          .where("status", "<=", 1)
           .onSnapshot(function (snapshot) {
             console.log("connected");
             snapshot.docChanges.forEach(function (change, i) {
@@ -551,9 +583,6 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   chrome.storage.onChanged.addListener(function (changes) {
     dataOnSnapshot = changes.data.newValue
   })
-  var check = false
-
-
 
   chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
@@ -720,13 +749,13 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                   "status": 3
                 })
                 if ((i + 1) == dataRes.length) {
-                  if ( dataRes.length < 500){
+                  if (dataRes.length < 500) {
                     batch.commit().then(() => {
                       alert("ĐÃ CHUYỂN " + dataRes.length + " PHIẾU XUẤT VỀ HOÀN THÀNH")
                     })
-                  }else {
+                  } else {
                     alert("batch write không thể đọc quá 500 doc")
-                  }                  
+                  }
                 }
               })
             }
@@ -749,14 +778,20 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   }
 
   function ready(response, sendResponse) {
-    var checkready = setInterval(function () {
+    // sendResponse()
+    console.log(check);
+    if (check) {
+      sendResponse()
+    } else {
+      var checkready = setInterval(function () {
+        if (check) {
+          clearInterval(checkready)
+          console.log("READY");
+          sendResponse()
+        }
+      }, 100)
+    }
 
-      if (check) {
-        clearInterval(checkready)
-        console.log("READY");
-        sendResponse()
-      }
-    }, 1000)
   }
 
 
@@ -1013,43 +1048,43 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           content: id.content,
           user: uid
         })
-        console.log(id);
+        
         var status = new Object()
         switch (true) {
-          case Number(id.shopeePayPre) + Number(id.shopeeMoney) < Number(id.exMoney):
+          case (+Number(id.shopeePayPre).toFixed(0) + Number(id.shopeeMoney).toFixed(0)) < +Number(id.exMoney).toFixed(0):
             status = {
               status: 1,
               create_at: new Date()
             }
             break;
-          case Number(id.shopeePayPre) + Number(id.shopeeMoney) == Number(id.exMoney):
+          case (+Number(id.shopeePayPre).toFixed(0) + +Number(id.shopeeMoney).toFixed(0)) == +Number(id.exMoney).toFixed(0):
             status = {
               status: 2,
               create_at: new Date()
             }
             break;
-          case Number(id.shopeePayPre) + Number(id.shopeeMoney) > Number(id.exMoney):
+          case (+Number(id.shopeePayPre).toFixed(0) + +Number(id.shopeeMoney).toFixed(0)) > +Number(id.exMoney).toFixed(0):
             status = {
               status: 3,
               create_at: new Date()
             }
             break;
         }
-
-
+        console.log(id, status);
+        id.importMoneyId.push(importId);
         batch.update(docRef, {
           "own_transaction": id.own_transaction,
           "actual_money_shopee_paid": Number(id.shopeePayPre) + Number(id.shopeeMoney),
-          "importMoneyId": id.importId.push(importId),
+          "importMoneyId": id.importMoneyId,
           "paymentStatus": status
         })
         check.push(i)
-
       }
       if ((i + 1) == response.id.length) {
         batch.commit().then(function () {
+          alert("Đã tạo phiếu thu " + importId)
           sendResponse()
-        });
+        }).catch(err => alert("Lỗi: " + err));
       }
 
 
@@ -1072,7 +1107,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             const data = doc.data();
             var obj = new Object();
 
-            var voucher_price = parseInt(((data.voucher_price) * 100) / 100)
+            var voucher_price = data.voucher_absorbed_by_seller? Number(data.voucher_price).toFixed(0): 0
             var money = parseInt(((data.buyer_paid_amount) * 100) / 100)
             money = data.voucher_absorbed_by_seller ? money - voucher_price : money
             var selectedExpTags = [data.own_status.status];
@@ -1086,9 +1121,13 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               status: names[0],
               traceno: data.shipping_traceno,
               exportId: data.exportId,
-              shopeePayPre: data.actual_money_shopee_paid ? data.actual_money_shopee_paid : 0,
-              own_transaction: data.own_transaction ? data.own_transaction : [],
-              importMoneyId: data.importMoneyId? data.importMoneyId: []
+              shopeePayPre: //0,
+              data.actual_money_shopee_paid ? data.actual_money_shopee_paid : 0,
+              own_transaction: //[],
+              data.own_transaction ? data.own_transaction : [],
+              importMoneyId: //[],
+              data.importMoneyId ? data.importMoneyId : [],
+              paymentStatus: data.paymentStatus ? data.paymentStatus : {},
             }
             resOrdersn.push(obj)
           })
@@ -1103,7 +1142,8 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             exportId: "",
             shopeePayPre: "chua co trong Firestore",
             own_transaction: "chua co trong Firestore",
-            importMoneyId:""
+            importMoneyId: "",
+            paymentStatus: ""
           }
           resOrdersn.push(obj)
         }

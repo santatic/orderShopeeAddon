@@ -107,6 +107,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                 }).on('afterShow', function () {
                     n.close()
                     var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
+                    console.log(names[0]);
                     $.each(names[0], function (i, val) {
                         if(i<100){
                             if (val.exId !== "" && jQuery.inArray(val.exId, arrEx) == -1) {
