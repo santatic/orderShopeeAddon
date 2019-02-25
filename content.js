@@ -110,7 +110,7 @@ function myMain(evt) {
                     }).show();
                     // end code cho phep copy so luong hang
                     break;
-                case /https:\/\/shopee.vn\/.*i\.\d+\.\d+/.test(window.location.href): //https://shopee.vn/-4-M%C3%A0u-B%E1%BA%A1c-%C4%90en-H%E1%BB%93ng-Cam-H%E1%BB%93ng-Balo-Ulzzang-C%E1%BA%B7p-S%C3%A1ch-Th%E1%BB%9Di-Trang-Si%C3%AAu-C%C3%A1-T%C3%ADnh-!-i.20340126.665841685
+                case (/https:\/\/shopee.vn\/.*i\.\d+\.\d+/.test(window.location.href)) || (/https:\/\/shopee.vn\/product\/\d+\/\d+/.test(window.location.href)): //https://shopee.vn/-4-M%C3%A0u-B%E1%BA%A1c-%C4%90en-H%E1%BB%93ng-Cam-H%E1%BB%93ng-Balo-Ulzzang-C%E1%BA%B7p-S%C3%A1ch-Th%E1%BB%9Di-Trang-Si%C3%AAu-C%C3%A1-T%C3%ADnh-!-i.20340126.665841685
                     console.log("heelo");
                     $.get(chrome.extension.getURL('app-content/shopee/frontend/single-product/template.html'), function (data) {
                         $(data).prependTo('body');

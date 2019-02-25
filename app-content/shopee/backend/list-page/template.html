@@ -1,5 +1,12 @@
 <div class="panel panel-default panel-1688-shopee" ng-controller="list-shopee-saleCtrl">
-    <!-- <div class="panel-body">
-        <button class="btn btn-success" ng-disabled="notExist.length == 0" id="open">{{notExist.length}} Đơn Cần Theo Dõi</button>
-    </div> -->
+    <div class="panel-body" ng-show="pendings.length > 0" >
+        <span title="Đơn đã có mã vận đơn nhưng chưa được theo dõi">
+            {{pendings.length}} <span ng-click="updatePendings(pendings)" title="Bấm để đẩy những đơn này vào cơ sở dữ liệu" style="cursor: pointer;
+            padding: 7px 9px;
+            background: #ee4d2d;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: bold;">&#8634;</span>
+        </span>
+    </div>
 </div>

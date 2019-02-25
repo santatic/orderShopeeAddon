@@ -188,7 +188,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             }, {
                 name: "Người đóng gói",
                 field: "packer",
-                visible: false
+                // visible: false
             }, {
                 name: "Dự kiến thu",
                 
@@ -228,7 +228,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     // angular.element(document.getElementsByClassName('grid')[0]).css('height', '900px');
     $scope.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.NEVER;
     $scope.doSomething = function (row) {
-        // console.log(row);
+        console.log(row.entity);
         // jQuery.noConflict(); 
         $scope.showStatus = row.entity.ownStatus
         var selectedExpTags = [row.entity.ownStatus];
@@ -277,11 +277,11 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         action: function () {
             var selected = $scope.gridApi.selection.getSelectedRows();
             var condi = true
-            selected.forEach(function (val) {
-                if (val.ownStatus !== 1) {
-                    condi = false
-                }
-            })
+            // selected.forEach(function (val) {
+            //     if (val.ownStatus !== 1) {
+            //         condi = false
+            //     }
+            // })
 
             if (condi) {
                 selected.sort(function (a, b) {
@@ -292,22 +292,27 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 })
                 $scope.rowSelected = selected;
                 // window.onload = function () {
-                selected.forEach(function (val) {
+                selected.forEach(function (val,i) {
                     // console.log(val.id);
                     var timer = setInterval(function () {
-                        if (($("#" + val.id)).length) {
+                        if ($("svg").length) {
                             clearInterval(timer)
                             console.log(val.id);
-                            var qrcode = new QRCode(document.getElementById(val.id), {
-                                width: 60,
-                                height: 60,
-                                correctLevel: QRCode.CorrectLevel.H
-                            });
+                            JsBarcode("#barcode" + i, val.trackno.toString(),{
+                                height: 30,
+                                width: 1,
+                                // displayValue: false
+                            })
+                            // var qrcode = new QRCode(document.getElementById(val.id), {
+                            //     width: 60,
+                            //     height: 60,
+                            //     correctLevel: QRCode.CorrectLevel.H
+                            // });
 
-                            function makeCode() {
-                                qrcode.makeCode(val.id.toString());
-                            }
-                            makeCode();
+                            // function makeCode() {
+                            //     qrcode.makeCode(val.id.toString());
+                            // }
+                            // makeCode();
                         }
                     })
 
@@ -401,9 +406,11 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             $scope.users = []
             var selected = $scope.gridApi.selection.getSelectedRows();
             var condi = true
-            // selected.forEach(function (val) {
-            //     if (val.ownStatus !== 1 || val.packer) condi = false;
-            // })
+            selected.forEach(function (val) {
+                if (val.ownStatus !== 1 
+                    // || val.packer
+                    ) condi = false;
+            })
             if (condi && selected.length > 0) {
                 $('#chiadon').modal()
                 $scope.tasks = []
@@ -503,6 +510,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                                     name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^", "").replace('FREESHIP TOÀN QUỐC 99K_ ', '').replace('FREESHIP 99K TOÀN QUỐC_ ', '').replace('FREESHIP 99K_ ', '').replace("FREESHIP ", ""),
                                     model: model.name,
                                     amount: item.amount,
+                                    images: product.images,
                                     imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
                                     picked: [{
                                         status: false,
@@ -515,6 +523,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                                     shopid: product.shopid
                                 }
                                 tempOrdersPro.push(productsObj)
+                                
                             });
 
                         })
@@ -556,7 +565,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                             let ind = pickPros.findIndex(x => x.productId == model.proId)
                             if (ind !== -1) {
                                 pickPros[ind].model.push(model)
-                            } else {
+                                pickPros[ind].model.sort((a, b) => (a.model> b.model) ? 1 : ((b.model > a.model) ? -1 : 0));
+                            } else {                              
                                 pickPros.push({
                                     productId: model.proId,
                                     model: [model]
@@ -568,7 +578,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                         var pickIndex = 0
                         pickPros.forEach(function (pro, i) {
                             pro.model.forEach(function (model) {
-                                console.log(model);
+                                // console.log(model);
                                 let ind = picks[pickIndex].modelNeedPick.findIndex(x => x.name == model.name && x.model == model.model);
                                 if (ind !== -1) {
                                     picks[pickIndex].modelNeedPick[ind].amount = picks[pickIndex].modelNeedPick[ind].amount + model.amount;
@@ -633,26 +643,21 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI CÁC ĐƠN ĐÃ CHỌN")
         if (confirmChange) {
             var that = this
-            var n = new Noty({
-                layout: 'bottomRight',
-                theme: "relax",
-                type: 'warning',
-                text: 'ĐANG THAY ĐỔI TRẠNG THÁI...'
-            }).show();
+            
             var batch = firestore.batch()
             var arrayAfterChange = $scope.BulkChangeStatus
             var check = []
             $('input[name="scanId"]:checked').each(function () {
                 console.log($(that).val())
                 let selectedExpTags = [$(that).val()];
-                let index = arrayAfterChange.findIndex(x => x.id == $(this).val())
+                let index = arrayAfterChange.findIndex(x => x.mvd == $(this).val())
 
                 if (arrayFilter.find(y => y.vietnamese == arrayAfterChange[index].status).id !== 1) {
                     check.push($(this).val())
                 };
                 let names = selectedExpTags.map(x => arrayFilter.find(y => y.english == x).id)
                 let status = selectedExpTags.map(x => arrayFilter.find(y => y.english == x).vietnamese)
-                var docRef = firestore.collection("orderShopee").doc($(this).val())
+                var docRef = firestore.collection("orderShopee").doc(arrayAfterChange[index].id.toString())
 
                 var obj = {
                     "own_status": {
@@ -666,10 +671,17 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
             })
             if (check.length == 0) {
+                var n = new Noty({
+                    layout: 'bottomRight',
+                    theme: "relax",
+                    type: 'warning',
+                    text: 'ĐANG THAY ĐỔI TRẠNG THÁI...'
+                }).show();
                 batch.commit().then(() => {
                     n.close()
                     $scope.BulkStatusRadio = null
                     $scope.BulkChangeStatus = arrayAfterChange
+                    $('#packedChange').prop('checked', false);
                     $('#checkall').prop('checked', false);
                     $('input[name="scanId"]:checked').prop('checked', false);
                     $scope.$apply()
@@ -683,6 +695,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 })
             } else {
                 alert("có đơn chưa phải là đơn mới")
+                $('#packedChange').prop('checked', false);
             }
 
         } else $scope.BulkStatusRadio = null
@@ -698,11 +711,11 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
         timeout = setTimeout(function () {
             var inputScan = $(that).val()
-            if (inputScan && $.isNumeric(inputScan)) {
-                let indexAfterScan = $scope.BulkChangeStatus.findIndex(x => x.id == inputScan)
+            if (inputScan) {
+                let indexAfterScan = $scope.BulkChangeStatus.findIndex(x => x.mvd == inputScan)
                 if (indexAfterScan == -1) {
                     $scope.BulkChangeStatus.unshift({
-                        id: inputScan,
+                        mvd: inputScan,
                         status: "",
                         new_status: "",
                         carrier: ""
@@ -710,16 +723,20 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     $(that).val("")
                     console.log($scope.BulkChangeStatus);
                     $scope.$apply()
-                    let index = dataForPro.findIndex(x => x.id == inputScan)
+                    let index = dataForPro.findIndex(x => x.shipping_traceno == inputScan)
                     if (index !== -1) {
                         const data = dataForPro[index]
                         $scope.getBulkChangeData(data, inputScan)
                     } else {
-                        firestore.collection("orderShopee").doc(inputScan).get().then(function (doc) {
-                            if (doc.exists) {
+                        console.log("db");
+                        firestore.collection("orderShopee").where("shipping_traceno", "==", inputScan).limit(1).get().then(function (querySnapshot) {
+                            if (querySnapshot.size>0) {
                                 console.log("from DB");
-                                const data = doc.data()
-                                getBulkChangeData(data, inputScan)
+                                querySnapshot.forEach(doc=>{
+                                    const data = doc.data()
+                                    $scope.getBulkChangeData(data, inputScan)
+                                })
+                                
                             } else {
                                 alert("Đơn này không tồn tại trong hệ thống")
                                 $(that).val("")
@@ -740,9 +757,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     $scope.getBulkChangeData = function (data, inputScan) {
         let selectedExpTags = [data.own_status.status];
         let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-        let indexPromise = $scope.BulkChangeStatus.findIndex(x => x.id == inputScan)
+        let indexPromise = $scope.BulkChangeStatus.findIndex(x => x.mvd == inputScan)
         $scope.BulkChangeStatus[indexPromise].status = names[0]
         $scope.BulkChangeStatus[indexPromise].carrier = data.actual_carrier
+        $scope.BulkChangeStatus[indexPromise].id = data.id
         $scope.reportBulkScan = []
         $scope.BulkChangeStatus.forEach(function (order, i) {
             var found = $scope.reportBulkScan.some(function (el) {
@@ -801,8 +819,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
 
     chrome.storage.onChanged.addListener(function (changes) {
-        getData(changes.data.newValue);
-        dataForPro = changes.data.newValue
+        if(changes.data){
+            getData(changes.data.newValue);
+            dataForPro = changes.data.newValue
+        }        
     })
     $scope.options.gridMenuCustomItems.push({
         title: "IN SẢN PHẨM",
@@ -1108,7 +1128,6 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         $scope.options.data = $scope.data;
         $scope.loading = false
         $scope.gridApi.core.refresh();
-
 
         sources.forEach(function (row, index) {
             switch (row.carrier) {

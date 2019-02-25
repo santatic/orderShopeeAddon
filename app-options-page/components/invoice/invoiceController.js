@@ -1,4 +1,3 @@
-
 app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGridConstants) {
 
     $scope.options = {
@@ -16,7 +15,8 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         }, {
             name: "Id Đơn",
             field: "id",
-            enableCellEdit: false
+            enableCellEdit: false,
+            visible: false
         }, {
             name: "Trạng Thái",
             enableCellEdit: false,
@@ -24,6 +24,11 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         }, {
             name: "Ghi Chú",
             field: "note"
+        }, {
+            name: "Tên Các SP",
+            field: "totalProducts",
+            cellTemplate: '<div class="ui-grid-cell-contents" title="{{row.entity.totalProducts}}"><span>{{row.entity.totalProducts}}</span></div>'
+
         }, {
             name: "Mã Vận Đơn",
             enableCellEdit: false,
@@ -425,23 +430,36 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         })
 
         $scope.traceNo = obj.shipping_traceId
-
         $scope.optionsShipping.data = $scope.traceNo
-
+        var reportProduct = []
         obj.models.forEach(function (element, i) {
+
             obj.models[i].quantity = Number(obj.models[i].quantity)
-            console.log(obj.models[i].price);
+            // console.log(obj.models[i].price);
             obj.models[i].price = Number(obj.models[i].price)
             obj.models[i].sum = obj.models[i].quantity * obj.models[i].price
             obj.models[i].image = obj.models[i].image ? obj.models[i].image : "https://i.imgur.com/NWUJZb1.png",
                 obj.models[i].offset = (Number(obj.models[i].actual_quantity) - obj.models[i].quantity) * obj.models[i].price
+            let index = reportProduct.findIndex(x => x.productName == element.productName)
+            if (index == -1) {
+                reportProduct.push({
+                    productName: element.productName,
+                    quantity: obj.models[i].quantity,
+                    price: obj.models[i].sum
+                })
+            } else {
+                reportProduct[index].quantity = reportProduct[index].quantity + obj.models[i].quantity
+                reportProduct[index].price = reportProduct[index].price + (obj.models[i].sum)
+            }
         })
+        $scope.reportProduct = (reportProduct);
 
         $scope.optionsDetail.data = obj.models
 
         $scope.models = obj.models
-
+        $scope.totalProducts = row.entity.totalProducts !== undefined ? row.entity.totalProducts : ""
         $scope.arrayStatus = helper.buyOrderStatus
+        $scope.invoiceId1688 = obj.invoiceId
         $scope.invoiceId = obj.id
         $scope.currency_rate = Number(obj.currency_rate)
         console.log(obj);
@@ -650,15 +668,23 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
             let selectedExpTags = [parseInt(element.status.status)];
             let names = selectedExpTags.map(x => helper.buyOrderStatus.find(y => y.id === x).name)
             element.statusName = names[0]
-
+            element.totalProducts = []
             element.models.forEach(function (valModel, i) {
+                
                 var selectedExpTags = [valModel.productId];
                 var names = selectedExpTags.map(x => element.products.find(y => y.id === x).name)
                 element.models[i].productName = names[0];
+                let index = element.totalProducts.indexOf(element.models[i].productName)
+                // console.log(element.totalProducts,valModel.productName );        
+                if (index == -1 && (element.models[i].productName !== undefined)) {
+                    element.totalProducts.push(element.models[i].productName)
+                } else {
+                    console.log(element.models, element.models[i].productName);
+                };
                 element.models[i].actual_quantity = element.models[i].actual_quantity ? element.models[i].actual_quantity : element.models[i].quantity
             })
+            element.totalProducts = element.totalProducts.join();
         });
-        console.log(invoices);
 
         $scope.options.data = invoices
         $scope.gridApi.core.refresh()

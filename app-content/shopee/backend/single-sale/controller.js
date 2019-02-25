@@ -217,6 +217,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                 $scope.exId = response.exportId
                 $scope.note = response.note                
                 $scope.exDate = response.exDate
+                $scope.traceno = response.traceno
                 $scope.exLink = chrome.extension.getURL("options.html#/export/" + response.exportId);
                 $('.product-name').each(function(){
                     var productName = $(this).clone()    //clone the element
@@ -225,8 +226,9 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
                     .end().text().trim();
                     var product = findProduct(productName)
                     var link = "https://shopee.vn/!-i." + product.shopid + "." +product.itemid
+                    var editlink = "https://banhang.shopee.vn/portal/product/"+ product.itemid
                     console.log(link);
-                    $(this).html('<a style="color:#0400bf" href="'+ link +'" target="_blank">'+productName+'</>')
+                    $(this).html('<a style="color:#0400bf" href="'+ link +'" target="_blank">'+productName+'</> <a style="font-weight: bold;font-size: 16px;" href="'+editlink+'" target="_blank">&#9728;</a>' )
                 })
                 $scope.$apply()
                 chrome.runtime.sendMessage({

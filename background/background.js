@@ -12,6 +12,13 @@ const settings = { /* your settings... */
 firestore.settings(settings);
 console.log("run");
 
+// firestore.collection("orderShopee").where("paymentStatus.status", "==", 1)
+// .get().then(querySnapshot=>{
+//   console.log(querySnapshot.size);
+//   querySnapshot.forEach(doc=>console.log(doc.data()))
+// })
+
+
 // firestore.collection("orderShopee").where("importMoneyId", "==", 1).limit(500).get()
 //   .then(querySnapshot => {
 //     console.log(querySnapshot);
@@ -98,7 +105,7 @@ console.log("run");
 //       let vc = data.voucher_absorbed_by_seller? Number(data.voucher_price).toFixed(0): 0
 //       let offset = Number(data.actual_money_shopee_paid).toFixed(0) - (Number(data.buyer_paid_amount).toFixed(0)-vc)
 //       console.log(vc,offset);   
-      
+
 //       if (offset == 1||offset == 0) {
 //         paymentStatus.status = 2
 //         let docRef = firestore.collection("orderShopee").doc(data.id.toString())
@@ -226,9 +233,10 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   var stockSet = []
   var dataStock = []
   var dataPayment1 = []
+  var chat = {}
 
   var check = false
-  chrome.storage.local.get('dataPayment1', function (obj) {
+  chrome.storage.local.get('chat', function (obj) {
     // console.log(obj);
     if (Object.keys(obj).length === 0) {
       chrome.storage.local.set({
@@ -258,6 +266,9 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       chrome.storage.local.set({
         dataPayment1: []
       });
+      chrome.storage.local.set({
+        chat: {}
+      });
 
       chrome.storage.local.get('data', function (obj) {
         dataOnSnapshot = obj.data;
@@ -284,14 +295,17 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       chrome.storage.local.get('stocks', function (obj) {
         dataStock = obj.stocks;
       })
+      chrome.storage.local.get('stocks', function (obj) {
+        chat = obj.chat;
+      })
     } else {
-      dataExport = obj.export;
-      console.log(dataExport);
+      // chat = obj.chat;
+      // console.log(dataExport);
       chrome.storage.local.get('data', function (obj) {
         dataOnSnapshot = obj.data;
         // console.log(dataOnSnapshot);
       })
-      // console.log(dataOnSnapshot);
+      // // console.log(dataOnSnapshot);
       chrome.storage.local.get('suggests', function (obj) {
         dataSuggests = obj.suggests;
         console.log(dataSuggests);
@@ -299,12 +313,21 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
       chrome.storage.local.get('products', function (obj) {
         dataProducts = obj.products;
       })
-      chrome.storage.local.get('invoices', function (obj) {
-        dataInvoices = obj.invoices;
-      })
-      chrome.storage.local.get('stocks', function (obj) {
-        dataStock = obj.stocks;
-      })
+      // chrome.storage.local.get('export', function (obj) {
+      //   dataExport = obj.export;
+      // })
+      // chrome.storage.local.get('dataPayment1', function (obj) {
+      //   dataPayment1 = obj.dataPayment1;
+      // })
+      // chrome.storage.local.get('invoices', function (obj) {
+      //   dataInvoices = obj.invoices;
+      // })
+      // chrome.storage.local.get('stocks', function (obj) {
+      //   dataStock = obj.stocks;
+      // })
+      // chrome.storage.local.get('stocks', function (obj) {
+      //   dataStock = obj.stocks;
+      // })
     }
   });
 
@@ -320,8 +343,58 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     })
     return returnObj
   }
-
+  chrome.storage.local.get('badge', function (obj) {
+    if (Object.keys(obj).length === 0) {
+      chrome.storage.local.set({
+        badge: 0
+      });
+    }
+  })
   var isRunOnSnapshot = true
+  chat = []
+  firestore.collection("chats").orderBy('create_at', 'desc').limit(3)
+    .onSnapshot(function (snapshot) {
+      console.log("connected");
+      snapshot.docChanges().forEach(function (change, i) {
+        var obj = change.doc.data()
+        obj.id = change.doc.id
+        if (change.type === "added") {
+          chat.unshift(obj)
+        }
+        if (change.type === "modified") {
+          let noti = 0
+          chrome.storage.local.get('badge', function (objst) {
+            noti = objst.badge;
+          })
+          let index = chat.findIndex(x => x.id == obj.id)
+          // console.log("modified", obj);
+          chat[index] = obj
+
+          if (uid !== obj.messages[obj.messages.length - 1].from.uid) {
+            console.log(uid, obj.messages[obj.messages.length - 1].from.uid);
+            let audio = new Audio('../lib/audio/sound.mp3');
+            audio.play();
+            noti++
+            chrome.storage.local.set({
+              badge: noti
+            });
+            if (noti > 10) noti = "10+"
+            chrome.browserAction.setBadgeText({
+              text: noti.toString()
+            });
+          }
+
+        }
+        if (change.type === "removed") {
+          let index = chat.findIndex(x => x.id == obj.id)
+          chat.splice(index, 1);
+        }
+        if ((i + 1) == snapshot.docChanges().length) {
+          $scope.storageFirestore.chat = chat
+          $scope.storageFirestore.syncChat()
+        }
+      });
+    })
   chrome.tabs.onActivated.addListener(function (tabId) {
     var url;
     var tab_id = tabId.tabId;
@@ -341,11 +414,12 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         }, function (reminder) {
           console.log("created notification");
         })
+
         firestore.collection("orderShopee")
           .where("own_status.status", "<=", 5)
           .onSnapshot(function (snapshot) {
-            console.log("connected");
-            snapshot.docChanges.forEach(function (change, i) {
+            console.log("connected", snapshot);
+            snapshot.docChanges().forEach(function (change, i) {
               var obj = change.doc.data()
               if (change.type === "added") {
                 // var found = dataOnSnapshot.some(function (el) {
@@ -355,7 +429,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 // dataOnSnapshot.push(obj)
                 // }
 
-                dataSet.push(filterData(obj, ["paymentStatus", "own_transaction","voucher_absorbed_by_seller", "voucher_price", "shopid", "packer", "id", "actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount", "create_at", "exportId", "own_status", "item-models", "logistic", "note", "order-items", "ordersn", "products", "shipping_fee", "shipping_address", "shipping_traceno", "user", "importMoneyId"]))
+                dataSet.push(filterData(obj, ['buyer_address_phone','actual_money_shopee_paid', "item_count", "paymentStatus", "own_transaction", "voucher_absorbed_by_seller", "voucher_price", "shopid", "packer", "id", "actual_carrier", "actual_price", "buyer_address_name", "buyer_paid_amount", "create_at", "exportId", "own_status", "item-models", "logistic", "note", "order-items", "ordersn", "products", "shipping_fee", "shipping_address", "shipping_traceno", "user", "importMoneyId"]))
 
               }
               if (change.type === "modified") {
@@ -371,7 +445,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
                 // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
                 // dataOnSnapshot[index] = obj
               }
-              if ((i + 1) == snapshot.docChanges.length) {
+              if ((i + 1) == snapshot.docChanges().length) {
                 $scope.storageFirestore.data = dataSet
                 $scope.storageFirestore.syncOrders()
                 dataOnSnapshot = dataSet
@@ -379,200 +453,196 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               }
             });
           })
-        firestore.collection("orderShopee")
-          .where("paymentStatus.status", "==", 1)
-          .onSnapshot(function (snapshot) {
-            console.log("connected");
-            snapshot.docChanges.forEach(function (change, i) {
-              var obj = change.doc.data()
-              if (change.type === "added") {
-                // var found = dataOnSnapshot.some(function (el) {
-                //   return el.id == obj.id;
-                // });
-                // if (!found) {
-                // dataOnSnapshot.push(obj)
-                // }
+        // firestore.collection("orderShopee")
+        //   .where("paymentStatus.status", "==", 1).limit(50)
+        //   .onSnapshot(function (snapshot) {
+        //     console.log("connected");
+        //     dataPayment1 = []
+        //     snapshot.docChanges().forEach(function (change, i) {
+        //       var obj = change.doc.data()
+        //       if (change.type === "added") {
+        //         console.log("add", obj);
+        //         dataPayment1.push(filterData(obj, ["own_status", "paymentStatus", "voucher_absorbed_by_seller", "voucher_price", "actual_carrier", "importMoneyId", "id", "buyer_paid_amount", "create_at", "exportId", "ordersn", "shipping_fee", "shipping_traceno", "actual_money_shopee_paid"]))
 
-                dataPayment1.push(filterData(obj, ["voucher_absorbed_by_seller", "voucher_price", "actual_carrier", "importMoneyId", "id", "buyer_paid_amount", "create_at", "exportId", "ordersn", "shipping_fee", "shipping_traceno", "actual_money_shopee_paid"]))
+        //       }
+        //       if (change.type === "modified") {
+        //         let index = dataPayment1.findIndex(x => x.id == obj.id)
+        //         console.log("modified", obj);
+        //         dataPayment1[index] = obj
+        //       }
+        //       // console.log(change);
+        //       if (change.type === "removed") {
+        //         let index = dataPayment1.findIndex(x => x.id == obj.id)
+        //         console.log("removed", obj);
+        //         dataPayment1.splice(index, 1);
+        //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+        //         // dataOnSnapshot[index] = obj
+        //       }
+        //       if ((i + 1) == snapshot.docChanges().length) {
+        //         $scope.storageFirestore.dataPayment1 = dataPayment1
+        //         $scope.storageFirestore.syncPayment1()
 
-              }
-              if (change.type === "modified") {
-                let index = dataPayment1.findIndex(x => x.id == obj.id)
-                // console.log("modified", obj);
-                dataPayment1[index] = obj
-              }
-              // console.log(change);
-              if (change.type === "removed") {
-                let index = dataPayment1.findIndex(x => x.id == obj.id)
-                // console.log("removed", obj);
-                dataPayment1.splice(index, 1);
-                // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-                // dataOnSnapshot[index] = obj
-              }
-              if ((i + 1) == snapshot.docChanges.length) {
-                $scope.storageFirestore.dataPayment1 = dataPayment1
-                $scope.storageFirestore.syncPayment1()
+        //       }
+        //     });
+        //   })
+        // firestore.collection("suggest")
+        //   .onSnapshot(function (snapshot) {
+        //     console.log("connected");
+        //     snapshot.docChanges().forEach(function (change, i) {
+        //       var obj = {
+        //         suggest_chat: change.doc.data().suggest_chat,
+        //         id: change.doc.id
+        //       }
+        //       if (change.type === "added") {
+        //         var found = dataSuggests.some(function (el) {
+        //           return el.id == obj.id;
+        //         });
+        //         if (!found) {
+        //           // console.log("added", obj);
+        //           dataSuggests.push(obj)
+        //         }
 
-              }
-            });
-          })
-        firestore.collection("suggest")
-          .onSnapshot(function (snapshot) {
-            console.log("connected");
-            snapshot.docChanges.forEach(function (change, i) {
-              var obj = {
-                suggest_chat: change.doc.data().suggest_chat,
-                id: change.doc.id
-              }
-              if (change.type === "added") {
-                var found = dataSuggests.some(function (el) {
-                  return el.id == obj.id;
-                });
-                if (!found) {
-                  // console.log("added", obj);
-                  dataSuggests.push(obj)
-                }
+        //       }
+        //       if (change.type === "modified") {
+        //         let index = dataSuggests.findIndex(x => x.id == obj.id)
+        //         console.log("modified", obj);
+        //         dataSuggests[index] = obj
+        //       }
+        //       // console.log(change);
+        //       if (change.type === "removed") {
+        //         let index = dataSuggests.findIndex(x => x.id == obj.id)
+        //         console.log("removed", obj);
+        //         dataSuggests.splice(index, 1);
+        //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+        //         // dataOnSnapshot[index] = obj
+        //       }
+        //       if ((i + 1) == snapshot.docChanges().length) {
+        //         $scope.storageFirestore.suggests = dataSuggests
+        //         $scope.storageFirestore.syncSuggests()
+        //       }
+        //     });
+        //   })
 
-              }
-              if (change.type === "modified") {
-                let index = dataSuggests.findIndex(x => x.id == obj.id)
-                console.log("modified", obj);
-                dataSuggests[index] = obj
-              }
-              // console.log(change);
-              if (change.type === "removed") {
-                let index = dataSuggests.findIndex(x => x.id == obj.id)
-                console.log("removed", obj);
-                dataSuggests.splice(index, 1);
-                // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-                // dataOnSnapshot[index] = obj
-              }
-              if ((i + 1) == snapshot.docChanges.length) {
-                $scope.storageFirestore.suggests = dataSuggests
-                $scope.storageFirestore.syncSuggests()
-              }
-            });
-          })
-        firestore.collection("exportCode")
-          .where("status", "<=", 1)
-          .onSnapshot(function (snapshot) {
-            console.log("connected");
-            snapshot.docChanges.forEach(function (change, i) {
-              var obj = change.doc.data()
-              obj.id = change.doc.id
-              if (change.type === "added") {
-                // var found = dataExport.some(function (el) {
-                //   return el.id == obj.id;
-                // });
-                // if (!found) {
-                // console.log("added", obj);
-                exportSet.push(obj)
-                // }
+        // firestore.collection("exportCode")
+        //   .where("status", "<=", 1)
+        //   .onSnapshot(function (snapshot) {
+        //     console.log("connected");
+        //     snapshot.docChanges().forEach(function (change, i) {
+        //       var obj = change.doc.data()
+        //       obj.id = change.doc.id
+        //       if (change.type === "added") {
+        //         // var found = dataExport.some(function (el) {
+        //         //   return el.id == obj.id;
+        //         // });
+        //         // if (!found) {
+        //         // console.log("added", obj);
+        //         exportSet.push(obj)
+        //         // }
 
-              }
-              if (change.type === "modified") {
-                let index = exportSet.findIndex(x => x.id == obj.id)
-                console.log("modified", obj);
-                exportSet[index] = obj
-              }
-              // console.log(change);
-              if (change.type === "removed") {
-                let index = exportSet.findIndex(x => x.id == obj.id)
-                console.log("removed", obj);
-                exportSet.splice(index, 1);
-                // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-                // dataOnSnapshot[index] = obj
-              }
-              if ((i + 1) == snapshot.docChanges.length) {
-                $scope.storageFirestore.exports = exportSet
-                $scope.storageFirestore.syncExports()
-              }
-            });
-          })
-        firestore.collection("products")
-          .onSnapshot(function (snapshot) {
-            console.log("connected");
-            snapshot.docChanges.forEach(function (change, i) {
-              var obj = change.doc.data()
-              obj.id = change.doc.id
-              if (change.type === "added") {
-                productsSet.push(obj)
-              }
-              if (change.type === "modified") {
-                let index = productsSet.findIndex(x => x.id == obj.id)
-                console.log("modified", obj);
-                productsSet[index] = obj
-              }
-              // console.log(change);
-              if (change.type === "removed") {
-                let index = productsSet.findIndex(x => x.id == obj.id)
-                console.log("removed", obj);
-                productsSet.splice(index, 1);
-                // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-                // dataOnSnapshot[index] = obj
-              }
-              if ((i + 1) == snapshot.docChanges.length) {
-                $scope.storageFirestore.products = productsSet;
-                $scope.storageFirestore.syncProducts();
-              }
-            });
-          })
-        firestore.collection("invoiceBuy")
-          .onSnapshot(function (snapshot) {
-            console.log("connected");
-            snapshot.docChanges.forEach(function (change, i) {
-              var obj = change.doc.data()
-              obj.id = change.doc.id
-              if (change.type === "added") {
-                invoiceSet.push(obj)
-              }
-              if (change.type === "modified") {
-                let index = invoiceSet.findIndex(x => x.id == obj.id)
-                console.log("modified", obj);
-                invoiceSet[index] = obj
-              }
-              // console.log(change);
-              if (change.type === "removed") {
-                let index = invoiceSet.findIndex(x => x.id == obj.id)
-                console.log("removed", obj);
-                invoiceSet.splice(index, 1);
-                // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-                // dataOnSnapshot[index] = obj
-              }
-              if ((i + 1) == snapshot.docChanges.length) {
-                $scope.storageFirestore.invoices = invoiceSet;
-                $scope.storageFirestore.syncInvoices();
-              }
-            });
-          })
-        firestore.collection("stock")
-          .onSnapshot(function (snapshot) {
-            console.log("connected");
-            snapshot.docChanges.forEach(function (change, i) {
-              var obj = change.doc.data()
-              obj.id = change.doc.id
-              if (change.type === "added") {
-                stockSet.push(obj)
-              }
-              if (change.type === "modified") {
-                let index = stockSet.findIndex(x => x.id == obj.id)
-                console.log("modified", obj);
-                stockSet[index] = obj
-              }
-              // console.log(change);
-              if (change.type === "removed") {
-                let index = stockSet.findIndex(x => x.id == obj.id)
-                console.log("removed", obj);
-                stockSet.splice(index, 1);
-                // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
-                // dataOnSnapshot[index] = obj
-              }
-              if ((i + 1) == snapshot.docChanges.length) {
-                $scope.storageFirestore.stocks = stockSet;
-                $scope.storageFirestore.syncStock();
-              }
-            });
-          })
+        //       }
+        //       if (change.type === "modified") {
+        //         let index = exportSet.findIndex(x => x.id == obj.id)
+        //         console.log("modified", obj);
+        //         exportSet[index] = obj
+        //       }
+        //       // console.log(change);
+        //       if (change.type === "removed") {
+        //         let index = exportSet.findIndex(x => x.id == obj.id)
+        //         console.log("removed", obj);
+        //         exportSet.splice(index, 1);
+        //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+        //         // dataOnSnapshot[index] = obj
+        //       }
+        //       if ((i + 1) == snapshot.docChanges().length) {
+        //         $scope.storageFirestore.exports = exportSet
+        //         $scope.storageFirestore.syncExports()
+        //       }
+        //     });
+        //   })
+        // firestore.collection("products")
+        //   .onSnapshot(function (snapshot) {
+        //     console.log("connected");
+        //     snapshot.docChanges().forEach(function (change, i) {
+        //       var obj = change.doc.data()
+        //       obj.id = change.doc.id
+        //       if (change.type === "added") {
+        //         productsSet.push(obj)
+        //       }
+        //       if (change.type === "modified") {
+        //         let index = productsSet.findIndex(x => x.id == obj.id)
+        //         console.log("modified", obj);
+        //         productsSet[index] = obj
+        //       }
+        //       // console.log(change);
+        //       if (change.type === "removed") {
+        //         let index = productsSet.findIndex(x => x.id == obj.id)
+        //         console.log("removed", obj);
+        //         productsSet.splice(index, 1);
+        //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+        //         // dataOnSnapshot[index] = obj
+        //       }
+        //       if ((i + 1) == snapshot.docChanges().length) {
+        //         $scope.storageFirestore.products = productsSet;
+        //         $scope.storageFirestore.syncProducts();
+        //       }
+        //     });
+        //   })
+        // firestore.collection("invoiceBuy")
+        //   .onSnapshot(function (snapshot) {
+        //     console.log("connected");
+        //     snapshot.docChanges().forEach(function (change, i) {
+        //       var obj = change.doc.data()
+        //       obj.id = change.doc.id
+        //       if (change.type === "added") {
+        //         invoiceSet.push(obj)
+        //       }
+        //       if (change.type === "modified") {
+        //         let index = invoiceSet.findIndex(x => x.id == obj.id)
+        //         console.log("modified", obj);
+        //         invoiceSet[index] = obj
+        //       }
+        //       // console.log(change);
+        //       if (change.type === "removed") {
+        //         let index = invoiceSet.findIndex(x => x.id == obj.id)
+        //         console.log("removed", obj);
+        //         invoiceSet.splice(index, 1);
+        //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+        //         // dataOnSnapshot[index] = obj
+        //       }
+        //       if ((i + 1) == snapshot.docChanges().length) {
+        //         $scope.storageFirestore.invoices = invoiceSet;
+        //         $scope.storageFirestore.syncInvoices();
+        //       }
+        //     });
+        //   })
+        // firestore.collection("stock")
+        //   .onSnapshot(function (snapshot) {
+        //     console.log("connected");
+        //     snapshot.docChanges().forEach(function (change, i) {
+        //       var obj = change.doc.data()
+        //       obj.id = change.doc.id
+        //       if (change.type === "added") {
+        //         stockSet.push(obj)
+        //       }
+        //       if (change.type === "modified") {
+        //         let index = stockSet.findIndex(x => x.id == obj.id)
+        //         console.log("modified", obj);
+        //         stockSet[index] = obj
+        //       }
+        //       // console.log(change);
+        //       if (change.type === "removed") {
+        //         let index = stockSet.findIndex(x => x.id == obj.id)
+        //         console.log("removed", obj);
+        //         stockSet.splice(index, 1);
+        //         // let index = dataOnSnapshot.findIndex(x => x.id == obj.id)
+        //         // dataOnSnapshot[index] = obj
+        //       }
+        //       if ((i + 1) == snapshot.docChanges().length) {
+        //         $scope.storageFirestore.stocks = stockSet;
+        //         $scope.storageFirestore.syncStock();
+        //       }
+        //     });
+        //   })
       }
 
 
@@ -581,7 +651,9 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   });
 
   chrome.storage.onChanged.addListener(function (changes) {
-    dataOnSnapshot = changes.data.newValue
+    if (changes.data) {
+      dataOnSnapshot = changes.data.newValue
+    }
   })
 
   chrome.runtime.onMessage.addListener(
@@ -665,8 +737,77 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           updatePro(request, sendResponse)
           return true
           break
+        case "batchPendings":
+          batchPendings(request, sendResponse)
+          return true
+          break
       }
     });
+
+  function batchPendings(response, sendResponse) {
+    console.log(response.arr);
+    var batch = firestore.batch()
+    var count = 0
+    response.arr.forEach((id, i) => {
+      var val;
+      var user = new Object();
+      var promise = new Promise(function (resolve, reject) {
+        var res = httpGet("https://banhang.shopee.vn/api/v2/orders/" + id, [])
+        res ? resolve(res) : reject()
+      })
+
+      promise.then(function (data) {
+        val = data
+      }).then(function () {
+        user = {
+          id: val.users[0].id,
+          name: val.users[0].username,
+          phone: val.users[0].phone,
+          email: val.users[0].email,
+          gender: val.users[0].gender,
+          create_at: val.users[0].ctime,
+          birth: val.users[0].birth_timestamp
+        }
+        delete val['bundle-deals'];
+        delete val['users'];
+        val.own_status = {
+          status: 1,
+          create_at: new Date()
+        }
+        val.actual_money_shopee_paid = 0
+        val.user = user
+        val.create_at = new Date();
+        val.note = "";
+        val.cancel_status = false;
+        let logis = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + id, [])
+        val.logistic = logis ? logis : {};
+        // console.log(val);
+        for (var key in val['order']) {
+          if (val['order'].hasOwnProperty(key)) {
+            val[key] = val['order'][key];
+          }
+        }
+
+      }).then(function () {
+        delete val['order'];
+        if (val.shipping_traceno) {
+          console.log(i, val);
+          let docRef = firestore.collection("orderShopee").doc(id.toString())
+          batch.set(docRef, val, {
+            merge: true
+          })
+          count++
+        }
+      }).then(() => {
+        if ((i + 1) == response.arr.length) {
+          batch.commit().then(() => {
+            alert("Đã đẩy " + count + " đơn vào CSDL")
+            sendResponse()
+          })
+        }
+      })
+    })
+  }
 
   function updatePro(response, sendResponse) {
     console.log(response.id, response.classify);
@@ -680,41 +821,43 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     })
   }
 
-
   function updateExFromHome(response, sendResponse) {
+    console.log("updateExFromHome");
     var count = 0
     var batch = firestore.batch()
-    chrome.storage.local.get('export', function (keys) {
-      response.exs.forEach(function (ex, index1) {
-        var selectedExpTags = [ex];
-        var names = selectedExpTags.map(x => keys.export.find(y => y.id == x).orders)
+    response.exs.forEach(function (ex, index1) {
+      firestore.collection("exportCode").doc(ex.toString()).get().then((doc) => {
+        var names = doc.data().orders
         var okey = []
-        names[0].forEach(function (order, index2) {
+        names.forEach(function (order, index2) {
           firestore.collection("orderShopee").doc(order.toString()).get()
             .then(function (doc) {
               const data = doc.data()
               var status = data.own_status.status
-              if (status == 5 || status == 6 || status == 11) {
+              // console.log(ex, status);
+              if (status == 5 || status == 6 || status == 8 || status == 11) {
                 okey.push(order)
               }
-              if (okey.length == names[0].length) {
-                console.log(ex, names[0]);
+              if (okey.length == names.length) {
                 var docRef = firestore.collection("exportCode").doc(ex)
                 batch.update(docRef, {
                   "status": 2
                 })
-                count = count + 1
+                console.log(ex);
+                count++
               }
-              if ((index1 + 1) == response.exs.length && (index2 + 1) == names[0].length) {
-                batch.commit().then(() => {
-                  sendResponse()
-                  alert("ĐÃ CHUYỂN " + count + " PHIẾU XUẤT VỀ ĐÃ GIAO")
-                })
+              if ((index1 + 1) == response.exs.length && (index2 + 1) == names.length) {
+                if (count > 0) {
+                  batch.commit().then(() => {
+                    alert("ĐÃ CHUYỂN " + count + " PHIẾU XUẤT VỀ ĐÃ GIAO")
+                  })
+                }
+                sendResponse()
               }
             })
         })
-      });
-    })
+      })
+    });
   }
 
   function updateEx(response, sendResponse) {
@@ -853,52 +996,9 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
   function updateLogFromContent(response, sendResponse) {
     console.log(response.updateLogShopee);
     var check = []
-    var arrExId = []
     var batch = firestore.batch()
-
-    $.each(response.updateLogShopee, function (i, val) {
-      var log = val.log;
-      console.log(log);
-      log = log ? log : ""
-      var test = log
-
-      var docRef = firestore.collection("orderShopee").doc(val.id.toString());
-      batch.update(docRef, {
-        "logistics_status": log
-      })
-
-      if (log == 2) {
-        let own_log = 5;
-        var docRef = firestore.collection("orderShopee").doc(val.id.toString());
-        batch.update(docRef, {
-          "own_status": {
-            status: own_log,
-            create_at: new Date()
-          }
-        })
-      } else if (log == 5) {
-        let own_log = 6;
-        var docRef = firestore.collection("orderShopee").doc(val.id.toString());
-        batch.update(docRef, {
-          "own_status": {
-            status: own_log,
-            create_at: new Date()
-          }
-        })
-      }
-
-      if (test != log) {
-        console.log(log);
-      }
-      var docRef = firestore.collection("orderShopee").doc(val.id.toString());
-      batch.update(docRef, {
-        "logistic": val.logistics
-      })
-      check.push(i)
-    })
-
     $.each(response.idsDaGiao, function (i, id) {
-      // console.log(id);
+      console.log(response.idsDaGiao.length, i, id);
       var docRef = firestore.collection("orderShopee").doc(id.toString());
       batch.update(docRef, {
         "own_status": {
@@ -906,21 +1006,53 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           create_at: new Date()
         }
       })
-      check.push(i)
+      // check.push(i)
     });
-    console.log(check.length);
-    console.log(response.idsDaGiao.length);
-    console.log(response.updateLogShopee.length);
+    $.each(response.updateLogShopee, function (i, val) {
+      var log = val.log ? val.log : ""
 
-    var timer = setInterval(function () {
-      if (check.length == (response.idsDaGiao.length + response.updateLogShopee.length)) {
-        clearInterval(timer)
+      if (log == 2) {
+        var docRef = firestore.collection("orderShopee").doc(val.id.toString());
+        batch.update(docRef, {
+          "own_status": {
+            status: 5,
+            create_at: new Date()
+          },
+          "logistics_status": log,
+          "logistic": val.logistics
+        })
+      } else if (log == 5) {
+        var docRef = firestore.collection("orderShopee").doc(val.id.toString());
+        batch.update(docRef, {
+          "own_status": {
+            status: 6,
+            create_at: new Date()
+          },
+          "logistics_status": log,
+          "logistic": val.logistics
+        })
+      }
+
+      // check.push(i)
+      if ((i + 1) == response.updateLogShopee.length) {
         batch.commit().then(function () {
-
+          console.log("done");
           sendResponse()
         });
       }
-    }, 500)
+    })
+
+
+    // console.log(check);
+    console.log(response.idsDaGiao);
+    console.log(response.updateLogShopee);
+
+    // var timer = setInterval(function () {
+    //   if (check.length == (response.idsDaGiao.length + response.updateLogShopee.length)) {
+    //     clearInterval(timer)
+    //     
+    //   }
+    // }, 500)
   }
 
   function getHomepage(response, sendResponse) {
@@ -1048,25 +1180,25 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
           content: id.content,
           user: uid
         })
-        
+
         var status = new Object()
         switch (true) {
-          case (+Number(id.shopeePayPre).toFixed(0) + Number(id.shopeeMoney).toFixed(0)) < +Number(id.exMoney).toFixed(0):
+          case (+Number(id.shopeePayPre).toFixed(0) + +Number(id.shopeeMoney).toFixed(0)) < +Number(id.exMoney).toFixed(0):
             status = {
               status: 1,
-              create_at: new Date()
+              create_at: id.time
             }
             break;
           case (+Number(id.shopeePayPre).toFixed(0) + +Number(id.shopeeMoney).toFixed(0)) == +Number(id.exMoney).toFixed(0):
             status = {
               status: 2,
-              create_at: new Date()
+              create_at: id.time
             }
             break;
           case (+Number(id.shopeePayPre).toFixed(0) + +Number(id.shopeeMoney).toFixed(0)) > +Number(id.exMoney).toFixed(0):
             status = {
               status: 3,
-              create_at: new Date()
+              create_at: id.time
             }
             break;
         }
@@ -1100,14 +1232,15 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
     var resOrdersn = []
 
     $.each(ordersn, function (i, val) {
-      var colRef = firestore.collection("orderShopee").where("ordersn", "==", val);
+      var colRef = firestore.collection("orderShopee").where("ordersn", "==", val).limit(1);
       colRef.get().then(function (querySnapshot) {
+        console.log(querySnapshot.size);
         if (querySnapshot.size == 1) {
           querySnapshot.forEach(function (doc) {
             const data = doc.data();
             var obj = new Object();
 
-            var voucher_price = data.voucher_absorbed_by_seller? Number(data.voucher_price).toFixed(0): 0
+            var voucher_price = data.voucher_absorbed_by_seller ? Number(data.voucher_price).toFixed(0) : 0
             var money = parseInt(((data.buyer_paid_amount) * 100) / 100)
             money = data.voucher_absorbed_by_seller ? money - voucher_price : money
             var selectedExpTags = [data.own_status.status];
@@ -1122,11 +1255,11 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               traceno: data.shipping_traceno,
               exportId: data.exportId,
               shopeePayPre: //0,
-              data.actual_money_shopee_paid ? data.actual_money_shopee_paid : 0,
+                data.actual_money_shopee_paid ? data.actual_money_shopee_paid : 0,
               own_transaction: //[],
-              data.own_transaction ? data.own_transaction : [],
+                data.own_transaction ? data.own_transaction : [],
               importMoneyId: //[],
-              data.importMoneyId ? data.importMoneyId : [],
+                data.importMoneyId ? data.importMoneyId : [],
               paymentStatus: data.paymentStatus ? data.paymentStatus : {},
             }
             resOrdersn.push(obj)
@@ -1146,6 +1279,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
             paymentStatus: ""
           }
           resOrdersn.push(obj)
+          console.log(obj);
         }
       }).catch(function (error) {
         console.log("Error getting documents: ", error)
@@ -1244,6 +1378,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
         status: 1,
         create_at: new Date()
       }
+      val.actual_money_shopee_paid = 0
       val.user = user
       val.create_at = new Date();
       val.note = "";
@@ -1336,6 +1471,7 @@ app.controller('mainCtrl', function ($scope, $q, storageFirestore, request_cente
               money: data.buyer_paid_amount,
               status: names[0],
               exportId: data.exportId,
+              traceno: data.shipping_traceno,
               exDate: doc.data().create_at.seconds * 1000
             })
           })

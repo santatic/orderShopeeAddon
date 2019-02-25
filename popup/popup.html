@@ -1,53 +1,116 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8">
-    <title>Lập Nghiệp Shop Online</title>
-    <link rel="stylesheet" type="text/css" href="/lib/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/lib/custom/popup/css/custom.css">
+  <meta charset="utf-8">
+  <title>Lập Nghiệp Shop Online</title>
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/lib/custom/popup/css/custom.css">
+  <link href="../css/quicksand.css" rel="stylesheet">
+  <link href="../css/play.css" rel="stylesheet">
 </head>
+
 <body ng-app='app'>
-  <nav ng-controller="headerCtrl" class="navbar navbar-default">
-    
-      <!-- Brand and toggle get grouped for better mobile display -->
+
+  <!-- <nav ng-controller="headerCtrl" class="navbar navbar-default"> -->
+
+  <!-- </nav> -->
+
+
+  <!-- <div ng-controller="headerCtrl">
+
+      <ul class="nav navbar-nav">
+        <li ng-show="firebaseUser">
+          <a>Xin chào, {{ firebaseUser.displayName }}</a>
+        </li>
+        <li ng-show="firebaseUser">
+          <a href="#" ng-click="startSignIn()">Sign Out</a>
+        </li>
+
+        <li ng-hide="firebaseUser">
+          <a>Xin chào, vui lòng đăng nhập.</a>
+        </li>
+        <li ng-hide="firebaseUser">
+          <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
+        </li>
+        <li><a href="{{linkOptionPage}}" target="_blank" id="linkOpenOptionsPage">Quản Trị</a></li>
+      </ul>
+    </div>
+  </div> -->
+
+  <div id="header" style="position:absolute; top:0px; left:0px; height:50px; right:0px;overflow:hidden;">
+    <!-- <div class="container-fluid" ng-controller="headerCtrl">
+      <ul class="nav navbar-nav">
+        <li ng-show="firebaseUser">
+          <a>{{ firebaseUser.displayName }}</a>
+        </li>
+        <li ng-show="firebaseUser">
+          <a href="#" ng-click="startSignIn()">ĐĂNG XUẤT</a>
+        </li>
+
+        <li ng-hide="firebaseUser">
+          <a>Xin chào, vui lòng đăng nhập.</a>
+        </li>
+        <li ng-hide="firebaseUser">
+          <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
+        </li>
+        <li><a href="{{linkOptionPage}}" target="_blank" id="linkOpenOptionsPage">QUẢN TRỊ</a></li>
+      </ul>
+    </div> -->
+    <div ng-controller="headerCtrl">
+        <ul id="nav">
+            <li ng-show="firebaseUser">
+                <a>{{ firebaseUser.displayName }}</a>
+              </li>
+              <li ng-show="firebaseUser">
+                <a href="#" ng-click="startSignIn()">ĐĂNG XUẤT</a>
+              </li>
+              <li ng-hide="firebaseUser">
+                <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
+              </li>
+              <li ng-show="firebaseUser"><a href="{{linkOptionPage}}" target="_blank" id="linkOpenOptionsPage">QUẢN TRỊ</a></li>
+          </ul>
+    </div>
+  </div>
+  <div class="chat-content" ng-controller="chatCtrl" >
+      
+      <div  ng-show="chats.length > 0" style="margin-top:10px; position:absolute; top:50px; bottom:50px; left:0px; right:0px; overflow-y: scroll;"
+      class="chat-history" id="chat">
+      <ul>
+        <li class="clearfix" ng-repeat="item in chats">
+          <div class="message-data" ng-show="item.from.uid !== myuid">
+            <span class="message-data-name">{{item.from.name}}</span>
+          </div>
+          <div ng-class="myuid == item.from.uid ? 'message other-message float-right' : 'message my-message'">
+            
+              <span style="white-space: pre-line" title="{{item.time| date: 'dd/MM/yyyy HH:mm'}}">{{item.content}}</span>
+            
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div id="footer"  style="position:absolute; bottom:0px; height:50px; left:0px; right:0px; overflow:hidden;">
+        <textarea autofocus rows="1" type="text" placeholder="Nhập Tin Nhắn, Gõ 'ENTER' để gửi" ></textarea>
+        <!-- <button class="btn btn-success" ng-click="sendMsg()">SEND</button> -->
+    </div>
+  </div>
   
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-
-        <ul class="nav navbar-nav">
-          <li ng-show="firebaseUser">
-                  <a>Xin chào, {{ firebaseUser.displayName }}</a>                 
-          </li>   
-          <li ng-show="firebaseUser">
-              <a href="#" ng-click="startSignIn()">Sign Out</a>              
-          </li>   
-
-          <li ng-hide="firebaseUser"> 
-            <a>Xin chào, vui lòng đăng nhập.</a>
-          </li>
-          <li ng-hide="firebaseUser">
-            <a href="#" ng-disabled="isDisabled" ng-init="textButton = 'Sign In With Google'" ng-click="startSignIn()">{{textButton}}</a>
-          </li>
-          <li><a href="#" id="linkOpenOptionsPage">Quản Trị</a></li>
-        </ul>
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
   <!-- <div ng-view></div> -->
-    
+
   <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
 
   <script src="/lib/jquery/jquery-2.1.3.min.js"></script>
   <script src="/lib/angular/1.5.9/angular.min.js"></script>
   <script src="/lib/angular/1.5.9/angular-route.min.js"></script>
-
   <script src="/lib/bootstrap/js/bootstrap.min.js"></script>
 
-
-
+  <script src="../lib/moment/moment.js"></script>  
+  <script src="../lib/moment/angular-moment.min.js"></script>
   <script src="/app-popup/app.js"></script>
   <script src="/app-popup/controller/homeCtrl.js"></script>
-  <script src="/app-popup/controller/feedCtrl.js"></script>
+  <script src="/app-popup/controller/chatCtrl.js"></script>
 
 </body>
+
 </html>

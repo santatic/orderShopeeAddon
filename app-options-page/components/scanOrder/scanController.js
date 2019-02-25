@@ -11,7 +11,6 @@ app.controller("scan-controller", function ($scope, $routeParams) {
   scanner.addListener('scan', function (content) {
     console.log(content);
     document.getElementById('play-beep').play()
-
     var url
     switch ($scope.typeUrl) {
       case "addon":

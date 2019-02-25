@@ -1,3 +1,166 @@
 body {
-    min-width:768px;
+    min-width: 450px;;
+    height: 500px;
+}
+
+#nav {
+    /* width: 750px; */
+    margin: 0 auto;
+}
+
+#header ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+}
+
+#header li {
+    display: inline;
+    float: left;
+}
+
+#header a:link,
+a:visited,a {
+    display: block;
+    /* width: 120px; */
+    font-weight: bold;
+    color: #FFFFFF;
+    /* background-color: #98bf21; */
+    text-align: center;
+    padding: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: 300ms
+}
+
+#header a:hover,
+#header a:active {
+    background-color: rgb(0, 0, 0);
+    transition: 300ms
+}
+.chat-history {
+    border-bottom: 2px solid white;
+}
+
+.chat-content {
+    font-family: 'Quicksand', sans-serif;
+
+}
+
+.nav>li>a:hover {
+    background: #F5F5F5 !important;
+    color: #212121 !important
+}
+
+#header {
+    background: #233242
+}
+
+#header li a {
+    font-family: 'Play', sans-serif;
+    font-weight: bold;
+    color: #F5F5F5
+}
+
+.message-data {
+    line-height: 29px;
+    font-size: 12px;
+    font-family: 'Play', sans-serif;
+}
+
+#footer textarea,
+button {
+    vertical-align: middle;
+}
+
+#footer textarea {
+    width: 100%;
+    padding: 5px;
+    border: #fff solid 1px;
+    /* margin-left: 10px; */
+    line-height: 21px;
+    background: #0000;
+    height: 50px;
+    font-size: 16px
+}
+
+.message-data-time {
+    color: lighten(gray, 8%);
+    padding-left: 6px;
+    font-size: 12px;
+}
+
+ul {
+    list-style-type: none;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+p {
+    margin: 0
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #212121;
+}
+
+.message {
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    max-width: 90%;
+    width: auto;
+}
+
+/* .message:after {
+    bottom: 100%;
+    left: 7%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-bottom-color: #f1f0f0;
+    border-width: 10px;
+    margin-left: -2px;
+} */
+
+.my-message {
+    background: #f1f0f0;
+    position: relative;
+    color: #000;
+    width: fit-content;
+}
+
+.other-message {
+    background: #4080ff;
+}
+
+.other-message:after {
+    border-bottom-color: #4080ff;
+    left: 93%;
+}
+
+.float-right {
+    float: right;
+}
+
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
 }

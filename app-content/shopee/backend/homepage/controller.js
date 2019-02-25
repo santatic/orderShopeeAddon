@@ -92,6 +92,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
             $scope.data = response.data;
             $scope.$apply()
         })
+
         $scope.update = function (status) {
             var idsDaGiao = []
             var updateLogShopee = []
@@ -109,10 +110,7 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                     var names = selectedExpTags.map(x => $scope.data.find(y => y.status === x).logistics)
                     console.log(names[0]);
                     $.each(names[0], function (i, val) {
-                        if(i<100){
-                            if (val.exId !== "" && jQuery.inArray(val.exId, arrEx) == -1) {
-                                arrEx.push(val.exId)
-                            }
+                        if (i < 450) {
                             console.log(i, val);
                             // console.log(val.logistics);
                             var sub = "Đã giao hàng"
@@ -121,10 +119,9 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                             } else {
                                 var data = httpGet("https://banhang.shopee.vn/api/v2/orders/" + val.id, [], i + 1)
                                 var logistics = httpGet("https://banhang.shopee.vn/api/v2/tracking/logisticsHistories/" + val.id, [], i + 1)
-    
+
                                 if (val.logistics_status !== data.order.logistics_status) {
                                     var obj = new Object()
-    
                                     obj = {
                                         id: val.id,
                                         log: data.order.logistics_status,
@@ -132,35 +129,43 @@ app.controller("logisticCtrl", ['$scope', 'Chat', 'getList',
                                     }
                                     console.log(obj);
                                     updateLogShopee.push(obj)
+                                    if (status == "PACKED" && val.exId !== "" && jQuery.inArray(val.exId, arrEx) == -1) {
+                                        arrEx.push(val.exId)
+                                    }
                                 }
-    
+
                             }
                         }
-                        
+
                     })
                     resovle()
                 }).show();
 
             })
             promise.then(function () {
-                console.log("then");
+                console.log(arrEx);
+
                 chrome.runtime.sendMessage({
                     mission: "updateLogFromContent",
                     idsDaGiao: idsDaGiao,
                     updateLogShopee: updateLogShopee
                 }, function (response) {
-                    if (status == "NEW" || status == "PACKED") {
-                        chrome.runtime.sendMessage({
-                            mission: "updateExFromHome",
-                            exs: arrEx
-                        }, function (response) {
+                        if (arrEx.length > 0) {
+                            chrome.runtime.sendMessage({
+                                mission: "updateExFromHome",
+                                exs: arrEx
+                            }, function (response2) {         
+                                console.log('ok ex');                       
+                            })
                             location.reload()
-                            console.log("done")
-                        })
-                    } else {
-                        location.reload()
-                        console.log("done")
-                    };
+                        }else location.reload()
+                        
+                    // if (status == "NEW" || status == "PACKED") {
+
+                    // } else {
+                    //     // location.reload()
+                    // //     console.log("done")
+                    // };
                 })
             })
 

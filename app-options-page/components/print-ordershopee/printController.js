@@ -1,5 +1,4 @@
-
-app.controller("print-controller", function ($scope, $rootScope, $routeParams, helper,moment) {
+app.controller("print-controller", function ($scope, $rootScope, $routeParams, helper, moment) {
     $scope.printProducts = false
     var arrayFilter = [{
             id: 1,
@@ -68,14 +67,14 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
             "font-size": "30px"
         })
         console.log($scope.printProducts);
-        if($scope.printProducts){
+        if ($scope.printProducts) {
             $('.rowProducts').removeClass('noprint')
             $('.rowProducts').addClass('print')
             $('.imageProduct').css({
                 "display": "none"
             })
         }
-        setTimeout(function(){
+        setTimeout(function () {
             window.print()
             $("#line").remove()
             $('.rowProducts').removeClass('print')
@@ -84,11 +83,11 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
                 "display": "block"
             })
             $("#trackno").css({
-            "font-size": "15px"
-        })
-        },500)
-        
-        
+                "font-size": "15px"
+            })
+        }, 500)
+
+
     }
 
     $scope.print = function () {
@@ -99,20 +98,20 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
 
     $('button#saveNote').click(function () {
         var note = $('#noteEdit').val();
-        
-            firestore.collection("orderShopee").doc(id).update({
-                "note": note
-            }).then(function () {
-                console.log("done");
-                new Noty({
-                    layout: 'topLeft',
-                    theme: "relax",
-                    timeout: 2500,
-                    type: 'success',
-                    text: 'ĐÃ CẬP NHẬT NOTE'
-                }).show();
-            })
-        
+
+        firestore.collection("orderShopee").doc(id).update({
+            "note": note
+        }).then(function () {
+            console.log("done");
+            new Noty({
+                layout: 'topLeft',
+                theme: "relax",
+                timeout: 2500,
+                type: 'success',
+                text: 'ĐÃ CẬP NHẬT NOTE'
+            }).show();
+        })
+
     })
     $('button#cancelNote').click(function () {
         $('#noteEdit').val("")
@@ -142,7 +141,7 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
                 type: 'success',
                 text: 'TRẠNG THÁI ĐƠN ĐÃ ĐƯỢC CẬP NHẬT'
             }).show();
-            $('.noty_layout').addClass('noprint')            
+            $('.noty_layout').addClass('noprint')
             n.close()
             myPrint()
         })
@@ -164,10 +163,10 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
                 text: 'ĐANG TRUY VẤN TỪ SERVER...'
             }).show();
             firestore.collection("orderShopee").doc(id).get().then(function (doc) {
-                if(doc.exists){
+                if (doc.exists) {
                     n.close()
                     getDetail(doc.data())
-                }else{
+                } else {
                     n.close()
                     new Noty({
                         layout: 'bottomRight',
@@ -175,7 +174,7 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
                         type: 'error',
                         text: 'ĐƠN KHÔNG TỒN TẠI'
                     }).show();
-                }                
+                }
             })
         }
     })
@@ -187,6 +186,20 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
         $scope.transaction = data.own_transaction ? data.own_transaction : [];
         $scope.trackingNo = data.shipping_traceno;
         $scope.nickName = data.user.name;
+        if (data.paymentStatus) {
+            switch (data.paymentStatus.status) {
+                case 1:
+                    $scope.payStatus = "Trả thiếu"
+                    break
+                case 2:
+                    $scope.payStatus = "Trả đủ"
+                    break
+                case 3:
+                    $scope.payStatus = "Trả thừa"
+                    break
+            }
+        } else $scope.payStatus = "Chưa trả"
+
         data['order-items'].forEach((item, index) => {
             // console.log(item.snapshotid + " = " + item.modelid);
             let product = data['products'].find(o => o.id === item.snapshotid);
@@ -199,7 +212,7 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
                 model: model.name,
                 amount: item.amount,
                 imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
-                productUrl:  "https://shopee.vn/!-i." + product.shopid + "." +product.itemid
+                productUrl: "https://shopee.vn/!-i." + product.shopid + "." + product.itemid
             }
             products.push(productsObj)
         });
@@ -213,8 +226,8 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
         $scope.statusRadio = names[0]
         $scope.exportId = data.exportId
         $scope.showEx = false
-        if($scope.exportId){           
-            $scope.showEx = true                        
+        if ($scope.exportId) {
+            $scope.showEx = true
         }
         $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY");
         $scope.carrier = data.actual_carrier
@@ -222,12 +235,12 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
         $scope.address = data.shipping_address;
         $scope.phone = data.buyer_address_phone;
 
-        $scope.packer = data.packer? data.packer.name:"Chưa có người đóng gói"        
+        $scope.packer = data.packer ? data.packer.name : "Chưa có người đóng gói"
 
-        $scope.shop = (helper.myShop.find(x=> x.id == data.shopid)).name
+        $scope.shop = (helper.myShop.find(x => x.id == data.shopid)).name
 
         console.log(helper.myShop);
-        
+
         $scope.orderId = data.ordersn;
         $scope.urlId = id;
         $scope.logistics = data.logistic['logistics-logs'][0].description
@@ -257,11 +270,11 @@ app.controller("print-controller", function ($scope, $rootScope, $routeParams, h
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open("GET", theUrl, false); // false for synchronous request
         for (var i = 0; i < headers.length; i++) {
-          xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
+            xmlHttp.setRequestHeader(headers[i][0], headers[i][1]);
         }
         xmlHttp.send(null);
         return JSON.parse(xmlHttp.responseText);
-      }
+    }
 
 
 });

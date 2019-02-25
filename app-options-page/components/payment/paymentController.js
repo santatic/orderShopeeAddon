@@ -8,8 +8,8 @@ function paymentController($scope, moment, uiGridConstants) {
   $scope.gridOptions = {
     enableRowSelection: true,
     enableSelectAll: true,
-    paginationPageSizes: [15, 30, 45],
-    paginationPageSize: 15,
+    // paginationPageSizes: [15, 30, 45],
+    // paginationPageSize: 15,
     enableSorting: true,
     showGridFooter: false,
     enableFiltering: true,
@@ -217,30 +217,30 @@ app.directive("fileread", [function () {
               $scope.opts.columnDefs[5].visible = false
               $scope.opts.columnDefs[6].visible = false
               $scope.opts.columnDefs.push({
-                name: "Mã Id",
+                name: "Id Don Hang",
                 field: "orderId",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.orderId}}">{{row.entity.orderId}}</a></div>'
               }, {
-                name: "Mã vận đơn",
+                name: "Ma Van Don",
                 field: "traceno",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.orderId}}">{{grid.getCellValue(row, col)}}</a></div>'
               }, {
-                name: "Dự kiến thu",
+                name: "Du kien thu",
                 field: "moneyEx"
               }, {
-                name: "Phí ship",
+                name: "Phi Ship",
                 field: "shippingFee"
               }, {
-                name: "Trợ giá",
+                name: "Tro Gia",
                 field: "vc"
               }, {
-                name: "Đối soát",
+                name: "Doi Soat",
                 field: "offset"
               }, {
-                name: "Hoàn tiền",
+                name: "Hoan Tien",
                 field: "refund"
               }, {
-                name: "Trạng thái tt",
+                name: "Trang Thai",
                 field: "paymentStatus"
               })
 
@@ -256,7 +256,7 @@ app.directive("fileread", [function () {
                 var ordernoStr = value[orderKey];
                 var index = ordernoStr.indexOf('#');
                 var orderno = ordernoStr.substr(index + 1);
-                // console.log(traceno);
+                console.log(orderno, ordernoStr );
                 sendOrderno.push(orderno)
               })
               var arrStt = []
@@ -328,7 +328,8 @@ app.directive("fileread", [function () {
                       content: data[i][Object.keys(data[i])[1]] + ", " + data[i][Object.keys(data[i])[3]],
                       own_transaction: val.own_transaction,
                       importMoneyId: val.importMoneyId,
-                      exportId: val.exportId
+                      exportId: val.exportId,
+                      time: data[i][Object.keys(data[i])[0]].toString()
                     }
                     if (val.paymentStatus.status)
                       $scope.check = val.paymentStatus.status == 2 || val.paymentStatus.status == 3 ? false : $scope.check;

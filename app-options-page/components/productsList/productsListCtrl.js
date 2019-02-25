@@ -881,7 +881,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                     invoice.currency_rate = 0
                                     invoice.note = $scope.note? $scope.note: ""
                                     console.log(invoice);
-                                    firestore.collection("invoiceBuy").doc(invoiceId).set(invoice)
+                                    if(invoice.models.length > 0){
+                                        firestore.collection("invoiceBuy").doc(invoiceId).set(invoice)
                                         .then(() => {
                                             $("#addInvoiceSelected").modal('hide')
                                             new Noty({
@@ -892,6 +893,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                                 text: 'ĐÃ LƯU ĐƠN MUA'
                                             }).show()
                                         })
+                                    }else alert("Không tồn tại phân loại, vui lòng kiểm tra lại")
+                                    
                                 }
                             } else {
                                 alert("Đảm bảo rằng bạn đã cho phân loại hàng?...")
@@ -1014,7 +1017,7 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                 } else {
                                     var invoiceId = $('input#invoiceId').val()
                                     var shipping_fee = $('input#shipping_fee').val()
-                                    if (invoiceId ) {
+                                    if (invoiceId && models.length > 0) {
                                         // alert($scope.sumPaidCopy)
                                         var invoiceCopy = new Object()
                                         invoiceCopy.shipping_traceId = $scope.shippingNo.map(function (obj) {
@@ -1052,9 +1055,8 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                                                 }).show()
                                             })
                                         console.log(invoiceCopy);
-                                    } else {
-                                        alert("Vui lòng nhập mã đơn!")
-                                    }
+                                    } else  console.log("Vui lòng nhập mã đơn! hoặc kiểm tra lại phân loại")
+                                    
 
                                 }
                             }
@@ -1125,8 +1127,6 @@ function productsList($scope, $q, $timeout, moment, uiGridConstants) {
                     })
                 }
             })
-
-            console.log(arrDis);
             obj = {
                 skuProduct: myData.id,
                 time: time,

@@ -3,8 +3,12 @@ firebase.initializeApp({
     apiKey: "AIzaSyCSjrlqzY5ogerTPlDPEp-A1OLRCUnudWM",
     projectId: "nguoitimship"
 });
-
-var app = angular.module("app", ["ngRoute"]);
+const firestore = firebase.firestore();
+const settings = { /* your settings... */
+  timestampsInSnapshots: true
+};
+firestore.settings(settings);
+var app = angular.module("app", ["ngRoute", "angularMoment"]);
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {
@@ -20,6 +24,9 @@ app.config(function($routeProvider) {
     //     controller : "ordersCtrl"
     // });
 });
+app.config(function ($compileProvider) {
+  $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension):/);
+});
 
 app.controller("headerCtrl",  ['$scope', '$location',  function($scope, $location, $firebaseObject) {
     $scope.isActive = function(route) {
@@ -27,7 +34,8 @@ app.controller("headerCtrl",  ['$scope', '$location',  function($scope, $locatio
 		return route === $location.path();
 		
     }
-    $('#linkOpenOptionsPage').click(function(){ chrome.runtime.openOptionsPage(); return false; });
+    $scope.linkOptionPage = chrome.extension.getURL("options.html#/orders")
+    console.log($scope.linkOptionPage);
     $scope.isDisabled = false;
 
     $scope.init = function(){
@@ -37,15 +45,17 @@ app.controller("headerCtrl",  ['$scope', '$location',  function($scope, $locatio
         if (user) {
             $scope.$apply(function () {  
                 $scope.firebaseUser = user;
-                $scope.textButton = 'Sign Out';                
+                $scope.textButton = 'Sign Out';  
+                $scope.isDisabled = true;              
             });
 
         } else {
             $scope.$apply(function () { 
-                $scope.textButton = 'Sign In With Google';
+                $scope.textButton = 'ĐĂNG NHẬP BẰNG GOOGLE';
+                $scope.isDisabled = false;
             });
         }
-        $scope.isDisabled = false;
+        
       });
 
     }

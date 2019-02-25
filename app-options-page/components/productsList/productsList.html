@@ -175,16 +175,19 @@
     </div>
 </div>
 <div class="modal fade" id="addInvoiceSelected" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width: 750px">
         <!-- style="width:fit-content" -->
         <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header" ng-show="!previewInv" style="background: #eeeeee30">
+            <div class="modal-header" ng-show="!previewInv" style="padding-bottom: unset;border-bottom:unset">
 
                 <input placeholder="Nhập mã đơn hàng..." type="text" name="" ng-model="invoiceId" id="invoiceId">
                 <!-- <input placeholder="Nhập mã vẫn đơn..." type="button" name="" ng-model="invoiceId" id="invoiceId"> -->
+                <span class="glyphicon glyphicon-plus"></span>
+                <input placeholder="Phí Ship" style="width: 15%;" type="number" name="" ng-model="shipping_fee" id="shipping_fee">
+                <span class="glyphicon glyphicon-minus"></span>
+                <input style="width:15%" placeholder="GIẢM GIÁ" type="number" name="" ng-model="discount" id="discount">
 
-                <input placeholder="Phí Ship" style="width: 25%;" type="number" name="" ng-model="shipping_fee" id="shipping_fee">
                 <select class="form-control" name="" id="selectCurrence">
                     <!-- <option></option> -->
                     <option>CNY</option>
@@ -193,6 +196,7 @@
                 </select>
                 <button ng-click="addShippingNo()" id="addShippingNo"><span class="glyphicon glyphicon-plus"></span> Mã
                     Vận Đơn</button>
+                <button ng-show="copy" ng-click="saveInvoiceCopy()" style="float: right;padding: 4px 6px;" class="btn btn-success">SAVE</button>
                 <p style="    margin-right: 2px;">
                     <textarea ng-model="note" placeholder="Nhập note tại đây" class="form-control" rows="1" id="noteInvoice"></textarea>
                 </p>
@@ -254,13 +258,7 @@
                         <div class="totalBefore">
                             <b>GIÁ ĐƠN: </b><span id="sumPaidCopy">{{(sumPaidCopy - discount + shipping_fee)|number:3}}</span>
                         </div>
-                        <div class="discount">
-                            <input style="padding-left: 5px;
-                            border: #ddd solid 2px;
-                            border-radius: 2px;"
-                                placeholder="GIẢM GIÁ" type="number" name="" ng-model="discount" id="">
-
-                        </div>
+                        
 
                     </div>
                     <div id="previewCopy"></div>
@@ -325,7 +323,7 @@
             <div class="modal-footer">
 
                 <span ng-show="!copy && !previewInv" ng-click="previewInvoice()" class="previewInvoice">PREVIEW</span>
-                <button ng-show="copy" ng-click="saveInvoiceCopy()" style="float: right" class="btn btn-success">SAVE</button>
+                
                 <button ng-show="previewInv" ng-click="saveInvoice()" class="btn btn-success">ADD</button>
                 <button ng-show="previewInv" ng-click="previewInv = false" class="btn btn-danger">CANCEL</button>
             </div>

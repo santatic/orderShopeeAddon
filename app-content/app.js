@@ -14,62 +14,7 @@ app.config(function ($compileProvider) {
 
 app.service('getList', function () {
     this.getList = function () {
-        var arrayFilter = [{
-                id: 1,
-                english: "NEW",
-                vietnamese: "đơn mới"
-            },
-            {
-                id: 2,
-                english: "PREPARED",
-                vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-            },
-            {
-                id: 3,
-                english: "UNPREPARED",
-                vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-            },
-            {
-                id: 4,
-                english: "PACKED",
-                vietnamese: "đã đóng gói chờ gửi đi"
-            },
-            {
-                id: 5,
-                english: "SHIPPED",
-                vietnamese: "đã gửi đi"
-            },
-            {
-                id: 6,
-                english: "DELIVERED",
-                vietnamese: "khách đã nhận hàng"
-            },
-            {
-                id: 7,
-                english: "RETURNING",
-                vietnamese: "đang hoàn hàng chưa về đến kho"
-            },
-            {
-                id: 8,
-                english: "RETURNED",
-                vietnamese: "đã hoàn về kho"
-            },
-            {
-                id: 9,
-                english: "PAID",
-                vietnamese: "đã thanh toán"
-            },
-            {
-                id: 10,
-                english: "REFUNDED",
-                vietnamese: "đã hoàn tiền"
-            },
-            {
-                id: 11,
-                english: "CANCELED",
-                vietnamese: "đã hủy"
-            },
-        ]
+        
 
         function httpGet(theUrl, headers, i) {
             var xmlHttp = new XMLHttpRequest();
@@ -82,12 +27,11 @@ app.service('getList', function () {
         }
 
         function getListFromStorage() {
-
-
             chrome.storage.local.get('data', function (keys) {
                 keys.data
                 var timer = setInterval(function () {
                     $('div.order-items').not('.loading').find(".order-items__item").each(function (index, value) {
+                        $scope.pendings = []
                         var _this = $(this);
                         var id = $(this).attr("href");
                         if (id) {
@@ -98,7 +42,7 @@ app.service('getList', function () {
                             });
 
                             var optionsUrl = chrome.extension.getURL("options.html#/");
-
+                            // console.log(obj);
                             _this.find(".ct-buyer > div").find('span#test').remove()
                             if (obj) {
                                 var exportId
@@ -112,39 +56,39 @@ app.service('getList', function () {
                                     logistics = logistics.indexOf('[Vietnam]') !== -1 ? logistics.replace('[Vietnam]', '') : logistics
                                     console.log(logistics);
                                     _this.find(".ct-status").html(logistics)
-                                    if (logistics.indexOf('Thành công - Phát thành công') !== -1 || logistics.indexOf('Đã giao hàng/Chưa đối soát') !== -1) {
-                                        // var ItemId = []
-                                        obj['order-items'].forEach((item, index) => {
-                                            // console.log(item.snapshotid + " = " + item.modelid);
-                                            let product = obj['products'].find(o => o.id === item.snapshotid);
-                                            // console.log(product);
-                                            // let productImage = data['products'].find(o => o.id === item.images[0]);
-                                            let model = obj['item-models'].find(o => o.id === item.modelid)
-                                            var promise = new Promise(function (resolve, reject) {
-                                                resolve((httpGet("https://shopee.vn/api/v1/comment_list/?item_id=" + model.itemid + "&shop_id=20340126&limit=50", [])).comments)
-                                            })
-                                            promise.then(function (comments) {
-                                                var found = comments.find(el => el.username == obj.user.name);
-                                                if (found) {
-                                                    // console.log(found);
-                                                    var linkcomment = "https://shopee.vn/" + product.name + "-i.20340126." + model.itemid
-                                                    _this.find(".item:eq(" + index + ")").find(".ct-item-product-inner").append("<b style='font-size:18px;color:#000'><a target='_blank' href='" + linkcomment + "'>" + found.rating_star + "<span style='color:#ff5722'>&bigstar;</span></a></b>" + "<span title='" + found.comment + "'>" + found.comment + "</span>")
-                                                } else {
-                                                    // _this.find(".ct-buyer > div").append("Khách chưa đánh giá")
-                                                    console.log("notFound");
-                                                }
-                                                // ItemId.push({
-                                                //     comments: found,
-                                                //     modelId : model.itemid,
-                                                //     name: product.name,
-                                                //     model: model.name,
-                                                //     imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"                            
-                                                // })
-                                            })
-                                        });
-                                        // console.log(id, ItemId);
+                                    // if (logistics.indexOf('Thành công - Phát thành công') !== -1 || logistics.indexOf('Đã giao hàng/Chưa đối soát') !== -1) {
+                                    //     // var ItemId = []
+                                    //     obj['order-items'].forEach((item, index) => {
+                                    //         // console.log(item.snapshotid + " = " + item.modelid);
+                                    //         let product = obj['products'].find(o => o.id === item.snapshotid);
+                                    //         // console.log(product);
+                                    //         // let productImage = data['products'].find(o => o.id === item.images[0]);
+                                    //         let model = obj['item-models'].find(o => o.id === item.modelid)
+                                    //         var promise = new Promise(function (resolve, reject) {
+                                    //             resolve((httpGet("https://shopee.vn/api/v1/comment_list/?item_id=" + model.itemid + "&shop_id=20340126&limit=50", [])).comments)
+                                    //         })
+                                    //         promise.then(function (comments) {
+                                    //             var found = comments.find(el => el.username == obj.user.name);
+                                    //             if (found) {
+                                    //                 // console.log(found);
+                                    //                 var linkcomment = "https://shopee.vn/" + product.name + "-i.20340126." + model.itemid
+                                    //                 _this.find(".item:eq(" + index + ")").find(".ct-item-product-inner").append("<b style='font-size:18px;color:#000'><a target='_blank' href='" + linkcomment + "'>" + found.rating_star + "<span style='color:#ff5722'>&bigstar;</span></a></b>" + "<span title='" + found.comment + "'>" + found.comment + "</span>")
+                                    //             } else {
+                                    //                 // _this.find(".ct-buyer > div").append("Khách chưa đánh giá")
+                                    //                 console.log("notFound");
+                                    //             }
+                                    //             // ItemId.push({
+                                    //             //     comments: found,
+                                    //             //     modelId : model.itemid,
+                                    //             //     name: product.name,
+                                    //             //     model: model.name,
+                                    //             //     imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn"                            
+                                    //             // })
+                                    //         })
+                                    //     });
+                                    //     // console.log(id, ItemId);
 
-                                    }
+                                    // }
                                 }
 
                                 var status
@@ -160,80 +104,86 @@ app.service('getList', function () {
                                 _this.find(".ct-buyer > div").find('#'+id+'').remove()
                                 _this.find(".ct-buyer > div").find('.'+id+'').remove()
                                 if(_this.find('.ct-logistics div.label.green').length > 0){
-                                    chrome.runtime.sendMessage({
-                                        mission: "getSingle",
-                                        id: id
-                                    }, function (response){
-                                        if(response.state){
-                                            _this.find(".ct-buyer > div").find('#'+id+'').remove()
-                                            _this.find(".ct-buyer > div").find('.'+id+'').remove()
-                                            var selectedExpTags = [response.status];
-                                            var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                                            var status = names[0]
-                                            _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
+                                    _this.find(".ct-buyer > div").append(' <span style="background: #ff3d3e;border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" class="'+id+'">&nbsp<b>CÓ MÃ VẬN ĐƠN NHƯNG CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span>')
+                                    console.log(id);
+                                    
+                                    // chrome.runtime.sendMessage({
+                                    //     mission: "getSingle",
+                                    //     id: id
+                                    // }, function (response){
+                                    //     console.log(response.state);
+                                    //     if(response.state){
+                                    //         _this.find(".ct-buyer > div").find('#'+id+'').remove()
+                                    //         _this.find(".ct-buyer > div").find('.'+id+'').remove()
+                                    //         var selectedExpTags = [response.status];
+                                    //         var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                                    //         var status = names[0]
+                                    //         _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
                                             
-                                        }else{
-                                            chrome.runtime.sendMessage({
-                                                mission: "detailOrder",
-                                                url: id
-                                            }, function (response) {
+                                    //     }else{
+                                    //         console.log(id);
+                                    //         // chrome.runtime.sendMessage({
+                                    //         //     mission: "detailOrder",
+                                    //         //     url: id
+                                    //         // }, function (response) {
                                                 
-                                                console.log(response);
-                                                if(response.check == "success"){
-                                                    _this.find(".ct-buyer > div").find('#'+id+'').remove()
-                                                    _this.find(".ct-buyer > div").find('.'+id+'').remove()
-                                                    var selectedExpTags = [response.status];
-                                                    var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                                                    var status = names[0]
-                                                    _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
+                                    //         //     console.log(response);
+                                    //         //     if(response.check == "success"){
+                                    //         //         _this.find(".ct-buyer > div").find('#'+id+'').remove()
+                                    //         //         _this.find(".ct-buyer > div").find('.'+id+'').remove()
+                                    //         //         var selectedExpTags = [response.status];
+                                    //         //         var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                                    //         //         var status = names[0]
+                                    //         //         _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
                                                     
-                                                }else{
-                                                    alert("đơn chưa có mã phiếu xuất")
-                                                    _this.find(".ct-buyer > div").find('#'+id+'').css({
-                                                        "display": "block"
-                                                    })
-                                                    _this.find(".ct-buyer > div").find('.'+id+'').text("CHƯA ĐƯỢC THEO DÕI")
-                                                }
-                                            })
-                                        }
+                                    //         //     }else{
+                                    //         //         alert("đơn chưa có mã phiếu xuất")
+                                    //         //         _this.find(".ct-buyer > div").find('#'+id+'').css({
+                                    //         //             "display": "block"
+                                    //         //         })
+                                    //         //         _this.find(".ct-buyer > div").find('.'+id+'').text("CHƯA ĐƯỢC THEO DÕI")
+                                    //         //     }
+                                    //         // })
+                                    //     }
                                         
-                                    })
+                                    // })
                                 }else{
-                                    _this.find(".ct-buyer > div").append(' <span style="background: #ff3d3e;border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" class="'+id+'">&nbsp<b>CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span>')
-                                    _this.find(".ct-actions").click(function(){
-                                        console.log(id);
-                                        var timer = setInterval(function () {  
-                                            if(_this.find('.ct-logistics div.label.green').length > 0){
-                                                clearInterval(timer)
-                                                console.log("sending...");
-                                                chrome.runtime.sendMessage({
-                                                    mission: "detailOrder",
-                                                    url: id
-                                                }, function (response) {
+                                    // console.log(id);
+                                    _this.find(".ct-buyer > div").append(' <span style="background:#6f6f71;border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;" class="'+id+'">&nbsp<b>CHƯA ĐƯỢC THEO DÕI</b>&nbsp</span>')
+                                    // _this.find(".ct-actions").click(function(){
+                                    //     console.log(id);
+                                        // var timer = setInterval(function () {  
+                                        //     if(_this.find('.ct-logistics div.label.green').length > 0){
+                                        //         clearInterval(timer)
+                                        //         console.log("sending...");
+                                        //         chrome.runtime.sendMessage({
+                                        //             mission: "detailOrder",
+                                        //             url: id
+                                        //         }, function (response) {
                                                     
-                                                    console.log(response);
-                                                    if(response.check == "success"){
-                                                        new Noty({
-                                                            layout: 'bottomRight',
-                                                            theme: "relax",
-                                                            type: 'success',
-                                                            timeout: 1500,
-                                                            text: 'Thêm Đơn Thành Công'
-                                                        }).show();
-                                                        _this.find(".ct-buyer > div").find('#'+id+'').remove()
-                                                        _this.find(".ct-buyer > div").find('.'+id+'').remove()
-                                                        var selectedExpTags = [response.status];
-                                                        var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
-                                                        var status = names[0]
-                                                        _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
+                                        //             console.log(response);
+                                        //             if(response.check == "success"){
+                                        //                 new Noty({
+                                        //                     layout: 'bottomRight',
+                                        //                     theme: "relax",
+                                        //                     type: 'success',
+                                        //                     timeout: 1500,
+                                        //                     text: 'Thêm Đơn Thành Công'
+                                        //                 }).show();
+                                        //                 _this.find(".ct-buyer > div").find('#'+id+'').remove()
+                                        //                 _this.find(".ct-buyer > div").find('.'+id+'').remove()
+                                        //                 var selectedExpTags = [response.status];
+                                        //                 var names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
+                                        //                 var status = names[0]
+                                        //                 _this.find(".ct-buyer > div").append(' <span id="test">&nbsp<b> ' + (((response.buyer_paid_amount) * 100) / 100).toLocaleString() + " VNĐ - " + (((response.shipping_fee) * 100) / 100).toLocaleString() + ' VNĐ | <a target="_blank" href="' + optionsUrl + "orders/" + id + '">' + response.id + '</a> | <a style="background: rgba(44, 9, 188, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px " target="_blank">#' + response.exportId + '</a>' + '<a style="background: rgba(0, 146, 231, 0.65);border-radius:25px ; color: #fff ;padding: 5px 8px;margin-left: 8px;text-transform: uppercase;">' + status + ' </a>' + '</b></span>')
                                                         
-                                                    }else{
+                                        //             }else{
                                                         
-                                                    }
-                                                })
-                                            }
-                                        },1000)
-                                    })
+                                        //             }
+                                        //         })
+                                        //     }
+                                        // },1000)
+                                    // })
                                     // $('a#'+id+'').click(function(){
                                     // if( _this.find('div.label.green').length > 0){
                                     //     console.log($(this).attr("id"));
@@ -285,10 +235,13 @@ app.service('Chat', function () {
             states = []
             // console.log(changes.suggests);
             // if(typeof changes.suggests.newValue !== undefined){
-                changes.suggests.newValue.forEach(function (val) {
-                    states.push(val.suggest_chat)
-                    // console.log(val.suggest_chat);
-                });
+                if(changes.suggests){
+                    changes.suggests.newValue.forEach(function (val) {
+                        states.push(val.suggest_chat)
+                        // console.log(val.suggest_chat);
+                    });
+                }
+                
             // }
             
         })

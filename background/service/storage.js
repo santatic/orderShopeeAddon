@@ -7,7 +7,8 @@ app.service('storageFirestore', function ($q) {
     this.invoices = []
     this.stocks = []
     this.dataPayment1 = []
-    
+    this.chat = {}
+
     this.findAll = function (callback) {
         chrome.storage.local.get('data', function (keys) {
             console.log(keys);
@@ -21,7 +22,17 @@ app.service('storageFirestore', function ($q) {
             // }
         });
     }
-    this.syncStock = function(){
+    this.syncChat = function () {
+        chrome.storage.local.set({
+            chat: this.chat
+        }, function () {
+            console.log('Chat is stored in Chrome storage');
+            chrome.storage.local.get('chat', function (keys) {
+                console.log(keys);
+            });
+        });
+    }
+    this.syncStock = function () {
         chrome.storage.local.set({
             stocks: this.stocks
         }, function () {
@@ -29,19 +40,19 @@ app.service('storageFirestore', function ($q) {
             chrome.storage.local.get('stocks', function (keys) {
                 console.log(keys);
             });
-        }); 
+        });
     }
-    this.syncPayment1 = function(){
+    this.syncPayment1 = function () {
         chrome.storage.local.set({
             dataPayment1: this.dataPayment1
         }, function () {
-            console.log('Stock is stored in Chrome storage');
+            console.log('Payment1 is stored in Chrome storage');
             chrome.storage.local.get('dataPayment1', function (keys) {
                 console.log(keys);
             });
-        }); 
+        });
     }
-    this.syncSuggests = function(){
+    this.syncSuggests = function () {
         chrome.storage.local.set({
             suggests: this.suggests
         }, function () {
@@ -49,9 +60,9 @@ app.service('storageFirestore', function ($q) {
             chrome.storage.local.get('suggests', function (keys) {
                 console.log(keys);
             });
-        }); 
+        });
     }
-    this.syncInvoices = function(){
+    this.syncInvoices = function () {
         chrome.storage.local.set({
             invoices: this.invoices
         }, function () {
@@ -59,9 +70,9 @@ app.service('storageFirestore', function ($q) {
             chrome.storage.local.get('invoices', function (keys) {
                 console.log(keys);
             });
-        }); 
+        });
     }
-    this.syncExports = function(){
+    this.syncExports = function () {
         chrome.storage.local.set({
             export: this.exports
         }, function () {
@@ -69,9 +80,9 @@ app.service('storageFirestore', function ($q) {
             chrome.storage.local.get('export', function (keys) {
                 console.log(keys);
             });
-        }); 
+        });
     }
-    this.syncProducts = function(){
+    this.syncProducts = function () {
         chrome.storage.local.set({
             products: this.products
         }, function () {
@@ -79,12 +90,12 @@ app.service('storageFirestore', function ($q) {
             chrome.storage.local.get('products', function (keys) {
                 console.log(keys);
             });
-        }); 
+        });
     }
 
     this.check = false
 
-    this.syncOrders = function () { 
+    this.syncOrders = function () {
         chrome.storage.local.set({
             data: this.data
         }, function () {
@@ -92,14 +103,14 @@ app.service('storageFirestore', function ($q) {
             chrome.storage.local.get('data', function (keys) {
                 console.log(keys);
                 if (!this.check) {
-                    chrome.notifications.clear('reminder', function(wasCleared){
-                        console.log("closed",wasCleared);
+                    chrome.notifications.clear('reminder', function (wasCleared) {
+                        console.log("closed", wasCleared);
                         this.check = true
                     })
-                    
-                  }
+
+                }
             });
-        });  
+        });
 
     }
 

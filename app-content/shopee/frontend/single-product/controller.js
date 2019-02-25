@@ -1,6 +1,7 @@
 
 app.controller("shopeeCtrl", ['$scope', 'moment',
     function ($scope, moment) {
+        // console.log("hello");
         function httpGet(theUrl, headers) {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("GET", theUrl, false); // false for synchronous request
@@ -57,18 +58,28 @@ app.controller("shopeeCtrl", ['$scope', 'moment',
         $scope.item = {};
         $scope.init = function () {
             var regex = /\/.+i\.(\d+\.\d+)/g;
-            var matchs = regex.exec(window.location.href);
-            //console.log(matchs)       ;
+            var matchs = regex.exec(window.location.href);          
             if (matchs !== null) {
                 var shopid_itemid = matchs[1].split('.');
-
                 $scope.item.itemid = shopid_itemid[1];
-                $scope.item.shopid = shopid_itemid[0];
-                console.log($scope.item.itemid);
-                console.log($scope.item.shopid);
+                $scope.item.shopid = shopid_itemid[0];     
+            }else{
+                var regex = /\/(\d+\/\d+)/g;
+                var matchs = regex.exec(window.location.href);
+                var shopid_itemid = matchs[1].split('/');
+                $scope.item.itemid = shopid_itemid[1];
+                $scope.item.shopid = shopid_itemid[0];    
             }
         }
         $scope.init();
+        chrome.storage.local.get('shopCurrent', function (keys) {
+            console.log(keys.shopCurrent[0]);
+            if(keys.shopCurrent[0].shopid == $scope.item.shopid){
+                var editlink = "https://banhang.shopee.vn/portal/product/"+ $scope.item.itemid
+                console.log(editlink);
+                $('.qaNIZv').append('<a style="font-weight: bold;font-size: 16px;" href="'+editlink+'" target="_blank">&#9728;</a>')
+          }                    
+        });
 
         var request = httpGet('https://shopee.vn/api/v1/item_detail/?item_id=' + $scope.item.itemid + '&shop_id=' + $scope.item.shopid, []);
         $scope.sold = request.sold

@@ -26,6 +26,14 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-5" style="padding-right: 0">
+                        {{invoiceId1688}} <a href="https://trade.1688.com/order/new_step_order_detail.htm?orderId={{invoiceId1688}}" target="_blank"><span class="glyphicon glyphicon-new-window" ></span></a> 
+                        <div class="reportProduct">
+                            <ul>
+                                <li ng-repeat = "i in reportProduct">
+                                    {{i.productName}} (số lượng: {{i.quantity}} = {{i.price}} $)
+                                </li>
+                            </ul>
+                        </div>
                         <!-- <div class="invoiceId"><a href="https://trade.1688.com/order/new_step_order_detail.htm?orderId={{orderId}}" target="_blank">{{orderId}}</a></div> -->
                         <div ng-show="traceNo.length>0" id="grid3" ui-grid="optionsShipping" ui-grid-resize ui-grid-resize-columns
                             ui-grid-selection ui-grid-edit ui-grid-row-edit class="grid3"></div>
@@ -33,6 +41,7 @@
                             <textarea name="" id="note" class="form-control" rows="3" style="margin-bottom: 5px;" ng-model="note"></textarea>
                             <button class="btn btn-success" ng-click="saveNote()">SAVE</button>
                         </div>
+                        
                         
                     </div>
                     <div class="col-md-7">

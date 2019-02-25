@@ -16,8 +16,8 @@
 </div>
 <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
 
-<div id="grid1" ui-grid="options" ui-grid-edit ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-cellnav
-    ui-grid-pagination class="grid noprint">
+<div id="grid1" ui-grid="options" ui-grid-edit ui-grid-resize-columns ui-grid-selection ui-grid-exporter
+    ui-grid-cellnav ui-grid-pagination class="grid noprint">
 </div>
 <div class="modal fade noprint" id="myModal" role="dialog">
     <div class="modal-dialog">
@@ -69,28 +69,29 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-5">
-                    
+
                     <div class="form-group-status" id="bulkStatus">
                         <div class="changeStatus">
                             <!-- <input type="radio" ng-model="BulkStatusRadio" style="margin: 4px 0px 22px 10px;" value="NEW">
                             <b>ĐƠN MỚI</b> -->
 
 
-                            <input type="radio" ng-model="BulkStatusRadio" style="margin: 4px 0px 22px 10px;" value="PACKED">
+                            <input type="radio" id="packedChange" ng-model="BulkStatusRadio" style="margin: 4px 0px 22px 10px;"
+                                value="PACKED">
                             <b>ĐÃ ĐÓNG GÓI</b>
                             <button ng-click="createExport()" style="margin-left: 12px;margin-bottom: 15px;border: none;padding: 6px;background: #da3725;color: #fff;border-radius: 3px;">TẠO
                                 PHIẾU XUẤT</button>
-                        </div>                        
+                        </div>
                     </div>
                     <div style="font-size: 16px" class="report" ng-show="BulkChangeStatus.length > 0">
-                            <li ng-repeat="i in reportBulkScan">
-                                <span>{{i.count}} đơn</span>
-                                <span>{{i.carrier}} <span ng-show="i.note !== ''">({{i.note}})</span> </span>
-                            </li>
-                        </div>
+                        <li ng-repeat="i in reportBulkScan">
+                            <span>{{i.count}} đơn</span>
+                            <span>{{i.carrier}} <span ng-show="i.note !== ''">({{i.note}})</span> </span>
+                        </li>
+                    </div>
                 </div>
                 <div class="col-md-7">
-                    <input placeholder="Nhập id để đổi trạng thái" type="text" id="testScan" autofocus>
+                    <input placeholder="Nhập MVĐ để đổi trạng thái" type="text" id="testScan" autofocus>
                     <div id="listChangeSuccess" style="overflow: scroll;overflow-x: hidden;">
                         <!-- <span ng-show="BulkChangeStatus.length > 0">
                             <input type="checkbox" checked ng-click="toggle($event)" id="checkall" />
@@ -120,7 +121,7 @@
                                         <input type="checkbox" checked ng-click="toggle($event)" id="checkall" />
                                     </th>
                                     <th>
-                                        Id Đơn
+                                        MVĐ
                                     </th>
                                     <th>
                                         Nhà Vận Chuyển
@@ -135,8 +136,8 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="i in BulkChangeStatus" id="{{i.id}}">
-                                    <th><input type="checkbox" name="scanId" checked value="{{i.id}}"></th>
-                                    <th>{{i.id}}</th>
+                                    <th><input type="checkbox" name="scanId" checked value="{{i.mvd}}"></th>
+                                    <th>{{i.mvd}}</th>
                                     <th>{{i.carrier}}</th>
                                     <th>{{i.status}}</th>
                                     <th>{{i.new_status}}</th>
@@ -165,11 +166,12 @@
             </div>
             <div class="modal-body">
                 <div class="form-group-status" id="selectUser" style="padding-top: 0" ng-show="users.length > 0">
-                    <input type="checkbox" name="checkall" id="" ng-model="checkedAll" ng-change="chiadon($event)" >
+                    <input type="checkbox" name="checkall" id="" ng-model="checkedAll" ng-change="chiadon($event)">
                     Chọn hết
                     <div class="selectUser">
                         <div ng-repeat="i in users">
-                            <input type="checkbox" id="{{i.uid}}" name="chiadon" ng-change="chiadon($event)" ng-model="checked" style="cursor:pointer">
+                            <input type="checkbox" id="{{i.uid}}" name="chiadon" ng-change="chiadon($event)" ng-model="checked"
+                                style="cursor:pointer">
                             <span id="name"><b>{{i.name}}</b></span> <br> <span id="email">{{i.email}}</span>
                         </div>
                     </div>
@@ -210,24 +212,16 @@
 </div>
 
 <div class="print rowPrint">
-    <ul ng-repeat="x in rowSelected" class="list-group" style="float: left;width: 50%; margin-bottom: 5px">
-        <div style="display: inline-block; margin-right: 10px">
-            <div id="{{x.id}}"></div>
+    <ul ng-repeat="(i,x) in rowSelected" class="list-group" style="float: left;width: 50%; margin-bottom: 5px">
 
-        </div>
-        <div style="display: inline-block">
-            <!-- <li class="list-group-item">
-                ID: {{x.id}} - {{x.own_Status}}
-            </li> -->
-
-            <span style="font-size:22px">{{x.trackno}}</span>
+        <li style="padding-bottom: 8px; list-style-type : none">
+            <svg trackno="{{x.id}}" id="barcode{{i}}"></svg>
             <br>
-            <li style="padding-bottom: 8px; list-style-type : none">
-                {{x.nickname}}
-                <br>{{x.name}}<span style="font-size: 10px">[{{x.lengthClassify}}] <span ng-show="x.packer !== ''">[{{x.packer}}]</span>
-                </span>
-            </li>
-        </div>
+            {{x.nickname}}
+            <br>{{x.name}}<span style="font-size: 10px">[{{x.lengthClassify}}] <span ng-show="x.packer !== ''">[{{x.packer}}]</span>
+            </span>
+        </li>
+        <!-- </div> -->
 
     </ul>
 
