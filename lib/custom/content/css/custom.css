@@ -8,6 +8,27 @@
     left:0;
     z-index:99999999;
 }
+.panel {
+    background: #dcffef;
+    border: #33d0b1 solid 2px;
+    border-radius: 0 8px 8px 0;
+    padding: 10px;
+}
+.panel-body div, .panel-header div {
+    padding: 3px;
+}
+button.btn {
+    background: #fff;
+    padding: 10px;
+    font-weight: bold;
+    border: rgba(0,0,0,.14) solid 1px;
+}
+button.btn:hover {
+    background: #41ffb2;
+}
+span.dateEx {
+    margin-top: 3px
+}
 input#newName {
     width: 100%;
     padding: 5px;

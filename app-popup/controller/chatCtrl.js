@@ -15,43 +15,65 @@ app.controller("chatCtrl", function ($scope, $location, $anchorScroll, moment) {
                 if (changes.chat) getChats(changes.chat.newValue);
             })
 
+            $scope.items = [];
+
+            var counter = 0;
+            // $scope.loadMore = function () {
+            //     for (var i = 0; i < 10; i++) {
+            //         $scope.items.unshift({ id: counter });
+            //         counter += 10;
+            //     }
+            // };
+
+            // $scope.loadMore();
 
             function getChats(chats) {
                 $scope.arr = []
                 $scope.chats = []
-                chats.forEach(function (chat) {
-                    // console.log(chat.messages);
-                    chat.messages.forEach(function (mes) {
-                        $scope.chats.push(mes)                        
-                        if (moment().format('YYYY-MM-DD').toString() == moment(chats.id).format('YYYY-MM-DD')) {
-                            $scope.arr.push(mes);                            
-                        }
-                        $scope.$apply()
-                        
+                var begin = 0
+                var end = 5
+                var count = 0   
+                $scope.loadMore = function () {
+                    var arrSlice = chats.slice(begin, end)
+                    console.log(arrSlice);
+                    arrSlice.forEach(function (chat) {
+                        // console.log(chat.messages);
+                        if(count > 0)  chat.messages.reverse()
+                        chat.messages.forEach(function (mes) {
+                            count == 0? $scope.chats.push(mes): $scope.chats.unshift(mes);
+                            if (moment().format('YYYY-MM-DD').toString() == chat.id.toString()) {
+                                $scope.arr.push(mes);
+                            }
+                        })
+                        count++
                     })
-                })
+                    begin += 5;
+                    end += 5;
+                    
+                };
+
+                $scope.loadMore();
+
                 $scope.myuid = user.uid
                 $scope.name = user.displayName
-                $scope.time = moment(chats.create_at).format().toString()              
-                console.log($scope.chats);
+                $scope.time = moment(chats.create_at).format().toString()
                 $scope.$apply()
-
-                console.log($scope.chats);
-                var d = $('#chat');
-                d.animate({
-                    scrollTop: d.prop('scrollHeight')
-                }, 1000);
-                chrome.storage.local.get('badge', function (obj) {
-                    if (Object.keys(obj).length === 0) {
-                        chrome.storage.local.set({
-                            badge: 0
-                        });
-                    } else {
-                        chrome.storage.local.set({
-                            badge: 0
-                        });
-                    }
-                })
+                // var d = $('#chat');
+                
+                // d.animate({
+                //     scrollTop: d.prop('scrollHeight')
+                // }, 200);
+                // chrome.storage.local.get('badge', function (obj) {
+                //     if (Object.keys(obj).length === 0) {
+                //         chrome.storage.local.set({
+                //             badge: 0
+                //         });
+                //     } else {
+                //         chrome.storage.local.set({
+                //             badge: 0
+                //         });
+                //     }
+                // })
             }
 
         }

@@ -95,10 +95,11 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
         }, {
                 name: "TrackNo",
                 enableCellEdit: false,
-                width: '200',
+                width: '180',
                 field: "trackno",
                 cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
-            }, {
+            },
+            { name: "Shop", field: "shop", width: '150' }, {
                 name: "NickName",
                 enableCellEdit: false,
                 field: "nickname"
@@ -181,7 +182,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
                 })
 
-        } else{
+        } else {
             firestore.collection("exportCode").doc(id).update({
                 "status": valueSelected
             }).then(function () {
@@ -202,23 +203,23 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
     });
 
-    $scope.printEx = function () {  
+    $scope.printEx = function () {
         $('#haveQR').append('<td id="qrcodeEx" ></td>')
-                $scope.id = id;
-                var qrcode = new QRCode("qrcodeEx", {
-                    width: 100,
-                    height: 100,
-                    correctLevel: QRCode.CorrectLevel.H
-                });
+        $scope.id = id;
+        var qrcode = new QRCode("qrcodeEx", {
+            width: 100,
+            height: 100,
+            correctLevel: QRCode.CorrectLevel.H
+        });
 
-                function makeCode() {
-                    qrcode.makeCode(id);
-                }
-                makeCode();
-                $timeout(function () {
-                    window.print();
-                    $('#qrcode').remove()
-                }, 500)
+        function makeCode() {
+            qrcode.makeCode(id);
+        }
+        makeCode();
+        $timeout(function () {
+            window.print();
+            $('#qrcode').remove()
+        }, 500)
     }
 
     $scope.options.gridMenuCustomItems = [
@@ -484,7 +485,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                 $scope.cancel = false
                 $scope.status = "PHIẾU NÀY ĐÃ BỊ HỦY"
             } else {
-                $scope.status = data.status.toString()                
+                $scope.status = data.status.toString()
             }
             $scope.date = moment(data.create_at.seconds * 1000).format("DD-MM-YYYY HH:mm");
             $scope.$apply()
@@ -493,15 +494,15 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
 
     })
     chrome.storage.onChanged.addListener(function (changes) {
-        $scope.options.data = []
-        $scope.$apply()
+
+
         getData(ordersInEx, changes.data.newValue);
     })
     var sources = []
     function getData(ordersInExport, arrayData) {
         // console.log(arrayData);
         // console.log(ordersInExport);
-
+        $scope.options.data = []
         var arrTraceno = []
         var arrShipped = []
         var arrDone = []
@@ -521,7 +522,7 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     // console.log(idOrder, "ko thaays");
                     firestore.collection("orderShopee").doc(idOrder.toString()).get().then(function (docOrder) {
                         data(docOrder.data())
-                    }).then(function(){
+                    }).then(function () {
                         $scope.run = true
                         console.log("from Server");
                     })
@@ -537,19 +538,20 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     obj = new Object();
                     obj = {
                         id: idOrder,
+                        shop: helper.myShop.find(x => x.id == myData.shopid).name,
                         trackno: myData.shipping_traceno,
                         nickname: myData.user.name + " - " + myData.buyer_address_name,
                         carrier: myData.actual_carrier,
                         paid: ((myData.buyer_paid_amount * 100) / 100).toLocaleString(),
                         shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
-                        ownStatus: myData.own_status.status == 11? "11": myData.own_status.status
+                        ownStatus: myData.own_status.status == 11 ? "11" : myData.own_status.status
                     }
                     if (myData.own_status.status == 5) {
                         arrShipped.push(idOrder)
                     }
-                    myData.paymentStatus = myData.paymentStatus? myData.paymentStatus: {status: 0}
+                    myData.paymentStatus = myData.paymentStatus ? myData.paymentStatus : { status: 0 }
                     console.log(myData.paymentStatus);
-                    if (myData.own_status.status == 8||myData.paymentStatus.status == 2||myData.own_status.status == 11) {
+                    if (myData.own_status.status == 8 || myData.paymentStatus.status == 2 || myData.own_status.status == 11) {
                         arrDone.push(idOrder)
                     }
                     $scope.carrier = obj.carrier
@@ -560,13 +562,13 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     $scope.size = $scope.originLength
                     $scope.$apply()
                     arrTraceno.push((obj.trackno))
-                    
+
                 }
             })
             var arrStatus = []
-            
 
-            
+
+
             if (arrShipped.length == sources.length) {
                 $('span#shipped').css({
                     "padding": "5px",
@@ -582,24 +584,24 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             }
 
             $scope.arrShipped = arrShipped
-            $scope.arrDone = arrDone            
-            
+            $scope.arrDone = arrDone
+
             $scope.arrTraceno = arrTraceno
-            
+
             // console.log(arrayData.length);
-            
+
             // console.log($scope.arrTraceno);
             // $scope.options.data = $scope.data;
-            $scope.loading = false  
+            $scope.loading = false
             // console.log($scope.options.data);  
-            var timer = setInterval(function () {  
-                if($scope.options.data.length == $scope.originLength && $scope.run){
+            var timer = setInterval(function () {
+                if ($scope.options.data.length == $scope.originLength && $scope.run) {
                     clearInterval(timer)
                     arrStt.forEach(function (val) {
                         let selectedExpTags = [val];
                         let names = selectedExpTags.map(x => arrayFilter.find(y => y.id === x).vietnamese)
                         let obj = {
-                            value: val==11? "11":val,
+                            value: val == 11 ? "11" : val,
                             label: names[0]
                         }
                         arrStatus.push(obj)
@@ -607,16 +609,16 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
                     statusDef.filter.selectOptions = arrStatus
                     console.log(statusDef.filter.selectOptions);
                     console.log($scope.options.data);
-                    
+
                 }
-            })        
-            
+            })
+
         } else {
             $scope.loading = false
         }
     }
     var timer = setInterval(function () {
-        if($scope.arrDone.length == $scope.size && $scope.status !== "3"&& $scope.status !== "4"){
+        if ($scope.arrDone.length == $scope.size && $scope.status !== "3" && $scope.status !== "4") {
             clearInterval(timer)
             console.log("ok");
             var n = new Noty({
@@ -627,14 +629,14 @@ function ordersController($scope, $timeout, moment, $routeParams, uiGridConstant
             }).on("afterShow", function () {
                 firestore.collection("exportCode").doc(id).update({
                     "status": 3
-                }).then(()=>{
+                }).then(() => {
                     n.close()
                     $scope.status = "3"
                     $scope.$apply()
                 })
             }).show()
-        }else{
-            setTimeout(function( ) { clearInterval( timer ); }, 10000);
+        } else {
+            setTimeout(function () { clearInterval(timer); }, 10000);
         }
     })
 

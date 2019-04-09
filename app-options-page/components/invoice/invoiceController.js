@@ -107,6 +107,49 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
             gridApi.edit.on.afterCellEdit($scope, $scope.saveRowShipping);
         }
     };
+    $scope.optionProducts = {
+        enableRowSelection: true,
+        enableSelectAll: true,
+        enableGridMenu: true,
+        enableSorting: true,
+        showGridFooter: false,
+        columnDefs: [{
+                name: "TÊN SP",
+                field: "productName",
+                cellTemplate: '<div class="ui-grid-cell-contents"><span title="{{row.entity.productName}}">{{row.entity.productName}}</span></div>'
+        
+                // width: "180"
+            }, {
+                name: "Giá",
+                field: "eachprice"
+            }, {
+                name: "SL",
+                field: "quantity"
+            }, {
+                name: "Tổng tiền",
+                field: "price",
+                width: '100'
+            }
+
+        ],
+        onRegisterApi: function (gridApi) {
+            $scope.gridApiProduct = gridApi;
+            gridApi.edit.on.afterCellEdit($scope, $scope.saveRowProduct);
+        }
+    };
+    $scope.saveRowProduct = function(rowEntity, colDef, newValue, oldValue){
+
+        if(colDef.field == 'eachprice'){
+            let index = $scope.optionProducts.data.findIndex(x => x.id == rowEntity.id)
+            $scope.optionProducts.data[index].eachprice = newValue
+            $scope.optionProducts.data[index].price = $scope.optionProducts.data[index].eachprice*$scope.optionProducts.data[index].quantity
+            let tempsum = 0;
+            $scope.optionProducts.data.forEach(function(val){
+                tempsum = tempsum + (val.eachprice * val.quantity) 
+            })
+            $scope.sumPaid = tempsum;
+        }
+    }
 
     $scope.saveRowShipping = function (rowEntity, colDef, newValue, oldValue) {
 
@@ -435,25 +478,37 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
         obj.models.forEach(function (element, i) {
 
             obj.models[i].quantity = Number(obj.models[i].quantity)
-            // console.log(obj.models[i].price);
+            console.log(obj.models[i].price);
             obj.models[i].price = Number(obj.models[i].price)
             obj.models[i].sum = obj.models[i].quantity * obj.models[i].price
             obj.models[i].image = obj.models[i].image ? obj.models[i].image : "https://i.imgur.com/NWUJZb1.png",
                 obj.models[i].offset = (Number(obj.models[i].actual_quantity) - obj.models[i].quantity) * obj.models[i].price
             let index = reportProduct.findIndex(x => x.productName == element.productName)
             if (index == -1) {
+
                 reportProduct.push({
+                    id: element.productId,
+                    eachprice: obj.models[i].price,
                     productName: element.productName,
                     quantity: obj.models[i].quantity,
-                    price: obj.models[i].sum
+                    price: obj.models[i].price * obj.models[i].quantity
                 })
             } else {
                 reportProduct[index].quantity = reportProduct[index].quantity + obj.models[i].quantity
                 reportProduct[index].price = reportProduct[index].price + (obj.models[i].sum)
             }
         })
+        
         $scope.reportProduct = (reportProduct);
-
+        $scope.optionProducts.data = reportProduct
+        $scope.tempEditQuantity = function(){
+            console.log(reportProduct);
+            let tempsum = 0;
+            reportProduct.forEach(function(val){
+                tempsum = tempsum + (val.eachprice * val.quantity) 
+            })
+            $scope.sumPaid = tempsum;
+        }
         $scope.optionsDetail.data = obj.models
 
         $scope.models = obj.models
@@ -679,7 +734,7 @@ app.controller("invoice-controller", function ($q, $scope, moment, helper, uiGri
                 if (index == -1 && (element.models[i].productName !== undefined)) {
                     element.totalProducts.push(element.models[i].productName)
                 } else {
-                    console.log(element.models, element.models[i].productName);
+                    // console.log(element.models, element.models[i].productName);
                 };
                 element.models[i].actual_quantity = element.models[i].actual_quantity ? element.models[i].actual_quantity : element.models[i].quantity
             })

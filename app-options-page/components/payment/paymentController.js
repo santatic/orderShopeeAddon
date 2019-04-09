@@ -250,27 +250,35 @@ app.directive("fileread", [function () {
               var totalOwnMoney = []
               var arrayId = []
               var notExist = []
+              chrome.storage.local.get('shopCurrent', function (keys) {
+                $scope.shopid = keys.shopCurrent[0].shopid              
+            })
 
               data.forEach(function (value, i) {
                 var orderKey = Object.keys(value)[3];
                 var ordernoStr = value[orderKey];
                 var index = ordernoStr.indexOf('#');
                 var orderno = ordernoStr.substr(index + 1);
-                console.log(orderno, ordernoStr );
-                sendOrderno.push(orderno)
+                // console.log(orderno, ordernoStr );
+                if($.inArray(orderno, sendOrderno) == -1) 
+                  sendOrderno.push(orderno);
+                else
+                  alert("Xuất hiện đơn trùng " + orderno)
+
               })
               var arrStt = []
               chrome.runtime.sendMessage({
                 mission: "payment",
                 arrayOrderno: sendOrderno
               }, function (response) {
-
-                (response.moneyEx).forEach(function (val, i) {
+                var check = false;
+                response.moneyEx.forEach(function (val, i) {
+                  if(val.shopid !== $scope.shopid) check = true
                   data[i].moneyEx = val.money;
                   data[i].refund = 0
                   var shopeeMoney = data[i][Object.keys(data[i])[2]];
                   var total = +shopeeMoney + +Number(val.shopeePayPre).toFixed(0)
-                  console.log(total);
+                  // console.log(total);
                   totalShopeeMoney.push(total);
                   shopeeMoneyOnce.push(Number(shopeeMoney))
                   if (val.money == "chua co trong Firestore") {
@@ -282,38 +290,46 @@ app.directive("fileread", [function () {
                     totalOwnMoney.push(val.money)
                     data[i].vc = val.vc
                     if (val.status == "PAID") {
+                     
                       data[i].offset = shopeeMoney;
                     } else {
+                      
                       $("button.update").attr("disabled", false);
-                      if ((parseInt(shopeeMoney) - val.money) < 0) {
+                      if ((parseInt(shopeeMoney) - parseInt(val.money)) < 0) {
                         var promise2 = new Promise(function (resolve, reject) {
                           resolve(httpGet("https://banhang.shopee.vn/api/v2/orders/" + val.id, []))
                         })
                         promise2.then(function (data2) {
                           // console.log(val.id, data);
-                          var refund = 0
-                          data2["order-items"].forEach(function (item) {
-                            if (item.status == 4) {
-                              refund = refund + ((item.item_price) * 100 / 100)
-
-                              // console.log(data[i].moneyEx);                         
-                            }
-                          })
-                          // console.log(parseInt(shopeeMoney) , val.shopeePayPre);
-                          data[i].moneyEx = val.money - refund
-                          data[i].offset = (parseInt(shopeeMoney) + parseInt(val.shopeePayPre)) - parseInt(data[i].moneyEx)
-                          data[i].refund = refund                          
-                          console.log(val.id, data[i].moneyEx, refund)
+                          if(data2 !== undefined){
+                            var refund = 0
+                            data2["order-items"].forEach(function (item) {
+                              if (item.status == 4) {
+                                refund = refund + ((item.item_price) * 100 / 100)
+  
+                                // console.log(data[i].moneyEx);                         
+                              }
+                            })
+                            // console.log(parseInt(shopeeMoney) , val.shopeePayPre);
+                            data[i].moneyEx = val.money - refund
+                            data[i].offset = (parseInt(shopeeMoney) + parseInt(val.shopeePayPre)) - parseInt(data[i].moneyEx)
+                            console.log(1, data[i].offset);
+                            data[i].refund = refund                          
+                            // console.log(val.id, data[i].moneyEx, refund)
+                          }else{
+                            data[i].offset = "shopKHAC"
+                          }
+                          
                         })
-                      } else {
+                      } else {                        
                         data[i].offset = parseInt(shopeeMoney) - parseInt(data[i].moneyEx)
+                        // console.log(2, data[i].offset);    
                       }
-                    }
-                    console.log(val.paymentStatus.status);                          
+                    }                 
                     data[i].paymentStatus = val.paymentStatus.status !== undefined ? paymentStatusRef.find(x => x.id == val.paymentStatus.status).status : "chưa đối soát"
                     data[i].orderId = val.id;
                     data[i].traceno = val.traceno
-
+                    console.log(data[i].moneyEx + "," +shopeeMoney + ","+ val.money,data[i].offset);
                     var selectedExpTags = [val.status];
                     var names = selectedExpTags.map(x => arrayFilter.find(y => y.english === x).id)
                     data[i].statuss = names[0]
@@ -333,13 +349,14 @@ app.directive("fileread", [function () {
                     }
                     if (val.paymentStatus.status)
                       $scope.check = val.paymentStatus.status == 2 || val.paymentStatus.status == 3 ? false : $scope.check;
-                    if (val.paymentStatus.status == 2 || val.paymentStatus.status == 3) console.log(val);
+                    // if (val.paymentStatus.status == 2 || val.paymentStatus.status == 3) console.log(val);
                     arrayId.push(obj)
                   }
                   // console.log(data[i].offset);
                   data[i].shippingFee = val.shipping_fee
 
                 })
+                if(check) alert("có đơn thuộc shop khác, vui lòng kiểm tra lại")
                 if (!$scope.check) alert("tồn tại đơn đã thanh toán đủ hoặc thừa");
 
                 console.log(notExist);
@@ -363,7 +380,7 @@ app.directive("fileread", [function () {
                 } else {
                   $('#null').text(notExist.length)
                 }
-                console.log(sumShopeeOnce);
+                // console.log(sumShopeeOnce);
                 $('#shpm').text(sumShopee.toLocaleString())
                 $('#ownm').text(sumOwn.toLocaleString())
                 $("#offset").text((sumShopee - sumOwn).toLocaleString())

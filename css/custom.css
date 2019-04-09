@@ -136,7 +136,10 @@ td span#last:last-child {
 .rowPrint ul:nth-child(2n) {
   padding-left: 15px !important
 }
-
+#chat {
+  height: 450px;
+  overflow: auto;
+}
 /* .rowPrint ul:nth-child(1),
 .rowPrint ul:nth-child(2) {
   margin-top: 15px
@@ -233,7 +236,7 @@ ul.list-group {
 
 @page {
   size: auto;
-  margin: 10mm;
+  margin: 0mm;
 }
 
 #qrcode img {

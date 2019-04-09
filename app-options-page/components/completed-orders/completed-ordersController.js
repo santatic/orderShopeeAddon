@@ -42,60 +42,60 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants, helper)
         carrier: "J&T Express"
     }]
     var arrayFilter = [{
-            id: 1,
-            english: "NEW",
-            vietnamese: "đơn mới"
-        },
-        {
-            id: 2,
-            english: "PREPARED",
-            vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-        },
-        {
-            id: 3,
-            english: "UNPREPARED",
-            vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-        },
-        {
-            id: 4,
-            english: "PACKED",
-            vietnamese: "đã đóng gói"
-        },
-        {
-            id: 5,
-            english: "SHIPPED",
-            vietnamese: "đã gửi đi"
-        },
-        {
-            id: 6,
-            english: "DELIVERED",
-            vietnamese: "khách đã nhận"
-        },
-        {
-            id: 7,
-            english: "RETURNING",
-            vietnamese: "đang hoàn hàng"
-        },
-        {
-            id: 8,
-            english: "RETURNED",
-            vietnamese: "đã hoàn về kho"
-        },
-        {
-            id: 9,
-            english: "PAID",
-            vietnamese: "đã thanh toán"
-        },
-        {
-            id: 10,
-            english: "REFUNDED",
-            vietnamese: "đã hoàn tiền"
-        },
-        {
-            id: 11,
-            english: "CANCELED",
-            vietnamese: "đã hủy"
-        },
+        id: 1,
+        english: "NEW",
+        vietnamese: "đơn mới"
+    },
+    {
+        id: 2,
+        english: "PREPARED",
+        vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+    },
+    {
+        id: 3,
+        english: "UNPREPARED",
+        vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+    },
+    {
+        id: 4,
+        english: "PACKED",
+        vietnamese: "đã đóng gói"
+    },
+    {
+        id: 5,
+        english: "SHIPPED",
+        vietnamese: "đã gửi đi"
+    },
+    {
+        id: 6,
+        english: "DELIVERED",
+        vietnamese: "khách đã nhận"
+    },
+    {
+        id: 7,
+        english: "RETURNING",
+        vietnamese: "đang hoàn hàng"
+    },
+    {
+        id: 8,
+        english: "RETURNED",
+        vietnamese: "đã hoàn về kho"
+    },
+    {
+        id: 9,
+        english: "PAID",
+        vietnamese: "đã thanh toán"
+    },
+    {
+        id: 10,
+        english: "REFUNDED",
+        vietnamese: "đã hoàn tiền"
+    },
+    {
+        id: 11,
+        english: "CANCELED",
+        vietnamese: "đã hủy"
+    },
     ]
 
     var statusDef = {
@@ -153,64 +153,64 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants, helper)
         var jobskill_query = firestore.collection('exportCode').doc(rowEntity.id)
     };
     $scope.options.columnDefs = [{
-            name: "PHIEU XUAT",
-            field: "exportCode",
-            enableCellEdit: false,
-            visible: false,
-            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exportCode}}">{{row.entity.exportCode}}</a></div>'
-        }, {
-            name: "ID",
-            field: "id",
-            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
-        }, {
-            name: "id don hàng",
-            field: "ordersn",
-            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{row.entity.ordersn}}</a></div>'
-        }, {
-            name: "ma van don",
-            field: "shippingId",
-        }, {
-            name: "NHA VAN CHUYEN",
-            field: "carrier",
-            visible: false
-        }, {
-            name: "PHIEU THU",
-            field: "importCode",
-            visible: false
-        }, {
-            name: "A.Doanh Thu",
-            field: "paid_amount"
-        }, {
-            name: "B.Shopee Tra",
-            field: "actual_recive",
-        }, {
-            name: "A - B",
-            field: "offset",
-        }, {
-            name: "Voucher",
-            field: "sellerVoucher",
-            visible: false
-        }, carrierDef, statusDef,
-        {
-            name: "tre",
-            field: "fromNow",
-            // type: "number",
-            width: 60,
-            sort: {
-                direction: 'desc',
-                priority: 0
-            }
-        },
-        paymentDef, {
-            name: "NGAY",
-            enableCellEdit: false,
-            field: "time",
-            visible: false,
-            sort: {
-                direction: 'desc',
-                priority: 0
-            }
+        name: "PHIEU XUAT",
+        field: "exportCode",
+        enableCellEdit: false,
+        visible: false,
+        cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exportCode}}">{{row.entity.exportCode}}</a></div>'
+    }, {
+        name: "ID",
+        field: "id",
+        cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
+    }, {
+        name: "id don hàng",
+        field: "ordersn",
+        cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/orders/{{row.entity.id}}">{{row.entity.ordersn}}</a></div>'
+    }, {
+        name: "ma van don",
+        field: "shippingId",
+    }, {
+        name: "NHA VAN CHUYEN",
+        field: "carrier",
+        visible: false
+    }, {
+        name: "PHIEU THU",
+        field: "importCode",
+        visible: false
+    }, {
+        name: "A.Doanh Thu",
+        field: "paid_amount"
+    }, {
+        name: "B.Shopee Tra",
+        field: "actual_recive",
+    }, {
+        name: "A - B",
+        field: "offset",
+    }, {
+        name: "Voucher",
+        field: "sellerVoucher",
+        visible: false
+    }, carrierDef, statusDef,
+    { name: "Ngay tao", field: "create_at" }, {
+        name: "Shop", field: "shop"
+    },
+    {
+        name: "ngay",
+        field: "fromNow",
+        type: "number",
+        width: 60,
+        sort: {
+            direction: 'desc',
+            priority: 0
         }
+    },
+        paymentDef, {
+        name: "NGAY TAO",
+        enableCellEdit: false,
+        field: "time",
+        visible: false,
+
+    }
     ]
 
     function filterData(obj, arr) {
@@ -233,16 +233,16 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants, helper)
         console.log(keys.dataPayment1);
     })
 
-    chrome.storage.onChanged.addListener(function (changes) {
-        if (changes.dataPayment1) 
-            // location.reload()
-            getOrders(changes.dataPayment1.newValue);
-    })
+    // chrome.storage.onChanged.addListener(function (changes) {
+    //     if (changes.dataPayment1) 
+    //         // location.reload()
+    //         getOrders(changes.dataPayment1.newValue);
+    // })
 
     function getOrders(arr) {
         arr.forEach(function (doc) {
             // console.log(doc);
-            doc = filterData(doc, ["actual_money_shopee_paid","paymentStatus", "own_status", "actual_carrier", "id", "buyer_paid_amount", "create_at", "exportId", "ordersn", "shipping_fee", "shipping_traceno"])
+            doc = filterData(doc, ["shopid","actual_money_shopee_paid", "paymentStatus", "own_status", "actual_carrier", "id", "buyer_paid_amount", "create_at", "exportId", "ordersn", "shipping_fee", "shipping_traceno"])
             getData(doc)
         })
         // console.log($scope.options.data);
@@ -253,36 +253,36 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants, helper)
         $scope.change = true
     }
     var ind = 0
-    // firestore.collection("orderShopee").where("actual_money_shopee_paid", "==", 0)
-    //         .where("own_status.status", ">=", 5).where("own_status.status", "<", 7)
-    //         // .limit(30)
-    //         .get()
-    //         .then(function (querty) {
-    //             console.log(querty.size);
-    //             querty.forEach(function (doc) {
-    //                 ind++
-    //                 var myData = doc.data()
-    //                 getData(myData)
-    //                 if(ind == querty.size) {
-    //                     statusDef.filter.selectOptions = $scope.arrfilterStatus
-    //                     carrierDef.filter.selectOptions = $scope.arrfilterCarrier
-    //                     paymentDef.filter.selectOptions = $scope.arrfilterPayment 
-    //                     $scope.loading = false
-    //                     $scope.$apply()
-    //                 }
-    //             })
-    //         }).catch(function (error) {
-    //             console.log("lỗi", error)
-    //         })
-    
-    
+    firestore.collection("orderShopee").where("actual_money_shopee_paid", "==", 0)
+        .where("own_status.status", ">=", 5).where("own_status.status", "<", 7)
+        // .limit(30)
+        .get()
+        .then(function (querty) {
+            console.log(querty.size);
+            querty.forEach(function (doc) {
+                ind++
+                var myData = doc.data()
+                getData(myData)
+                if (ind == querty.size) {
+                    statusDef.filter.selectOptions = $scope.arrfilterStatus
+                    carrierDef.filter.selectOptions = $scope.arrfilterCarrier
+                    paymentDef.filter.selectOptions = $scope.arrfilterPayment
+                    $scope.loading = false
+                    $scope.$apply()
+                }
+            })
+        }).catch(function (error) {
+            alert("lỗi", error)
+        })
+    // $scope.loading = false
+
     function getData(myData) {
 
         // myData = filterData(myData, ["paymentStatus", "own_status", "actual_carrier", "id", "buyer_paid_amount", "create_at", "exportId", "ordersn", "shipping_fee", "shipping_traceno"])
         let start = moment(myData.create_at.seconds * 1000)
         let carrier = arrCarrier.find(x => x.carrier == myData.actual_carrier).id
         let statusLabel = arrayFilter.find(x => x.id == myData.own_status.status).vietnamese
-        let idPayment = myData.paymentStatus ? myData.paymentStatus.status? myData.paymentStatus.status : 4:4;           
+        let idPayment = myData.paymentStatus ? myData.paymentStatus.status ? myData.paymentStatus.status : 4 : 4;
         let statusPayment = arrPay.find(x => x.id == idPayment).status
         if ($scope.arrfilterStatus.findIndex(x => x.value == myData.own_status.status) == -1) {
             $scope.arrfilterStatus.push({
@@ -302,11 +302,14 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants, helper)
                 label: myData.actual_carrier
             })
         }
+        // console.log(myData.shopid);
         obj = {
             id: myData.id,
+            create_at: start.format('YYYY/MM/DD'),
+            shop: myData.shopid? helper.myShop.find(x => x.id == myData.shopid).name: "",
             shippingFee: ((myData.shipping_fee * 100) / 100).toLocaleString(),
             ownStatus: myData.own_status.status,
-            fromNow: now.diff(start, 'days') + " ngay",
+            fromNow: Number(now.diff(start, 'days')),
             orderId: myData.ordersn,
             ordersn: myData.ordersn,
             time: start.format("YYYY-MM-DD"),
@@ -315,7 +318,7 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants, helper)
                 .replace(/./g, function (c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
                 }),
-            actual_recive: myData.actual_money_shopee_paid === undefined ?0: Number(myData.actual_money_shopee_paid)
+            actual_recive: myData.actual_money_shopee_paid === undefined ? 0 : Number(myData.actual_money_shopee_paid)
                 .toFixed(0)
                 .replace(/./g, function (c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
@@ -328,13 +331,14 @@ function ordersController($scope, $q, $timeout, moment, uiGridConstants, helper)
                 .replace(/./g, function (c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
                 }) : 0,
-            offset: myData.actual_money_shopee_paid === undefined ? Number(myData.buyer_paid_amount): (Number(myData.buyer_paid_amount) - Number(myData.actual_money_shopee_paid)).toFixed(0).replace(/./g, function (c, i, a) {
+            offset: myData.actual_money_shopee_paid === undefined ? Number(myData.buyer_paid_amount) : (Number(myData.buyer_paid_amount) - Number(myData.actual_money_shopee_paid)).toFixed(0).replace(/./g, function (c, i, a) {
                 return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
             }),
             paymentStatus: idPayment
         }
+        // console.log(obj.fromNow);
         // console.log(myData.actual_money_shopee_paid, obj.actual_recive);
-        $scope.options.data.push(obj)        
+        $scope.options.data.push(obj)
         // $scope.$apply()
         // }
     }

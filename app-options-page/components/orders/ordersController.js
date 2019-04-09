@@ -12,60 +12,60 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
     })
     var saleUrl = chrome.extension.getURL("options.html#/");
     var arrayFilter = [{
-            id: 1,
-            english: "NEW",
-            vietnamese: "đơn mới"
-        },
-        {
-            id: 2,
-            english: "PREPARED",
-            vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
-        },
-        {
-            id: 3,
-            english: "UNPREPARED",
-            vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
-        },
-        {
-            id: 4,
-            english: "PACKED",
-            vietnamese: "đã đóng gói"
-        },
-        {
-            id: 5,
-            english: "SHIPPED",
-            vietnamese: "đã gửi đi"
-        },
-        {
-            id: 6,
-            english: "DELIVERED",
-            vietnamese: "khách đã nhận"
-        },
-        {
-            id: 7,
-            english: "RETURNING",
-            vietnamese: "đang hoàn hàng"
-        },
-        {
-            id: 8,
-            english: "RETURNED",
-            vietnamese: "đã hoàn về kho"
-        },
-        {
-            id: 9,
-            english: "PAID",
-            vietnamese: "đã thanh toán"
-        },
-        {
-            id: 10,
-            english: "REFUNDED",
-            vietnamese: "đã hoàn tiền"
-        },
-        {
-            id: 11,
-            english: "CANCELED",
-            vietnamese: "đã hủy"
-        },
+        id: 1,
+        english: "NEW",
+        vietnamese: "đơn mới"
+    },
+    {
+        id: 2,
+        english: "PREPARED",
+        vietnamese: "đã nhặt đủ hàng để chờ đóng gói"
+    },
+    {
+        id: 3,
+        english: "UNPREPARED",
+        vietnamese: "chưa nhặt được hàng vì lý do nào đó (ghi lý do vào noteWarehouse)"
+    },
+    {
+        id: 4,
+        english: "PACKED",
+        vietnamese: "đã đóng gói"
+    },
+    {
+        id: 5,
+        english: "SHIPPED",
+        vietnamese: "đã gửi đi"
+    },
+    {
+        id: 6,
+        english: "DELIVERED",
+        vietnamese: "khách đã nhận"
+    },
+    {
+        id: 7,
+        english: "RETURNING",
+        vietnamese: "đang hoàn hàng"
+    },
+    {
+        id: 8,
+        english: "RETURNED",
+        vietnamese: "đã hoàn về kho"
+    },
+    {
+        id: 9,
+        english: "PAID",
+        vietnamese: "đã thanh toán"
+    },
+    {
+        id: 10,
+        english: "REFUNDED",
+        vietnamese: "đã hoàn tiền"
+    },
+    {
+        id: 11,
+        english: "CANCELED",
+        vietnamese: "đã hủy"
+    },
     ]
 
     var statusDef = {
@@ -87,121 +87,121 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         enableRowSelection: true,
         enableSelectAll: true,
         enableGridMenu: true,
-        paginationPageSizes: [15, 30, 45],
-        paginationPageSize: 15,
+        // paginationPageSizes: [15, 30, 45],
+        // paginationPageSize: 15,
         enableSorting: true,
         enableCellEditOnFocus: true,
         columnDefs: [{
-                name: "Shop Bán",
-                field: "shop",
-                visible: false
-            }, {
-                name: "ID",
-                field: "id",
-                
-                width: '100',
-                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
-            }, {
-                name: "Số Vận Đơn",
-                
-                field: "trackno",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để chỉnh sửa nhanh trạng thái" ng-click = "grid.appScope.doSomething(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp; <a target="_blank" title="{{row.entity.trackno}}" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
-            }, {
-                name: "UserName",
-                
-                width: '150',
-                field: "nickname"
-            }, {
-                name: "Mã đơn hàng",
-                
-                field: "orderId",
-                cellTooltip: function (row) {
-                    return row.entity.orderId;
-                },
-                // visible: false
-                // width: '100'
-            }, {
-                name: "Nhà Vận Chuyển",
-                width: "150",
-                field: "carrier",
-                filter: {
-                    type: uiGridConstants.filter.SELECT,
-                    selectOptions: [{
-                            value: 1,
-                            label: "Giao Hàng Tiết Kiệm"
-                        },
-                        {
-                            value: 2,
-                            label: "Viettel Post"
-                        },
-                        {
-                            value: 3,
-                            label: "Giao Hàng Nhanh"
-                        },
-                        {
-                            value: 4,
-                            label: "VNPost Tiết Kiệm"
-                        }, {
-                            value: 5,
-                            label: "VNPost Nhanh"
-                        }, {
-                            value: 6,
-                            label: "J&T Express"
-                        }
-                    ]
-                },
-                cellFilter: 'mapCarrier'
-            }, {
-                name: "Phiếu Xuất",
-                field: "exId",
-                cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
+            name: "Shop Bán",
+            field: "shop",
+            visible: false
+        }, {
+            name: "ID",
+            field: "id",
+
+            width: '100',
+            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="https://banhang.shopee.vn/portal/sale/{{row.entity.id}}">{{row.entity.id}}</a></div>'
+        }, {
+            name: "Số Vận Đơn",
+
+            field: "trackno",
+            cellTemplate: '<div class="ui-grid-cell-contents" ><span title="click để chỉnh sửa nhanh trạng thái" ng-click = "grid.appScope.doSomething(row)" style="cursor:pointer" class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp; <a target="_blank" title="{{row.entity.trackno}}" href="options.html#/orders/{{row.entity.id}}">{{grid.getCellValue(row, col)}}</a></div>'
+        }, {
+            name: "UserName",
+
+            width: '150',
+            field: "nickname"
+        }, {
+            name: "Mã đơn hàng",
+
+            field: "orderId",
+            cellTooltip: function (row) {
+                return row.entity.orderId;
             },
-            // {
-            //     name: "Phiếu Thu",
-            //     field: "importId",
-            //     cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.importId}}">{{row.entity.importId}}</a></div>'
-            // },
-            {
-                name: "Logistics Shopee",
-                
-                field: "status",
-                visible: false,
-                cellTooltip: function (row) {
-                    return row.entity.status;
+            // visible: false
+            // width: '100'
+        }, {
+            name: "Nhà Vận Chuyển",
+            width: "150",
+            field: "carrier",
+            filter: {
+                type: uiGridConstants.filter.SELECT,
+                selectOptions: [{
+                    value: 1,
+                    label: "Giao Hàng Tiết Kiệm"
+                },
+                {
+                    value: 2,
+                    label: "Viettel Post"
+                },
+                {
+                    value: 3,
+                    label: "Giao Hàng Nhanh"
+                },
+                {
+                    value: 4,
+                    label: "VNPost Tiết Kiệm"
+                }, {
+                    value: 5,
+                    label: "VNPost Nhanh"
+                }, {
+                    value: 6,
+                    label: "J&T Express"
                 }
-            }, {
-                name: "Thời gian của Logistics",
-                
-                width: '100',
-                field: "updateTime",
-                sort: {
-                    direction: 'asc',
-                    priority: 0
-                },
-                visible: false
+                ]
             },
-            statusDef, {
-                name: "Trễ",
-                field: "fromNow",
-                type: "number",
-                width: 60
-            }, {
-                name: "Người đóng gói",
-                field: "packer",
-                // visible: false
-            }, {
-                name: "Dự kiến thu",
-                
-                field: "paid",
-                width: '100'
-            },
-            {
-                name: "Phí Ship",
-                
-                width: '100',
-                field: "shippingFee",
-                visible: false
+            cellFilter: 'mapCarrier'
+        }, {
+            name: "Phiếu Xuất",
+            field: "exId",
+            cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/export/{{row.entity.exId}}">{{row.entity.exId}}</a></div>'
+        },
+        // {
+        //     name: "Phiếu Thu",
+        //     field: "importId",
+        //     cellTemplate: '<div class="ui-grid-cell-contents" ><a target="_blank" href="options.html#/import/{{row.entity.importId}}">{{row.entity.importId}}</a></div>'
+        // },
+        {
+            name: "Logistics Shopee",
+
+            field: "status",
+            visible: false,
+            cellTooltip: function (row) {
+                return row.entity.status;
             }
+        }, {
+            name: "Thời gian của Logistics",
+
+            width: '100',
+            field: "updateTime",
+            sort: {
+                direction: 'asc',
+                priority: 0
+            },
+            visible: false
+        },
+            statusDef, {
+            name: "Trễ",
+            field: "fromNow",
+            type: "number",
+            width: 60
+        }, {
+            name: "Người đóng gói",
+            field: "packer",
+            // visible: false
+        }, {
+            name: "Dự kiến thu",
+
+            field: "paid",
+            width: '100'
+        },
+        {
+            name: "Phí Ship",
+
+            width: '100',
+            field: "shippingFee",
+            visible: false
+        }
         ],
         enableFiltering: true,
         showGridFooter: true,
@@ -292,15 +292,16 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 })
                 $scope.rowSelected = selected;
                 // window.onload = function () {
-                selected.forEach(function (val,i) {
+                selected.forEach(function (val, i) {
                     // console.log(val.id);
                     var timer = setInterval(function () {
                         if ($("svg").length) {
                             clearInterval(timer)
                             console.log(val.id);
-                            JsBarcode("#barcode" + i, val.trackno.toString(),{
+                            JsBarcode("#barcode" + i, val.trackno.toString(), {
                                 height: 30,
-                                width: 1,
+                                width: 2,
+                                margin: 5
                                 // displayValue: false
                             })
                             // var qrcode = new QRCode(document.getElementById(val.id), {
@@ -318,6 +319,56 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
 
                 })
+                // }
+
+                $timeout(function () {
+                    window.print();
+                    $scope.rowSelected = []
+                }, 500)
+            } else {
+                alert("Vui lòng chọn đơn mới")
+            }
+
+
+        }
+    }, {
+        title: "IN BARCODE",
+        action: function () {
+            var selected = $scope.gridApi.selection.getSelectedRows();
+            var condi = true
+
+            if (condi) {
+                selected.sort(function (a, b) {
+                    return (a.trackno > b.trackno) ? 1 : ((b.trackno > a.trackno) ? -1 : 0)
+                })
+                selected.sort(function (a, b) {
+                    return (a.packer > b.packer) ? 1 : ((b.packer > a.packer) ? -1 : 0)
+                })
+
+                // window.onload = function () {
+                selected.forEach(function (val, i) {
+                    // console.log(val.id);
+                    var length = 15;
+                    val.name = val.name.length > length ?
+                        val.name.substring(0, length - 1) + "*" :
+                        val.name
+                    var timer = setInterval(function () {
+                        if ($("svg").length) {
+                            clearInterval(timer)
+                            console.log(val.id);
+                            JsBarcode("#barcode" + i, val.trackno.toString(), {
+                                height: 37,
+                                width: 1.3,
+                                font: "arial",
+                                margin: 0
+                                // displayValue: false
+                            })
+                        }
+                    })
+
+
+                })
+                $scope.printbarcode = selected;
                 // }
 
                 $timeout(function () {
@@ -407,9 +458,9 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             var selected = $scope.gridApi.selection.getSelectedRows();
             var condi = true
             selected.forEach(function (val) {
-                if (val.ownStatus !== 1 
+                if (val.ownStatus !== 1 || val.pickId == ""
                     // || val.packer
-                    ) condi = false;
+                ) condi = false;
             })
             if (condi && selected.length > 0) {
                 $('#chiadon').modal()
@@ -441,157 +492,168 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     if (event.currentTarget.name == "checkall") {
                         checkboxes = document.getElementsByName('chiadon');
                         for (var i = 0, n = checkboxes.length; i < n; i++) {
-                            checkboxes[i].checked = event.currentTarget.checked;                            
+                            checkboxes[i].checked = event.currentTarget.checked;
                         }
-                        (event.currentTarget.checked)? $scope.actionChiaDon():$scope.tasks = []
-                    }else{
+                        (event.currentTarget.checked) ? $scope.actionChiaDon() : $scope.tasks = []
+                    } else {
                         if ($('#selectUser input[name="chiadon"]:checkbox:checked').length == 0) {
                             $scope.tasks = []
-                            $("#selectUser input[name='checkall']"). prop("checked", false);
-                        } else{
+                            $("#selectUser input[name='checkall']").prop("checked", false);
+                        } else {
                             $scope.actionChiaDon()
-                        }                        
-                        
-                    }
-                    
-
-                }
-                $scope.actionChiaDon = function () {  
-                    tasks = []
-                        pickPros = []
-                        picks = []
-                        var averageItem = 0
-                        Array.prototype.sum = function (prop) {
-                            var total = 0
-                            for (var i = 0, _len = this.length; i < _len; i++) {
-                                total += this[i][prop]
-                            }
-                            return total
                         }
 
-                        $('#selectUser input[name="chiadon"]:checkbox:checked').each(function () {
-                            // console.log($(this).attr("id"))
-                            var user = {
-                                name: $(this).parent().find("#name").text(),
-                                uid: $(this).attr("id"),
-                                email: $(this).parent().find("#email").text(),
-                                orderNeedPack: [],
-                                numModel: 0
+                    }
+
+
+                }
+                $scope.actionChiaDon = function () {
+                    tasks = []
+                    pickPros = []
+                    picks = []
+                    var averageItem = 0
+                    Array.prototype.sum = function (prop) {
+                        var total = 0
+                        for (var i = 0, _len = this.length; i < _len; i++) {
+                            total += this[i][prop]
+                        }
+                        return total
+                    }
+
+                    $('#selectUser input[name="chiadon"]:checkbox:checked').each(function () {
+                        // console.log($(this).attr("id"))
+                        var user = {
+                            name: $(this).parent().find("#name").text(),
+                            uid: $(this).attr("id"),
+                            email: $(this).parent().find("#email").text(),
+                            orderNeedPack: [],
+                            numModel: 0
+                        }
+                        tasks.push(user)
+                        picks.push({
+                            uid: $(this).attr("id"),
+                            modelNeedPick: [],
+                            create_at: new Date(),
+                            general_status: false
+                        })
+                    })
+
+                    var orders1 = []
+                    var tempOrders = []
+                    var tempOrdersPro = []
+                    selected.forEach(val => {
+                        var obj = dataForPro.find(ol => {
+                            return ol.id == val.id
+                        })
+                        var objOrder = {
+                            modelNum: obj['item-models'].length,
+                            proNum: obj.products.length,
+                            amount: obj['order-items'].sum("amount"),
+                            orderId: obj.id
+                        }
+                        orders1.push(objOrder)
+                        tempOrders.push(objOrder)
+                        let i = 0
+                        obj['order-items'].forEach((item, index) => {
+                            let product = obj['products'].find(o => o.id === item.snapshotid);
+                            let model = obj['item-models'].find(o => o.id === item.modelid)
+                            var productsObj = new Object();
+                            productsObj = {
+                                pickedAmount: item.picked ? item.picked : 0,
+                                name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^", "").replace('FREESHIP TOÀN QUỐC 99K_ ', '').replace('FREESHIP 99K TOÀN QUỐC_ ', '').replace('FREESHIP 99K_ ', '').replace("FREESHIP ", ""),
+                                model: model.name,
+                                amount: item.amount,
+                                images: product.images,
+                                imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
+                                picked: [{
+                                    status: false,
+                                    create_at: new Date()
+                                }],
+                                note: "",
+                                proId: product.itemid,
+                                modelId: model.id,
+                                orderId: obj.id,
+                                shopid: product.shopid
                             }
-                            tasks.push(user)
-                            picks.push({
-                                uid: $(this).attr("id"),
-                                modelNeedPick: [],
-                                create_at: new Date(),
-                                general_status: false
+                            tempOrdersPro.push(productsObj)
+                            // if(productsObj.pickedAmount < productsObj.amount){
+                            //     i++
+                            //     tempOrdersPro.push(productsObj)
+                            //     let ind = orders1.findIndex(x=>x.orderId == productsObj.orderId)
+                            //     orders1[ind].modelNum=i;
+
+                            // }
+
+                        });
+
+                    })
+                    console.log(tempOrdersPro);
+
+                    tempOrders.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
+
+                    averageItem = (orders1.sum("modelNum")) / ($('#selectUser input[name="chiadon"]:checkbox:checked').length)
+                    averageItem = Math.round(averageItem);
+                    console.log(averageItem, orders1, tasks.length)
+
+                    var i = 0
+                    orders1.forEach(function (o, ind) {
+
+                        if ((tasks[i].numModel + tempOrders[0].modelNum) < averageItem || tasks.length == 1) {
+                            tasks[i].orderNeedPack.push(tempOrders[0])
+                            tasks[i].numModel = tasks[i].orderNeedPack.sum("modelNum")
+                            tempOrders.splice(0, 1)
+                        }
+                        i++
+                        if ((i) == tasks.length) {
+                            i = 0
+                        }
+                        if ((ind + 1) == orders1.length && tempOrders.length > 0) {
+                            Array.prototype.push.apply(tasks[tasks.length - 1].orderNeedPack, tempOrders)
+                        }
+                    })
+
+                    tasks.forEach(function (task, i) {
+                        task.numOrder = task.orderNeedPack.length
+                        task.numModel = task.orderNeedPack.sum("modelNum")
+                        task.numProduct = task.orderNeedPack.sum("proNum")
+                        task.sum = task.orderNeedPack.sum("amount")
+                    })
+
+                    $scope.tasks = tasks
+                    console.log(tasks);
+                    var checkPro = []
+                    tempOrdersPro.forEach(function (model) {
+                        let ind = pickPros.findIndex(x => x.productId == model.proId)
+                        if (ind !== -1) {
+                            pickPros[ind].model.push(model)
+                            pickPros[ind].model.sort((a, b) => (a.model > b.model) ? 1 : ((b.model > a.model) ? -1 : 0));
+                        } else {
+                            pickPros.push({
+                                productId: model.proId,
+                                model: [model]
                             })
-                        })
-
-                        var orders1 = []
-                        var tempOrders = []
-                        var tempOrdersPro = []
-                        selected.forEach(val => {
-                            var obj = dataForPro.find(ol => {
-                                return ol.id == val.id
-                            })
-                            var objOrder = {
-                                modelNum: obj['item-models'].length,
-                                proNum: obj.products.length,
-                                amount: obj['order-items'].sum("amount"),
-                                orderId: obj.id
-                            }
-                            orders1.push(objOrder)
-                            tempOrders.push(objOrder)
-                            obj['order-items'].forEach((item, index) => {
-                                let product = obj['products'].find(o => o.id === item.snapshotid);
-                                let model = obj['item-models'].find(o => o.id === item.modelid)
-                                var productsObj = new Object();
-                                productsObj = {
-                                    name: product.name.replace(/([\s\S]*?)[[\s\S]*?]/g, '').replace("^^", "").replace('FREESHIP TOÀN QUỐC 99K_ ', '').replace('FREESHIP 99K TOÀN QUỐC_ ', '').replace('FREESHIP 99K_ ', '').replace("FREESHIP ", ""),
-                                    model: model.name,
-                                    amount: item.amount,
-                                    images: product.images,
-                                    imageUrl: "https://cf.shopee.vn/file/" + product.images[0] + "_tn",
-                                    picked: [{
-                                        status: false,
-                                        create_at: new Date()
-                                    }],
-                                    note: "",
-                                    proId: product.itemid,
-                                    modelId: model.id,
-                                    orderId: obj.id,
-                                    shopid: product.shopid
-                                }
-                                tempOrdersPro.push(productsObj)
-                                
-                            });
-
-                        })
-
-                        tempOrders.sort((a, b) => (a.modelNum < b.modelNum) ? 1 : ((b.modelNum < a.modelNum) ? -1 : 0));
-
-                        averageItem = (orders1.sum("modelNum")) / ($('#selectUser input[name="chiadon"]:checkbox:checked').length)
-                        averageItem = Math.round(averageItem);
-                        console.log(averageItem, orders1, tasks.length)
-
-                        var i = 0
-                        orders1.forEach(function (o, ind) {
-
-                            if ((tasks[i].numModel + tempOrders[0].modelNum) < averageItem || tasks.length == 1) {
-                                tasks[i].orderNeedPack.push(tempOrders[0])
-                                tasks[i].numModel = tasks[i].orderNeedPack.sum("modelNum")
-                                tempOrders.splice(0, 1)
-                            }
-                            i++
-                            if ((i) == tasks.length) {
-                                i = 0
-                            }
-                            if ((ind + 1) == orders1.length && tempOrders.length > 0) {
-                                Array.prototype.push.apply(tasks[tasks.length - 1].orderNeedPack, tempOrders)
-                            }
-                        })
-
-                        tasks.forEach(function (task, i) {
-                            task.numOrder = task.orderNeedPack.length
-                            task.numModel = task.orderNeedPack.sum("modelNum")
-                            task.numProduct = task.orderNeedPack.sum("proNum")
-                            task.sum = task.orderNeedPack.sum("amount")
-                        })
-
-                        $scope.tasks = tasks
-                        console.log(tempOrdersPro);
-                        var checkPro = []
-                        tempOrdersPro.forEach(function (model) {
-                            let ind = pickPros.findIndex(x => x.productId == model.proId)
+                        }
+                    })
+                    pickPros.sort((a, b) => (a.model.length < b.model.length) ? 1 : ((b.model.length < a.model.length) ? -1 : 0));
+                    console.log(pickPros);
+                    var pickIndex = 0
+                    pickPros.forEach(function (pro, i) {
+                        pro.model.forEach(function (model) {
+                            // console.log(model.pickedAmount, model.amount);
+                            let ind = picks[pickIndex].modelNeedPick.findIndex(x => x.name == model.name && x.model == model.model);
                             if (ind !== -1) {
-                                pickPros[ind].model.push(model)
-                                pickPros[ind].model.sort((a, b) => (a.model> b.model) ? 1 : ((b.model > a.model) ? -1 : 0));
-                            } else {                              
-                                pickPros.push({
-                                    productId: model.proId,
-                                    model: [model]
-                                })
-                            }
-                        })
-                        pickPros.sort((a, b) => (a.model.length < b.model.length) ? 1 : ((b.model.length < a.model.length) ? -1 : 0));
-                        console.log(pickPros);
-                        var pickIndex = 0
-                        pickPros.forEach(function (pro, i) {
-                            pro.model.forEach(function (model) {
-                                // console.log(model);
-                                let ind = picks[pickIndex].modelNeedPick.findIndex(x => x.name == model.name && x.model == model.model);
-                                if (ind !== -1) {
-                                    picks[pickIndex].modelNeedPick[ind].amount = picks[pickIndex].modelNeedPick[ind].amount + model.amount;
-                                } else {
+                                picks[pickIndex].modelNeedPick[ind].amount = picks[pickIndex].modelNeedPick[ind].amount + model.amount;
+                            } else {
+                                if (model.pickedAmount < model.amount)
                                     picks[pickIndex].modelNeedPick.push(model)
-                                }
-                            })
-                            pickIndex++
-                            if ((pickIndex) == tasks.length) {
-                                pickIndex = 0
                             }
                         })
-                        console.log(picks);
+                        pickIndex++
+                        if ((pickIndex) == tasks.length) {
+                            pickIndex = 0
+                        }
+                    })
+                    console.log(picks);
                 }
                 $scope.updatechiadon = function () {
                     var batch = firestore.batch()
@@ -613,18 +675,33 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                                         var id = (pick.create_at).getTime().toString().slice(0, -3) + "-" + pick.uid
                                         var docPickRef = firestore.collection('pickModel').doc(id)
                                         batchPick.set(docPickRef, pick)
-                                        if ((iPick + 1) == picks.length) {
-                                            batchPick.commit().then(function () {
-                                                new Noty({
-                                                    layout: 'bottomRight',
-                                                    theme: "relax",
-                                                    timeout: 2500,
-                                                    type: 'success',
-                                                    text: 'ĐÃ THÊM NGƯỜI ĐÓNG GÓI và NHẶT HÀNG'
-                                                }).show();
-                                                $('#chiadon').modal("hide")
-                                            })
-                                        }
+                                        console.log(pick);
+                                        let check = []
+                                        pick.modelNeedPick.forEach(function (model, iModel) {
+                                            if ($.inArray(model.orderId, check) == -1) {
+                                                check.push(model.orderId)
+                                                console.log(model.orderId);
+                                                var orderRef = firestore.collection('orderShopee').doc(model.orderId.toString())
+                                                batchPick.update(orderRef, {
+                                                    pickId: id
+                                                })
+                                            }
+
+                                            if ((iModel + 1) == pick.modelNeedPick.length && (iPick + 1) == picks.length) {
+                                                batchPick.commit().then(function () {
+
+                                                    new Noty({
+                                                        layout: 'bottomRight',
+                                                        theme: "relax",
+                                                        timeout: 2500,
+                                                        type: 'success',
+                                                        text: 'ĐÃ THÊM NGƯỜI ĐÓNG GÓI và NHẶT HÀNG'
+                                                    }).show();
+                                                    $('#chiadon').modal("hide")
+                                                })
+                                            }
+                                        })
+
 
                                     })
 
@@ -635,7 +712,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     })
                 }
             } else {
-                alert("Vui lòng chọn đơn cần chia cho người làm và phải là đơn mới")
+                alert("Vui lòng chọn đơn phải là đơn mới và chưa được chia bao giờ")
             }
         }
     }]
@@ -643,7 +720,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
         var confirmChange = confirm("BẠN CÓ CHẮC MUỐN ĐỔI TRẠNG THÁI CÁC ĐƠN ĐÃ CHỌN")
         if (confirmChange) {
             var that = this
-            
+
             var batch = firestore.batch()
             var arrayAfterChange = $scope.BulkChangeStatus
             var check = []
@@ -666,8 +743,8 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     }
                 }
                 batch.update(docRef, obj)
-
                 arrayAfterChange[index].new_status = status[0]
+                
 
             })
             if (check.length == 0) {
@@ -679,11 +756,16 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                 }).show();
                 batch.commit().then(() => {
                     n.close()
+                    $('input[name="scanId"]:checked').each(function () {
+                        let index = arrayAfterChange.findIndex(x => x.mvd == $(this).val())
+                        arrayAfterChange[index].new_status = "ĐÃ ĐÓNG GÓI"
+                    })
                     $scope.BulkStatusRadio = null
                     $scope.BulkChangeStatus = arrayAfterChange
                     $('#packedChange').prop('checked', false);
                     $('#checkall').prop('checked', false);
                     $('input[name="scanId"]:checked').prop('checked', false);
+                   
                     $scope.$apply()
                     new Noty({
                         layout: 'bottomRight',
@@ -730,13 +812,13 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     } else {
                         console.log("db");
                         firestore.collection("orderShopee").where("shipping_traceno", "==", inputScan).limit(1).get().then(function (querySnapshot) {
-                            if (querySnapshot.size>0) {
+                            if (querySnapshot.size > 0) {
                                 console.log("from DB");
-                                querySnapshot.forEach(doc=>{
+                                querySnapshot.forEach(doc => {
                                     const data = doc.data()
                                     $scope.getBulkChangeData(data, inputScan)
                                 })
-                                
+
                             } else {
                                 alert("Đơn này không tồn tại trong hệ thống")
                                 $(that).val("")
@@ -819,10 +901,10 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
 
 
     chrome.storage.onChanged.addListener(function (changes) {
-        if(changes.data){
+        if (changes.data) {
             getData(changes.data.newValue);
             dataForPro = changes.data.newValue
-        }        
+        }
     })
     $scope.options.gridMenuCustomItems.push({
         title: "IN SẢN PHẨM",
@@ -839,7 +921,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
                     return obj.id == val.id;
                 });
 
-                if (!val.exId && val.ownStatus == 1) {} else {
+                if (!val.exId && val.ownStatus == 1) { } else {
                     condi = false
                 }
 
@@ -1075,6 +1157,7 @@ function ordersController($scope, $timeout, moment, uiGridConstants, helper) {
             obj = new Object();
             var start = new Date(myData.own_status.create_at.seconds * 1000)
             obj = {
+                pickid: myData.pickId ? myData.pickId : "",
                 id: myData.id,
                 trackno: myData.shipping_traceno,
                 nickname: myData.user.name,

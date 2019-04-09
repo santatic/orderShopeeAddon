@@ -172,7 +172,7 @@ app.controller("item-shopee-saleCtrl", ['$scope', 'moment', 'Chat',
         
 
         $scope.url = url;
-
+        $scope.traceno = ''
         var optionsUrl = chrome.extension.getURL("options.html#/orders/" + url);
         $scope.okey = false
         $scope.printLink = optionsUrl;

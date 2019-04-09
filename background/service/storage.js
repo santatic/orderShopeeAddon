@@ -8,6 +8,7 @@ app.service('storageFirestore', function ($q) {
     this.stocks = []
     this.dataPayment1 = []
     this.chat = {}
+    this.chats = []
 
     this.findAll = function (callback) {
         chrome.storage.local.get('data', function (keys) {
@@ -28,6 +29,16 @@ app.service('storageFirestore', function ($q) {
         }, function () {
             console.log('Chat is stored in Chrome storage');
             chrome.storage.local.get('chat', function (keys) {
+                console.log(keys);
+            });
+        });
+    }
+    this.syncChats = function () {
+        chrome.storage.local.set({
+            chats: this.chats
+        }, function () {
+            console.log('Chats is stored in Chrome storage');
+            chrome.storage.local.get('chats', function (keys) {
                 console.log(keys);
             });
         });

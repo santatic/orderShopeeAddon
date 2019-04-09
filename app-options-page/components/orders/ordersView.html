@@ -2,8 +2,7 @@
 <div class="printBut" style="display: none;position: fixed;bottom: 0px;left: 0px;z-index: 2147483647;">
     <div class="panel-body noprint">
         <button ng-click="printProduct()" style="font-size: 26px;
-             border-radius: 25px" class="btn btn-primary noprint"
-            id="print">
+             border-radius: 25px" class="btn btn-primary noprint" id="print">
             <span class="glyphicon glyphicon-print"></span>
         </button>
         <form id="imgur">
@@ -16,8 +15,8 @@
 </div>
 <img ng-show="loading" id="ordersLoading" src="../../../images/loader.gif" />
 
-<div id="grid1" ui-grid="options" ui-grid-edit ui-grid-resize-columns ui-grid-selection ui-grid-exporter
-    ui-grid-cellnav ui-grid-pagination class="grid noprint">
+<div id="grid1" ui-grid="options" ui-grid-edit ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-cellnav
+    class="grid noprint">
 </div>
 <div class="modal fade noprint" id="myModal" role="dialog">
     <div class="modal-dialog">
@@ -30,23 +29,23 @@
             <div class="modal-body">
                 <div class="form-group-status singleStatus" id="singleStatus">
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
-                        value="NEW">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;"
+                        ng-model="statusRadio" value="NEW">
                     <b>ĐƠN MỚI</b>
 
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
-                        value="PACKED">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;"
+                        ng-model="statusRadio" value="PACKED">
                     <b>ĐÃ ĐÓNG GÓI</b>
 
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
-                        value="SHIPPED">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;"
+                        ng-model="statusRadio" value="SHIPPED">
                     <b>ĐÃ GỬI ĐI</b>
 
 
-                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;" ng-model="statusRadio"
-                        value="DELIVERED">
+                    <input type="radio" ng-disabled="showStatus > 5" style="margin: 4px 5px 22px 15px;"
+                        ng-model="statusRadio" value="DELIVERED">
                     <b>KHÁCH ĐÃ NHẬN</b>
 
                     <!-- 
@@ -76,10 +75,11 @@
                             <b>ĐƠN MỚI</b> -->
 
 
-                            <input type="radio" id="packedChange" ng-model="BulkStatusRadio" style="margin: 4px 0px 22px 10px;"
-                                value="PACKED">
+                            <input type="radio" id="packedChange" ng-model="BulkStatusRadio"
+                                style="margin: 4px 0px 22px 10px;" value="PACKED">
                             <b>ĐÃ ĐÓNG GÓI</b>
-                            <button ng-click="createExport()" style="margin-left: 12px;margin-bottom: 15px;border: none;padding: 6px;background: #da3725;color: #fff;border-radius: 3px;">TẠO
+                            <button ng-click="createExport()"
+                                style="margin-left: 12px;margin-bottom: 15px;border: none;padding: 6px;background: #da3725;color: #fff;border-radius: 3px;">TẠO
                                 PHIẾU XUẤT</button>
                         </div>
                     </div>
@@ -170,8 +170,8 @@
                     Chọn hết
                     <div class="selectUser">
                         <div ng-repeat="i in users">
-                            <input type="checkbox" id="{{i.uid}}" name="chiadon" ng-change="chiadon($event)" ng-model="checked"
-                                style="cursor:pointer">
+                            <input type="checkbox" id="{{i.uid}}" name="chiadon" ng-change="chiadon($event)"
+                                ng-model="checked" style="cursor:pointer">
                             <span id="name"><b>{{i.name}}</b></span> <br> <span id="email">{{i.email}}</span>
                         </div>
                     </div>
@@ -214,11 +214,12 @@
 <div class="print rowPrint">
     <ul ng-repeat="(i,x) in rowSelected" class="list-group" style="float: left;width: 50%; margin-bottom: 5px">
 
-        <li style="padding-bottom: 8px; list-style-type : none">
-            <svg trackno="{{x.id}}" id="barcode{{i}}"></svg>
+        <li style="padding-left: 8px; padding-bottom: 8px; list-style-type : none">
+            <svg trackno="{{x.id}}" id="barcode{{i}}" style="margin:auto;"></svg>
             <br>
             {{x.nickname}}
-            <br>{{x.name}}<span style="font-size: 10px">[{{x.lengthClassify}}] <span ng-show="x.packer !== ''">[{{x.packer}}]</span>
+            <br>{{x.name}}<span style="font-size: 10px">[{{x.lengthClassify}}] <span
+                    ng-show="x.packer !== ''">[{{x.packer}}]</span>
             </span>
         </li>
         <!-- </div> -->
@@ -228,6 +229,22 @@
 
     <!-- <div class="col-sm-6"> -->
     <!-- </div>     -->
+</div>
+<div class="print">
+    <ul ng-repeat="(i,x) in printbarcode" style="padding-left:0; float: left;width: 170px; margin-bottom: 5px">
+
+        <li style="padding-left: 8px; list-style-type : none; font-size: 10px; font-family: Arial, Helvetica, sans-serif">
+
+            {{x.nickname}}
+            <br style="display: block;content: '';margin-top: -7px;">{{x.name}}<span style="font-size: 8px">[{{x.lengthClassify}}] <span
+                    ng-show="x.packer !== ''">[{{x.packer}}]</span>
+            </span><br>
+            <svg trackno="{{x.id}}" id="barcode{{i}}"></svg>
+
+        </li>
+        <!-- </div> -->
+
+    </ul>
 </div>
 <div class="modal fade noprint" id="modalProduct" role="dialog">
     <div class="modal-dialog " style="padding: 8px;
@@ -269,15 +286,17 @@
         </tr>
     </tbody>
 </table>
-<div ng-show="arr4.length > 0" style="display: inline;position: fixed;bottom: 0px;left: 0px;z-index: 999; background: #fff">
+<div ng-show="arr4.length > 0"
+    style="display: inline;position: fixed;bottom: 0px;left: 0px;z-index: 999; background: #fff">
     <div class="panel-header noprint" style="padding:5px 0 0 20px;">
-        ĐÃ ĐÓNG GÓI
+        ĐƠN ĐÃ ĐÓNG GÓI
         <span class="pull-right" data-toggle="collapse" data-target=".panel-body.arr4">
             <<< </span> </div> <div class="panel-body arr4 collapse in" style="padding: 15px;
     padding-left: 0px;">
                 <ul style="    padding-left: 20px;" class="noprint">
-                    <li style="margin-bottom: 8px;" ng-repeat="item in arr4">{{item.name}}: {{item.orders.length}} đơn
-                        <span style="cursor:pointer" ng-click="createEx(item.name)" class="glyphicon glyphicon-new-window"></span>
+                    <li style="margin-bottom: 8px;" ng-repeat="item in arr4">{{item.name}}: {{item.orders.length}}
+                        <span style="cursor:pointer" ng-click="createEx(item.name)"
+                            class="glyphicon glyphicon-new-window"></span>
                     </li>
                 </ul>
     </div>

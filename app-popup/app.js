@@ -9,6 +9,25 @@ const settings = { /* your settings... */
 };
 firestore.settings(settings);
 var app = angular.module("app", ["ngRoute", "angularMoment"]);
+
+app.directive('whenScrolled', ['$timeout', function($timeout) {
+  return function(scope, elm, attr) {
+      var raw = elm[0];
+      console.log(raw);
+      $timeout(function() {
+          raw.scrollTop = raw.scrollHeight;          
+      },500);         
+      
+      elm.bind('scroll', function() {
+          if (raw.scrollTop <= 100) { // load more items before you hit the top
+              var sh = raw.scrollHeight
+              scope.$apply(attr.whenScrolled);
+              raw.scrollTop = raw.scrollHeight - sh;
+          }
+      });
+  };
+}]);
+
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {

@@ -14,13 +14,13 @@
             font-weight: bold;" ng-show="note !== ''">
                 "{{note}}"
             </div>
-            <a href="#" target="_blank" class="exId" title="Mã Phiếu Xuất" style="padding: 5px;
-            background: #00bf33;
-            color: #fff;">{{traceno}}</a>
+            <a href="#" target="_blank" class="exId" ng-show="traceno !== ''" title="Mã Vận Đơn" style="padding: 5px;
+            background: #00bfa5;
+            color: #fff;line-height: 29px;">{{traceno}}</a>
             <br>
-            <a href="{{exLink}}" target="_blank" class="exId" title="Mã Phiếu Xuất" style="padding: 5px;
+            <a href="{{exLink}}" target="_blank" ng-show="exId !== ''" class="exId" title="Mã Phiếu Xuất" style="padding: 5px;
             background: #00bf33;
-            color: #fff;">{{exId}}</a>
+            color: #fff;line-height: 29px;">{{exId}}</a>
             <br>
             <span class="dateEx" title="Thời gian tạo Mã Phiếu Xuất">{{exDate | date:'dd/MM/yyyy hh:mm'}}</span>
         </div>
@@ -37,9 +37,9 @@
             <div class="form-check">
                 <input type="radio" ng-model="statusRadio" value="SHIPPED">ĐÃ GỬI ĐI
             </div>
-            <div class="form-check">
+            <!-- <div class="form-check">
                 <input type="radio" ng-model="statusRadio" value="DELIVERED">KHÁCH ĐÃ NHẬN
-            </div>
+            </div> -->
             <!-- <div class="form-check">
                 <input type="radio" ng-model="statusRadio" value="PAID">ĐÃ THANH TOÁN
             </div>

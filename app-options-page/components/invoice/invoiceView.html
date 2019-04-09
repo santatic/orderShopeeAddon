@@ -10,7 +10,7 @@
                 <button ng-click="addShippingNo()" id="addShippingNo"><span class="glyphicon glyphicon-plus"></span>
                     Vận Đơn</button>
                 <span>Hàng: </span>
-                <input type="number" name="" id="" ng-model="sumPaid" ng-value="sumPaid|number:2" disabled> + Ship
+                <input type="number" name="" id="" ng-model="sumPaid" ng-value="sumPaid|number:1" disabled> + Ship
                 <input type="number" name="" id="" ng-model="shipping_fee" ng-value="shipping_fee"> -
                 <input type="number" name="" id="" ng-model="voucher" ng-value="voucher"> =
                 {{(sumPaid + shipping_fee - voucher)|number:2}}&yen; * {{currency_rate}} = {{(currency_rate*(sumPaid + shipping_fee -
@@ -18,35 +18,46 @@
                 <select ng-show="status !== 8" class="form-control" name="" id="selectStatus">
                     <!-- <option></option> -->
                     <!-- <option value="{{status}}">{{statusName}}</option> -->
-                    <option ng-repeat="i in arrayStatus" value="{{i.id}}" ng-class="{'full': i.id == 8}" ng-selected="{{i.id}}==status" >{{i.name}}</option>
+                    <option ng-repeat="i in arrayStatus" value="{{i.id}}" ng-class="{'full': i.id == 8}"
+                        ng-selected="{{i.id}}==status">{{i.name}}</option>
                 </select>
-                <button type="button" ng-click="updateDetail()" class="btn btn-success" id="invoiceUpdate" style="float: right;">UPDATE</button>
+                <button type="button" ng-click="updateDetail()" class="btn btn-success" id="invoiceUpdate"
+                    style="float: right;">UPDATE</button>
                 <!-- <h5 class="modal-title">{{traceNo}} <i style="color: #9e25da;" class="glyphicon glyphicon-send"></i></h5> -->
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-5" style="padding-right: 0">
-                        {{invoiceId1688}} <a href="https://trade.1688.com/order/new_step_order_detail.htm?orderId={{invoiceId1688}}" target="_blank"><span class="glyphicon glyphicon-new-window" ></span></a> 
-                        <div class="reportProduct">
+                        {{invoiceId1688}} <a
+                            href="https://trade.1688.com/order/new_step_order_detail.htm?orderId={{invoiceId1688}}"
+                            target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+
+                        <!-- <div class="reportProduct">
                             <ul>
-                                <li ng-repeat = "i in reportProduct">
-                                    {{i.productName}} (số lượng: {{i.quantity}} = {{i.price}} $)
+                                <li ng-repeat="i in reportProduct">
+                                    {{i.productName}} (số lượng: {{i.quantity}} =
+                                    {{(i.quantity * i.eachprice)|number: 1}} $) <input type="number" name="" id=""
+                                        ng-model="i.eachprice" ng-value="i.eachprice" ng-change="tempEditQuantity()">
                                 </li>
                             </ul>
-                        </div>
-                        <!-- <div class="invoiceId"><a href="https://trade.1688.com/order/new_step_order_detail.htm?orderId={{orderId}}" target="_blank">{{orderId}}</a></div> -->
-                        <div ng-show="traceNo.length>0" id="grid3" ui-grid="optionsShipping" ui-grid-resize ui-grid-resize-columns
-                            ui-grid-selection ui-grid-edit ui-grid-row-edit class="grid3"></div>
+                        </div> -->
+                        <div id="grid4" ui-grid="optionProducts" ui-grid-resize ui-grid-resize-columns ui-grid-selection
+                            ui-grid-edit ui-grid-row-edit class="grid4"></div>
                         <div class="note">
-                            <textarea name="" id="note" class="form-control" rows="3" style="margin-bottom: 5px;" ng-model="note"></textarea>
+                            <textarea name="" id="note" class="form-control" rows="3" style="margin-bottom: 5px;"
+                                ng-model="note"></textarea>
                             <button class="btn btn-success" ng-click="saveNote()">SAVE</button>
                         </div>
-                        
-                        
+                        <!-- <div class="invoiceId"><a href="https://trade.1688.com/order/new_step_order_detail.htm?orderId={{orderId}}" target="_blank">{{orderId}}</a></div> -->
+                        <div ng-show="traceNo.length>0" id="grid3" ui-grid="optionsShipping" ui-grid-resize
+                            ui-grid-resize-columns ui-grid-selection ui-grid-edit ui-grid-row-edit class="grid3"></div>
+
+
+
                     </div>
                     <div class="col-md-7">
                         <div id="grid2" ui-grid="optionsDetail" ui-grid-resize ui-grid-resize-columns ui-grid-selection
-                            ui-grid-edit  ui-grid-row-edit class="grid2" style="height:470px"></div>
+                            ui-grid-edit ui-grid-row-edit class="grid2" style="height:470px"></div>
                     </div>
                 </div>
             </div>
@@ -69,9 +80,10 @@
                             Mã Đơn: <span>{{item.orderId}}</span>
                             Note: <span>{{item.note}}</span>
                         </div>
-                        <li style="margin-bottom: 5px;margin-left: 50px;" ng-repeat="i in item.shipping_trace" id="{{i.id}}">{{i.id}}<span
-                                class="timeOfShippingNo">{{i.time |
-                                date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}} (kg)</span>
+                        <li style="margin-bottom: 5px;margin-left: 50px;" ng-repeat="i in item.shipping_trace"
+                            id="{{i.id}}">{{i.id}}<span class="timeOfShippingNo">{{i.time |
+                                date: "dd/MM/y - HH:mm"}}</span> <span class="weightOfShippingNo">{{i.weight}}
+                                (kg)</span>
                             <span title="phí ship" class="ShippingFeeOfShippingNo">{{i.shipping_fee}} (&yen;)</span>
 
                         </li>

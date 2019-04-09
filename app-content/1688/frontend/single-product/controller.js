@@ -7,7 +7,8 @@ app.controller("1688Ctrl", ['$scope', 'moment',
         };
 
         var id1688 = $('meta[name=b2c_auction]').attr("content");
-
+        var companyName = $('div.company-name > a').text()
+        console.log(companyName);
         var Products = [];
         chrome.storage.local.get('products', function (obj) {
             getData(obj.products);
@@ -161,6 +162,7 @@ app.controller("1688Ctrl", ['$scope', 'moment',
                         original_sku: (date.getTime() + i + 1).toString(),
                     })
                     var obj = {
+                        companyName: companyName,
                         id: id1688.toString(),
                         name: (location.hostname).toString(),
                         original_sku: (date.getTime() + i + 1).toString(),
